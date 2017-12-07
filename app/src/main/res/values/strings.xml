@@ -3,4 +3,6 @@
     <string name="camera_connected">Camera is connected</string>
     <string name="camera_disconnected">Camera is disconnected</string>
     <string name="read_video">Play EventStream video</string>
+
+    <string name="prepare_camera">Preparing camera, please standby</string>
 </resources>

@@ -5,4 +5,6 @@
     <string name="read_video">Play EventStream video</string>
 
     <string name="prepare_camera">Preparing camera, please standby</string>
+    <string name="stop_camera_service">Stopping camera service</string>
+    <string name="request_grant_camera_permission">Please grant permissions to use the camera.</string>
 </resources>

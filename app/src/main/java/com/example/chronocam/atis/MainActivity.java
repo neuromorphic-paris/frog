@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity {
          System.loadLibrary("eventprocessor");
      }*/
     private static final String TAG = MainActivity.class.getName();
-    private static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
+    static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
-    private static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
+    static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
 
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver;
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                                     startCameraService();
                                 } else {
                                     Log.d(TAG, "Permissions denied by user");
+                                    Toast.makeText(getApplicationContext(), R.string.request_grant_camera_permission, Toast.LENGTH_SHORT).show();
                                 }
                             }
                             break;
@@ -93,13 +94,14 @@ public class MainActivity extends AppCompatActivity {
 
     void startCameraService() {
         Toast.makeText(getApplicationContext(), R.string.prepare_camera, Toast.LENGTH_SHORT).show();
-        cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
+        cameraServiceIntent = new Intent(this, CameraService.class);
         //cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
         //cameraServiceIntent.putExtra("filePaths", filePaths);
         startService(cameraServiceIntent);
     }
 
     void stopCameraService() {
+
     }
 
     UsbDevice getUsbDevice() {
@@ -108,23 +110,15 @@ public class MainActivity extends AppCompatActivity {
             Iterator<String> it = devices.keySet().iterator();
             String deviceName = it.next();
             return devices.get(deviceName);
-        }
-        return null;
-    }
-
-    boolean checkNumber(int num) {
-        return num > 0;
+        } else return null;
     }
 
     boolean checkPermissions(UsbDevice device) {
         if (device != null && usbManager != null && usbManager.hasPermission(device)) {
             Log.i("checkPermissions", "USB device attached, already has permissions");
             return true;
-        } else if (device == null) {
-            Log.i("checkPermissions", "Tried to check permissions although no device present!");
-            return false;
-        } else if (usbManager == null) {
-            Log.w("checkPermissions", "usbManager is null");
+        } else if (device == null || usbManager == null) {
+            Log.w("checkPermissions", "Tried to check permissions although no device present!");
             return false;
         } else {
             Log.d("checkPermissions", "USB device attached, does not have permissions");

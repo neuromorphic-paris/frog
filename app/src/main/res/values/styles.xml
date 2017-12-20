@@ -8,4 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Frog" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@android:color/holo_green_light</item>
+    </style>
 </resources>

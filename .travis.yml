@@ -1,0 +1,24 @@
+language: android
+android:
+  components:
+    #- tools
+    #- platform-tools
+    - build-tools-26.0.2
+    - android-26
+    - extra-google-m2repository
+    - extra-android-m2repository
+before_install:
+  - rm -fr $HOME/android-ndk-r16b
+  - pwd
+  - ls
+  - cd $HOME
+  - curl -L http://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip -O
+  - unzip -oq android-ndk-r16b-linux-x86_64.zip
+  - rm android-ndk-r16b-linux-x86_64.zip
+  - export ANDROID_NDK_HOME=$HOME/android-ndk-r16b
+  - ls $HOME
+  - ls $HOME/android-ndk-r16b
+  - ls $HOME/android-ndk-r16b/platforms
+  - cd $HOME/build/neuromorphic-paris/frog
+
+script: ./gradlew build test 

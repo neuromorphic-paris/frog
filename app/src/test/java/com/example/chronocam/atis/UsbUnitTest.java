@@ -1,10 +1,8 @@
 package com.example.chronocam.atis;
 
-import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,17 +10,17 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.HashMap;
 
-import static junit.framework.Assert.*;
-import static org.mockito.Mockito.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by gregorlenz on 05/12/17.
@@ -68,12 +66,13 @@ public class UsbUnitTest {
     }
 
     @Test
-    public void checkPermissions_nullDevice_returnsFalse(){
+    public void checkPermissions_nullDevice_returnsFalse() {
         boolean result = mainActivity.checkPermissions(null);
         assertFalse(result);
     }
+
     @Test
-    public void checkPermissions_nullUsbManager_returnsFalse(){
+    public void checkPermissions_nullUsbManager_returnsFalse() {
         usbManager = null;
         boolean result = mainActivity.checkPermissions(usbDevice);
         assertFalse(result);

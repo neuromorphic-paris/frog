@@ -17,8 +17,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
 import java.util.HashMap;
@@ -50,8 +48,7 @@ public class ActivityTest {
     @InjectMocks
     private MainActivity mainActivity = Robolectric.setupActivity(MainActivity.class);
 
-    Context context;
-    HashMap<String, UsbDevice> deviceList = new HashMap<>();
+    private Context context;
 
     @Before
     public void setup() {
@@ -95,7 +92,22 @@ public class ActivityTest {
     }
 
     @Test
-    public void usbBroadCastReceiver_permissionRequestIsDeniedByUser_shouldNotStartService(){
+    public void usbBroadCastReceiver_permissionRequestIsAcceptedByUser_shouldStartCameraService() {
+        Intent permissionRequestIntent = new Intent(MainActivity.ACTION_USB_PERMISSION);
+        permissionRequestIntent.putExtra(UsbManager.EXTRA_PERMISSION_GRANTED, true);
+        Intent goalIntent = new Intent(context, CameraService.class);
+
+        mainActivity.usbBroadcastReceiver.onReceive(context, permissionRequestIntent);
+        assertEquals(context.getString(R.string.prepare_camera), ShadowToast.getTextOfLatestToast());
+
+        Intent serviceIntent = shadowOf(mainActivity).getNextStartedService();
+
+        assertTrue(goalIntent.filterEquals(serviceIntent));
+        assertEquals(serviceIntent.getComponent(), goalIntent.getComponent());
+    }
+
+    @Test
+    public void usbBroadCastReceiver_permissionRequestIsDeniedByUser_shouldNotStartService() {
         Intent permissionRequestIntent = new Intent(MainActivity.ACTION_USB_PERMISSION);
         permissionRequestIntent.putExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
 
@@ -118,17 +130,5 @@ public class ActivityTest {
         mainActivity.startCameraService();
         assertEquals(context.getString(R.string.prepare_camera), ShadowToast.getTextOfLatestToast());
         assertEquals(CameraService.class.getName(), shadowOf(mainActivity).getNextStartedService().getComponent().getClassName());
-    }
-
-    @Test
-    public void onStart_appIsStarted_shouldCallOnStart() {
-        ActivityController activityController = Robolectric.buildActivity(MainActivity.class).create().start();
-        //assert that it happened...
-    }
-
-    @Test
-    public void onCreate_appIsStartedThroughIntent_shouldInitaliseCorrectly() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        MainActivity activity = Robolectric.buildActivity(MainActivity.class, intent).create().get();
     }
 }

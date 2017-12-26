@@ -29,7 +29,6 @@ import static org.mockito.Mockito.*;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
 public class UsbUnitTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
@@ -73,7 +72,6 @@ public class UsbUnitTest {
         boolean result = mainActivity.checkPermissions(null);
         assertFalse(result);
     }
-
     @Test
     public void checkPermissions_nullUsbManager_returnsFalse(){
         usbManager = null;

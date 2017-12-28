@@ -5,10 +5,15 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by gregorlenz on 05/12/17.
@@ -18,18 +23,21 @@ public class CameraService extends Service {
     private static final String TAG = CameraService.class.getName();
     private final IBinder iBinder = new LocalBinder();
 
-    public class LocalBinder extends Binder {
-        CameraService getService() {
-            return CameraService.this;
-        }
-    }
+    CameraPollingThread cameraPollingThread;
+    Looper cameraPollingThreadLooper;
+    ProcessingThread processingThread;
 
-    @Nullable
+    private Intent intent;
+
+    Handler resultHandler;
+
+    BlockingQueue<ChangeDetection> buffer;
+
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public void onCreate() {
     }
 
+    //using a service to make ATIS polling activity-independent
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Camera is starting...", Toast.LENGTH_SHORT).show();
@@ -44,30 +52,37 @@ public class CameraService extends Service {
                 new Notification.Builder(this)
                         .setContentTitle("ATIS camera connected")
                         .setContentText("reading events...")
-                        //.setSmallIcon(R.mipmap.camera_dt)
+                        .setSmallIcon(R.mipmap.camera_dt)
                         .setContentIntent(pendingIntent)
                         .setTicker("Camera is being polled...")
                         .build();
 
         startForeground(182903, notification);
 
-        //start thread which is actually retrieving the data from the camera
-        startCameraThread();
+        this.intent = intent;
+        buffer = new ArrayBlockingQueue<>(500000);
+
+        startProducer();
+        startConsumer();
 
         return START_REDELIVER_INTENT;
     }
 
+    void startProducer() {
+    }
+
+    void startConsumer() {
+    }
+
+    @Nullable
     @Override
-    public void onDestroy() {
-        stopCameraThread();
-        super.onDestroy();
-        Toast.makeText(this, "camera service has stopped", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "camera service has stopped");
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
-    void startCameraThread() {
-    }
-
-    void stopCameraThread() {
+    public class LocalBinder extends Binder {
+        CameraService getService() {
+            return CameraService.this;
+        }
     }
 }

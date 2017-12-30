@@ -1,3 +1,3 @@
 ![frog](frogBanner.png "The Frog banner")
-# frog
-Android framework for event-based vision
+
+Master Branch build status: [![Build Status](https://www.travis-ci.org/neuromorphic-paris/frog.svg?branch=master)](https://www.travis-ci.org/neuromorphic-paris/frog)

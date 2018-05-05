@@ -1,13 +1,13 @@
 ![frog](frogBanner.png "The Frog banner")
 
 # Frog
-Frog is an Android app which lets you use an event-camera that is connected via USB to the phone. You can then parse the events with your own C++ code or use our Framework called [Tarsier](https://github.com/neuromorphic-paris/tarsier). 
+Frog is an Android app which lets you use an event-camera that is connected via USB to the phone. You can then parse the events with your own C++ code or use the [Tarsier](https://github.com/neuromorphic-paris/tarsier) toolbox. 
 
 # Installation
-It's easiest to use [Android Studio](https://developer.android.com/studio/index.html), for superb support of both Java and C++ code and the Gradle build tool. Alternatively, run `gradlew clean build` from the command line and install the .apk file under app/build/outputs/apk/release/ manually
+It's easiest to use [Android Studio](https://developer.android.com/studio/index.html), for superb support of both Java and C++ code and the Gradle build tool. Alternatively, run `gradlew clean build` from the command line and install the .apk file under app/build/outputs/apk/release/ manually.
 
 # Test
-The Java Framework is backed up by [Robolectric](http://robolectric.org/). This does not include any C++ code for the moment. 
+Java code is backed up by [Robolectric](http://robolectric.org/). This does not include any C++ code for the moment. 
 
 Master Branch build status: [![Build Status](https://www.travis-ci.org/neuromorphic-paris/frog.svg?branch=master)](https://www.travis-ci.org/neuromorphic-paris/frog)
 

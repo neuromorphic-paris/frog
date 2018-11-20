@@ -1,2 +1,3 @@
 # File: Application.mk
-APP_STL := stlport_static
+APP_STL := c++_static
+APP_CPPFLAGS := -fexceptions

@@ -7,7 +7,6 @@ extern "C" {
 
 //TODO
 //use tool to link wrapper to new namespace packaging
-
 JNIEXPORT void JNICALL Java_com_example_chronocam_atis_eventprocessor_1moduleJNI_Eventprocessor_1init(JNIEnv *env, jclass jcls, jlong jniCPtr, jobject jarg1_, jstring l1ProtoPath_, jstring l2ProtoPath_, jstring gestureSigPath_) {
 
         __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor init L1 ", "IM HEREEEE");

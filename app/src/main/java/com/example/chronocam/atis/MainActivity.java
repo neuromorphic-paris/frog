@@ -10,6 +10,9 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -29,11 +32,18 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver usbBroadcastReceiver;
     Intent cameraServiceIntent;
 
+    Button startButton;
+    TextView infoText;
+    ImageView cameraImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        startButton = findViewById(R.id.start_recording_button);
+        infoText = findViewById(R.id.text_info);
+        cameraImage = findViewById(R.id.image_status);
 
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbBroadcastReceiver = new BroadcastReceiver() {
@@ -98,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
         //cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
         //cameraServiceIntent.putExtra("filePaths", filePaths);
         startService(cameraServiceIntent);
+        startButton.setEnabled(true);
+        infoText.setText(getString(R.string.press_start_to_record));
     }
 
     void stopCameraService() {

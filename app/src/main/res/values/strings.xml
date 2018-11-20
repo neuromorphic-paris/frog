@@ -8,5 +8,6 @@
     <string name="stop_camera_service">Stopping camera service</string>
     <string name="request_grant_camera_permission">Please grant permissions to use the camera.</string>
 
-    <string name="shared_console_info">Press START to record 3s</string>
+    <string name="no_camera_connected">Please connect an ATIS camera</string>
+    <string name="press_start_to_record">Press START to record 3s</string>
 </resources>

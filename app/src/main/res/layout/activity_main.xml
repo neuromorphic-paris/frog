@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="10dp"
-            android:text="@string/shared_console_info"
+            android:text="@string/no_camera_connected"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         <LinearLayout
@@ -62,6 +62,7 @@
                 style="@style/Base.TextAppearance.AppCompat.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:layout_gravity="center"
                 android:focusableInTouchMode="false"
                 android:padding="10dp"
@@ -73,6 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
+                android:visibility="invisible"
                 android:padding="10dp"
                 android:paddingEnd="0dp"
                 android:paddingStart="30dp"

@@ -1,0 +1,3 @@
+[submodule "app/src/main/cpp/sepia"]
+	path = app/src/main/cpp/sepia
+	url = https://github.com/neuromorphic-paris/sepia

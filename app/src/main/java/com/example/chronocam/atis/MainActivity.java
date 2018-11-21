@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
-    /* static {
-         System.loadLibrary("atis_java"); // load libatis_java.so
+    static {
+         //System.loadLibrary("atis_java"); // load libatis_java.so
          System.loadLibrary("eventprocessor");
-     }*/
+    }
     private static final String TAG = MainActivity.class.getName();
     static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(usbBroadcastReceiver, filter);
     }
+
+    public native String stringFromJNI();
 
     @Override
     public void onStop() {

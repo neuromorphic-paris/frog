@@ -8,6 +8,7 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
 before_install:
+  - yes | sdkmanager "platforms;android-28"
   - rm -fr $HOME/android-ndk-r16b
   - pwd
   - ls

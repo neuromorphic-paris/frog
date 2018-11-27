@@ -25,20 +25,15 @@ extern "C" {
     }
 
     JNIEXPORT jlong JNICALL
-    Java_com_example_chronocam_atis_Eventprocessor_delete_1Eventprocessor(JNIEnv *env, jobject instance,
-                                                                          jlong jniCPtr) {
+    Java_com_example_chronocam_atis_Eventprocessor_delete_1Eventprocessor(JNIEnv *env, jobject instance, jlong jniCPtr) {
 
         // TODO
 
     }
 
     JNIEXPORT void JNICALL
-    Java_com_example_chronocam_atis_Eventprocessor_set_1camera_1data_1Eventprocessor(JNIEnv *env,
-                                                                                     jobject instance,
-                                                                                     jlong jniCPtr,
-                                                                                     jobject eventprocessor,
-                                                                                     jbyteArray arg0_,
-                                                                                     jlong arg1) {
+    Java_com_example_chronocam_atis_Eventprocessor_set_1camera_1data_1Eventprocessor(
+    JNIEnv *env, jobject instance, jlong jniCPtr, jobject eventprocessor, jbyteArray arg0_, jlong arg1) {
         jbyte *arg0 = env->GetByteArrayElements(arg0_, NULL);
 
         // TODO

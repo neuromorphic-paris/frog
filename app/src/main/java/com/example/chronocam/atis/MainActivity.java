@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(usbBroadcastReceiver, filter);
         String filePath = copyResource(getApplicationContext(), "atis.es");
 
+        Log.d("onStart", filePath);
         //native triggerSepi
     }
 
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             return "";
         AssetManager assetManager = context.getAssets();
         try {
-            String resourceLocation = "/data/data/" + context.getPackageName() + "/" + resource;
+            String resourceLocation = context.getFilesDir().getPath() + context.getPackageName() + "/" + resource;
             copyAsset(assetManager, resource, resourceLocation);
             return resourceLocation;
         } catch (Exception e) {

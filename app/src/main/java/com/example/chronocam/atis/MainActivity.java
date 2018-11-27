@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(ACTION_USB_PERMISSION);
 
         registerReceiver(usbBroadcastReceiver, filter);
-        String filePath = Util.copyResource(getApplicationContext(), "atis.es");
+        String filePath = Util.copyResource(getApplicationContext(), "dvs.es");
 
         Log.d("onStart", filePath);
         Log.d("onStart", stringFromJNI());

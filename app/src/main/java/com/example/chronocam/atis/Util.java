@@ -19,7 +19,7 @@ public class Util {
             return "";
         AssetManager assetManager = context.getAssets();
         try {
-            String resourceLocation = context.getFilesDir().getPath() + context.getPackageName() + "/" + resource;
+            String resourceLocation = context.getFilesDir().getPath() + "/" + resource;
             copyAsset(assetManager, resource, resourceLocation);
             return resourceLocation;
         } catch (Exception e) {

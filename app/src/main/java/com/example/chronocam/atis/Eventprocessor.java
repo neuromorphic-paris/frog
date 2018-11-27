@@ -1,6 +1,9 @@
 package com.example.chronocam.atis;
 
 public class Eventprocessor {
+/*    static {
+        System.loadLibrary("eventprocessor");
+    }*/
     private transient long objPtr;
 
     public Eventprocessor() {

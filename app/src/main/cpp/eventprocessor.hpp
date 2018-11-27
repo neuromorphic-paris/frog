@@ -11,7 +11,7 @@ class EventProcessor {
 public:
 
     // Constructor
-    uint64_t baseTime = 0;
+    uint64_t baseTime;
 
     EventProcessor() {}
 };

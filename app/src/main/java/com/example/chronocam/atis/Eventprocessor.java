@@ -1,14 +1,22 @@
 package com.example.chronocam.atis;
 
 public class Eventprocessor {
-/*    static {
-        System.loadLibrary("eventprocessor");
-    }*/
+    private static final String TAG = Eventprocessor.class.getName();
+    static {
+        try {
+            System.loadLibrary("eventprocessor");
+        } catch (final UnsatisfiedLinkError e){
+            Log.e(TAG, "load library" + Log.getStackTraceString(e));
+        }    }
     private transient long objPtr;
 
     public Eventprocessor() {
         if (this.objPtr != 0) {
-            this.objPtr = new_Eventprocessor();
+            try {
+                this.objPtr = new_Eventprocessor();
+            } catch (UnsatisfiedLinkError e) {
+                this.objPtr = 0;
+            }
         }
     }
 
@@ -31,4 +39,6 @@ public class Eventprocessor {
     private native long delete_Eventprocessor(long jniCPtr);
     private native void set_camera_data_Eventprocessor(long jniCPtr, Eventprocessor eventprocessor, byte[] arg0, long arg1);
 
+    public native String stringFromJNI ();
+    public native void triggerSepia(String path);
 }

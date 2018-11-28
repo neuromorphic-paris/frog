@@ -7,7 +7,7 @@
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_MainActivity_triggerSepia(JNIEnv *env, jobject instance,
+Java_com_example_chronocam_atis_Eventprocessor_triggerSepia(JNIEnv *env, jobject instance,
                                                           jstring path_) {
     const char *path = env->GetStringUTFChars(path_, 0);
     std::string stdL1ProtoPath(path, 100);
@@ -26,17 +26,16 @@ Java_com_example_chronocam_atis_MainActivity_triggerSepia(JNIEnv *env, jobject i
     env->ReleaseStringUTFChars(path_, path);
 }
 
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_example_chronocam_atis_Eventprocessor_stringFromJNI(JNIEnv *env, jobject instance) {
+    __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor stringFromJNI ", "IM HEREEEE");
+
+    std::string hello = "Hello from C++";
+    return env->NewStringUTF(hello.c_str());
+}
 
 extern "C" {
-
-JNIEXPORT jstring JNICALL
-    Java_com_example_chronocam_atis_MainActivity_stringFromJNI(JNIEnv *env, jobject instance) {
-
-        __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor stringFromJNI ", "IM HEREEEE");
-
-        std::string hello = "Hello from C++";
-        return env->NewStringUTF(hello.c_str());
-    }
 
     JNIEXPORT jlong JNICALL
     Java_com_example_chronocam_atis_Eventprocessor_new_1Eventprocessor(JNIEnv *env, jobject instance) {

@@ -1,5 +1,7 @@
 package com.example.chronocam.atis;
 
+import android.util.Log;
+
 public class Eventprocessor {
     private static final String TAG = Eventprocessor.class.getName();
     static {

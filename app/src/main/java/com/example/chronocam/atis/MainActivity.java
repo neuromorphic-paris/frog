@@ -95,14 +95,20 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(usbBroadcastReceiver, filter);
         String filePath = Util.copyResource(getApplicationContext(), "dvs.es");
+        Log.d(TAG, filePath);
 
-        Log.d("onStart", filePath);
-        Log.d("onStart", stringFromJNI());
-        triggerSepia(filePath);
+        eventprocessor = new Eventprocessor();
+
+        String hello;
+        try {
+            hello = eventprocessor.stringFromJNI();
+            eventprocessor.triggerSepia(filePath);
+        } catch(UnsatisfiedLinkError e) {
+            hello = "test case";
+            Log.w(TAG, Log.getStackTraceString(e));
+        }
+        Log.d(TAG, hello);
     }
-
-    public native String stringFromJNI();
-    public native void triggerSepia(String path);
 
     @Override
     public void onStop() {

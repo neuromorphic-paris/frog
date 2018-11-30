@@ -1,5 +1,6 @@
 package com.example.chronocam.atis;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 public class Eventprocessor {
@@ -41,6 +42,7 @@ public class Eventprocessor {
     private native long delete_Eventprocessor(long jniCPtr);
     private native void set_camera_data_Eventprocessor(long jniCPtr, Eventprocessor eventprocessor, byte[] arg0, long arg1);
 
+    public native void renderPreview(Bitmap bitmap);
     public native String stringFromJNI ();
     public native void triggerSepia(String path);
 }

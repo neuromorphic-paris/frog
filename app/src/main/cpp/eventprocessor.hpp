@@ -6,6 +6,8 @@
 #define FROG_EVENTPROCESSOR_H
 
 #include <cstdint>
+#include <android/bitmap.h>
+
 
 class EventProcessor {
 public:

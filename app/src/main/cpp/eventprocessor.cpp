@@ -1,9 +1,13 @@
 #include <jni.h>
 #include <string>
+#include <android/bitmap.h>
 #include <android/log.h>
 #include <iostream>
 #include "eventprocessor.hpp"
 #include "sepia/source/sepia.hpp"
+
+#define LOG_TAG "eventprocessor"
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -13,8 +17,6 @@ Java_com_example_chronocam_atis_Eventprocessor_triggerSepia(JNIEnv *env, jobject
     std::string stdL1ProtoPath(path, 100);
     stdL1ProtoPath.erase(std::find(stdL1ProtoPath.begin(), stdL1ProtoPath.end(), '\0'), stdL1ProtoPath.end());
     __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", "init");
-    //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", path_);
-    //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", path);
     sepia::join_observable<sepia::type::dvs>(sepia::filename_to_ifstream(stdL1ProtoPath), [&](sepia::dvs_event dvs_event) {
         if (dvs_event.is_increase) {
             __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", "+");
@@ -35,9 +37,61 @@ Java_com_example_chronocam_atis_Eventprocessor_stringFromJNI(JNIEnv *env, jobjec
     return env->NewStringUTF(hello.c_str());
 }
 
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_chronocam_atis_Eventprocessor_renderPreview(JNIEnv *env, jobject instance,
+                                                             jobject bitmap) {
+
+    AndroidBitmapInfo  info;
+    void*              pixels;
+    int                ret;
+    static int         init;
+
+    if (!init) {
+        //init_tables();
+        //stats_init(&stats);
+        init = 1;
+    }
+
+    if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0) {
+        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+        return;
+    }
+
+    if (info.format != ANDROID_BITMAP_FORMAT_A_8) {
+        LOGE("Bitmap format is not A_8 !");
+        return;
+    }
+
+    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+    }
+
+    /* Now fill the values with a nice little plasma */
+    //fill_plasma(&info, pixels, time_ms );
+            uint8_t* address = (uint8_t*)pixels;
+
+            int width = info.width, height = info.height;
+            uint16_t x = 100, y = 100;
+
+            for (int x_step = 0; x_step < x; ++x_step){
+                for (int y_step = 0; y_step < y; ++y_step){
+                    address++;
+                }
+            }
+
+            for (int i = 0; i < 10; ++i){
+                *address = 0;
+                address++;
+            }
+
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+}
+
 extern "C" {
 
-    JNIEXPORT jlong JNICALL
+JNIEXPORT jlong JNICALL
     Java_com_example_chronocam_atis_Eventprocessor_new_1Eventprocessor(JNIEnv *env, jobject instance) {
         jlong jresult = 0;
         EventProcessor *result = 0;

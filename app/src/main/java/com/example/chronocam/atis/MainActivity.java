@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Button startButton;
     TextView infoText;
     ImageView cameraImage;
+    CameraPreview cameraPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         startButton = findViewById(R.id.start_recording_button);
         infoText = findViewById(R.id.text_info);
         cameraImage = findViewById(R.id.image_status);
+        cameraPreview = findViewById(R.id.camera_preview);
+        //cameraPreview.setBackgroundColor(Color.WHITE);
 
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbBroadcastReceiver = new BroadcastReceiver() {
@@ -97,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
         String filePath = Util.copyResource(getApplicationContext(), "dvs.es");
         Log.d(TAG, filePath);
 
+        /*
         eventprocessor = new Eventprocessor();
-
         String hello;
         try {
             hello = eventprocessor.stringFromJNI();
@@ -108,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
             Log.w(TAG, Log.getStackTraceString(e));
         }
         Log.d(TAG, hello);
+        */
     }
 
     @Override

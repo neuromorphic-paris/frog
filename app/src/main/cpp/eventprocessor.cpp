@@ -67,24 +67,20 @@ Java_com_example_chronocam_atis_Eventprocessor_renderPreview(JNIEnv *env, jobjec
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
 
-    /* Now fill the values with a nice little plasma */
-    //fill_plasma(&info, pixels, time_ms );
-            uint8_t* address = (uint8_t*)pixels;
+    /* Drawing rectangle */
+    int width = info.width, height = info.height;
+    uint16_t x = 304, y = 240;
 
-            int width = info.width, height = info.height;
-            uint16_t x = 100, y = 100;
+    int yy;
+    for (yy = 0;  yy < y; yy++){
+        uint16_t* line = (uint16_t*) pixels;
 
-            for (int x_step = 0; x_step < x; ++x_step){
-                for (int y_step = 0; y_step < y; ++y_step){
-                    address++;
-                }
-            }
-
-            for (int i = 0; i < 10; ++i){
-                *address = 0;
-                address++;
-            }
-
+        int xx;
+        for (xx = 0; xx < x; xx++){
+            line[xx] = 255;
+        }
+        pixels = (char*)pixels + info.stride;
+    }
 
     AndroidBitmap_unlockPixels(env, bitmap);
 }

@@ -20,14 +20,11 @@ public class CameraPreview extends View {
 
     @Override
     protected void onDraw(Canvas canvas){
-        for (int i = 40; i < 304; i++){
-            bitmap.setPixel(i, 80, Color.WHITE);
-            bitmap.setPixel(i, 81, Color.WHITE);
-            bitmap.setPixel(i, 82, Color.WHITE);
-            bitmap.setPixel(i, 83, Color.TRANSPARENT);
-            bitmap.setPixel(i, 84, Color.TRANSPARENT);
-            bitmap.setPixel(i, 85, Color.TRANSPARENT);
+    /*
+        for (int i = 0; i < 304; i++){
+            bitmap.setPixel(i, 100, Color.TRANSPARENT);
         }
+    */
         eventprocessor.renderPreview(bitmap);
         canvas.drawColor(Color.GRAY);
         canvas.drawBitmap(bitmap, 0, 0, null);

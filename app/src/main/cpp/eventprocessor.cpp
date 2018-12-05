@@ -11,6 +11,15 @@
 
 extern "C"
 JNIEXPORT void JNICALL
+Java_com_example_chronocam_atis_Eventprocessor_setBitmap(JNIEnv *env, jobject instance,
+                                                         jobject bitmap) {
+
+    // TODO
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_triggerSepia(JNIEnv *env, jobject instance,
                                                           jstring path_) {
     const char *path = env->GetStringUTFChars(path_, 0);
@@ -41,17 +50,9 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_renderPreview(JNIEnv *env, jobject instance,
                                                              jobject bitmap) {
-
     AndroidBitmapInfo  info;
     void*              pixels;
     int                ret;
-    static int         init;
-
-    if (!init) {
-        //init_tables();
-        //stats_init(&stats);
-        init = 1;
-    }
 
     if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0) {
         LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
@@ -68,18 +69,17 @@ Java_com_example_chronocam_atis_Eventprocessor_renderPreview(JNIEnv *env, jobjec
     }
 
     /* Drawing rectangle */
-    int width = info.width, height = info.height;
-    uint16_t x = 304, y = 240;
+    int width = info.width, height = info.height, stride = info.stride;
 
     int yy;
-    for (yy = 0;  yy < y; yy++){
+    for (yy = 0;  yy < height; yy++){
         uint16_t* line = (uint16_t*) pixels;
 
         int xx;
-        for (xx = 0; xx < x; xx++){
+        for (xx = 0; xx < width; xx++){
             line[xx] = 255;
         }
-        pixels = (char*)pixels + info.stride;
+        pixels = (char*)pixels + stride;
     }
 
     AndroidBitmap_unlockPixels(env, bitmap);

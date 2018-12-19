@@ -32,16 +32,27 @@ public class Eventprocessor {
         }
     }
 
-    public void set_camera_data(byte[] arg0, long arg1) {
+    public void setCameraData(byte[] arg0, long arg1) {
         set_camera_data_Eventprocessor(objPtr, this, arg0, arg1);
+    }
+
+    void renderPreview(Bitmap bitmap){
+        render_preview(bitmap);
+    }
+
+    String stringFromJNI(){
+        return string_from_JNI();
+    }
+
+    void triggerSepia(String filepath){
+        trigger_sepia(objPtr, filepath);
     }
 
     private native long new_Eventprocessor();
     private native long delete_Eventprocessor(long jniCPtr);
     private native void set_camera_data_Eventprocessor(long jniCPtr, Eventprocessor eventprocessor, byte[] arg0, long arg1);
-
-    public native void renderPreview(Bitmap bitmap);
-    public native void setBitmap(long objPtr, Bitmap bitmap);
-    public native String stringFromJNI ();
-    public native void triggerSepia(long objPtr, String path);
+    private native void render_preview(Bitmap bitmap);
+    private native void set_bitmap(long objPtr, Bitmap bitmap);
+    private native String string_from_JNI ();
+    private native void trigger_sepia(long objPtr, String path);
 }

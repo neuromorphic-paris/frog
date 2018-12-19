@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView cameraImage;
     CameraPreview cameraPreview;
 
+    String filePath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         infoText = findViewById(R.id.text_info);
         cameraImage = findViewById(R.id.image_status);
 
-        String filePath = Util.copyResource(getApplicationContext(), "dvs.es");
+        filePath = Util.copyResource(getApplicationContext(), "dvs.es");
         Log.d(TAG, filePath);
         cameraPreview = findViewById(R.id.camera_preview);
         eventprocessor = cameraPreview.eventprocessor;
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d(TAG, eventprocessor.stringFromJNI());
+            eventprocessor.triggerSepia(filePath);
             return null;
         }
     }

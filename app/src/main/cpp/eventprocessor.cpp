@@ -11,17 +11,8 @@
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_setBitmap(JNIEnv *env, jobject instance,
-                                                         jobject bitmap) {
-
-    // TODO
-
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_triggerSepia(JNIEnv *env, jobject instance,
-                                                          jstring path_) {
+Java_com_example_chronocam_atis_Eventprocessor_trigger_1sepia(JNIEnv *env, jobject instance,
+                                                              jlong objPtr, jstring path_) {
     const char *path = env->GetStringUTFChars(path_, 0);
     std::string stdL1ProtoPath(path, 100);
     stdL1ProtoPath.erase(std::find(stdL1ProtoPath.begin(), stdL1ProtoPath.end(), '\0'), stdL1ProtoPath.end());
@@ -39,7 +30,7 @@ Java_com_example_chronocam_atis_Eventprocessor_triggerSepia(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_stringFromJNI(JNIEnv *env, jobject instance) {
+Java_com_example_chronocam_atis_Eventprocessor_string_1from_1JNI(JNIEnv *env, jobject instance) {
     __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor stringFromJNI ", "IM HEREEEE");
 
     std::string hello = "Hello from C++";
@@ -48,7 +39,7 @@ Java_com_example_chronocam_atis_Eventprocessor_stringFromJNI(JNIEnv *env, jobjec
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_renderPreview(JNIEnv *env, jobject instance,
+Java_com_example_chronocam_atis_Eventprocessor_render_1preview(JNIEnv *env, jobject instance,
                                                              jobject bitmap) {
     AndroidBitmapInfo  info;
     void*              pixels;
@@ -83,6 +74,15 @@ Java_com_example_chronocam_atis_Eventprocessor_renderPreview(JNIEnv *env, jobjec
     }
 
     AndroidBitmap_unlockPixels(env, bitmap);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject instance,
+                                                           jlong objPtr, jobject bitmap) {
+
+    // TODO
+
 }
 
 extern "C" {

@@ -9,11 +9,10 @@ import android.view.View;
 
 public class CameraPreview extends View {
     private Bitmap bitmap;
-    private int scale = 3;
-    private Eventprocessor eventprocessor;
+    public Eventprocessor eventprocessor;
 
     public CameraPreview(Context context, AttributeSet attributeSet){
-        super(context);
+        super(context, attributeSet);
         this.bitmap = Bitmap.createBitmap(304, 240, Bitmap.Config.ALPHA_8);
         this.eventprocessor = new Eventprocessor();
     }

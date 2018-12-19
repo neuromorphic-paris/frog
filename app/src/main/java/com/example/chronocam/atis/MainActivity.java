@@ -5,9 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -46,8 +46,11 @@ public class MainActivity extends AppCompatActivity {
         startButton = findViewById(R.id.start_recording_button);
         infoText = findViewById(R.id.text_info);
         cameraImage = findViewById(R.id.image_status);
+
+        String filePath = Util.copyResource(getApplicationContext(), "dvs.es");
+        Log.d(TAG, filePath);
         cameraPreview = findViewById(R.id.camera_preview);
-        //cameraPreview.setBackgroundColor(Color.WHITE);
+        eventprocessor = cameraPreview.eventprocessor;
 
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbBroadcastReceiver = new BroadcastReceiver() {
@@ -98,21 +101,20 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(ACTION_USB_PERMISSION);
 
         registerReceiver(usbBroadcastReceiver, filter);
-        String filePath = Util.copyResource(getApplicationContext(), "dvs.es");
-        Log.d(TAG, filePath);
 
-        /*
-        eventprocessor = new Eventprocessor();
-        String hello;
-        try {
-            hello = eventprocessor.stringFromJNI();
-            eventprocessor.triggerSepia(filePath);
-        } catch(UnsatisfiedLinkError e) {
-            hello = "test case";
-            Log.w(TAG, Log.getStackTraceString(e));
+        Log.d(TAG, eventprocessor.stringFromJNI());
+
+        new AsyncEventProcessor().execute();
+
+    }
+
+    private  class AsyncEventProcessor extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Log.d(TAG, eventprocessor.stringFromJNI());
+            return null;
         }
-        Log.d(TAG, hello);
-        */
     }
 
     @Override

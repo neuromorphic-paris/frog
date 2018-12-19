@@ -14,12 +14,10 @@ public class Eventprocessor {
     private transient long objPtr;
 
     public Eventprocessor() {
-        if (this.objPtr != 0) {
-            try {
-                this.objPtr = new_Eventprocessor();
-            } catch (UnsatisfiedLinkError e) {
-                this.objPtr = 0;
-            }
+        try {
+            this.objPtr = new_Eventprocessor();
+        } catch (UnsatisfiedLinkError e) {
+            this.objPtr = 0;
         }
     }
 
@@ -43,6 +41,7 @@ public class Eventprocessor {
     private native void set_camera_data_Eventprocessor(long jniCPtr, Eventprocessor eventprocessor, byte[] arg0, long arg1);
 
     public native void renderPreview(Bitmap bitmap);
+    public native void setBitmap(long objPtr, Bitmap bitmap);
     public native String stringFromJNI ();
-    public native void triggerSepia(String path);
+    public native void triggerSepia(long objPtr, String path);
 }

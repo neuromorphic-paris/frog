@@ -15,6 +15,7 @@ public class CameraPreview extends View {
         super(context, attributeSet);
         this.bitmap = Bitmap.createBitmap(304, 240, Bitmap.Config.ALPHA_8);
         this.eventprocessor = new Eventprocessor();
+        eventprocessor.setBitmap(bitmap);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class CameraPreview extends View {
             bitmap.setPixel(i, 100, Color.TRANSPARENT);
         }
     */
-        eventprocessor.renderPreview(bitmap);
+        eventprocessor.renderPreview();
         canvas.drawColor(Color.GRAY);
         canvas.drawBitmap(bitmap, 0, 0, null);
         invalidate();

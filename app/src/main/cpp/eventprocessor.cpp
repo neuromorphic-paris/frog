@@ -1,51 +1,31 @@
-#include <jni.h>
-#include <string>
-#include <android/bitmap.h>
-#include <android/log.h>
-#include <iostream>
 #include "eventprocessor.hpp"
 #include "sepia/source/sepia.hpp"
 
 #define LOG_TAG "eventprocessor"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_trigger_1sepia(JNIEnv *env, jobject instance,
-                                                              jlong objPtr, jstring path_) {
-    const char *path = env->GetStringUTFChars(path_, 0);
-    std::string stdL1ProtoPath(path, 100);
-    stdL1ProtoPath.erase(std::find(stdL1ProtoPath.begin(), stdL1ProtoPath.end(), '\0'), stdL1ProtoPath.end());
-    __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", "init");
-    sepia::join_observable<sepia::type::dvs>(sepia::filename_to_ifstream(stdL1ProtoPath), [&](sepia::dvs_event dvs_event) {
+
+void EventProcessor::triggerSepia(std::string filepath) {
+    int counter = 0;
+    sepia::join_observable<sepia::type::dvs>(sepia::filename_to_ifstream(filepath), [&](sepia::dvs_event dvs_event) {
         if (dvs_event.is_increase) {
-            __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", "+");
+            if (counter < 10) {__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", "+"); counter++;}
         } else {
-            __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", "-");
+            if (counter < 10) {__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor triggerSepia ", "-"); counter++;}
         }
     });
-
-    env->ReleaseStringUTFChars(path_, path);
 }
 
-extern "C"
-JNIEXPORT jstring JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_string_1from_1JNI(JNIEnv *env, jobject instance) {
-    __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor stringFromJNI ", "IM HEREEEE");
-
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
+void EventProcessor::setBitmap(jobject bitmap) {
+    this->jbitmap = bitmap;
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_render_1preview(JNIEnv *env, jobject instance,
-                                                             jobject bitmap) {
+void EventProcessor::renderBitmapView(JNIEnv *env) {
     AndroidBitmapInfo  info;
     void*              pixels;
     int                ret;
 
-    if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0) {
+    if ((ret = AndroidBitmap_getInfo(env, this->jbitmap, &info)) < 0) {
         LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
         return;
     }
@@ -55,7 +35,7 @@ Java_com_example_chronocam_atis_Eventprocessor_render_1preview(JNIEnv *env, jobj
         return;
     }
 
-    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0) {
+    if ((ret = AndroidBitmap_lockPixels(env, this->jbitmap, &pixels)) < 0) {
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
 
@@ -73,44 +53,5 @@ Java_com_example_chronocam_atis_Eventprocessor_render_1preview(JNIEnv *env, jobj
         pixels = (char*)pixels + stride;
     }
 
-    AndroidBitmap_unlockPixels(env, bitmap);
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject instance,
-                                                           jlong objPtr, jobject bitmap) {
-
-    // TODO
-
-}
-
-extern "C" {
-
-JNIEXPORT jlong JNICALL
-    Java_com_example_chronocam_atis_Eventprocessor_new_1Eventprocessor(JNIEnv *env, jobject instance) {
-        jlong jresult = 0;
-        EventProcessor *result = 0;
-        result = (EventProcessor * )
-        new EventProcessor();
-        *(EventProcessor * *) & jresult = result;
-        return jresult;
-    }
-
-    JNIEXPORT jlong JNICALL
-    Java_com_example_chronocam_atis_Eventprocessor_delete_1Eventprocessor(JNIEnv *env, jobject instance, jlong jniCPtr) {
-
-        // TODO
-
-    }
-
-    JNIEXPORT void JNICALL
-    Java_com_example_chronocam_atis_Eventprocessor_set_1camera_1data_1Eventprocessor(
-    JNIEnv *env, jobject instance, jlong jniCPtr, jobject eventprocessor, jbyteArray arg0_, jlong arg1) {
-        jbyte *arg0 = env->GetByteArrayElements(arg0_, NULL);
-
-        // TODO
-
-        env->ReleaseByteArrayElements(arg0_, arg0, 0);
-    }
+    AndroidBitmap_unlockPixels(env, this->jbitmap);
 }

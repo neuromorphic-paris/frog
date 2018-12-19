@@ -10,7 +10,8 @@ public class Eventprocessor {
             System.loadLibrary("eventprocessor");
         } catch (final UnsatisfiedLinkError e){
             Log.e(TAG, "load library" + Log.getStackTraceString(e));
-        }    }
+        }
+    }
     private transient long objPtr;
 
     public Eventprocessor() {
@@ -36,8 +37,12 @@ public class Eventprocessor {
         set_camera_data_Eventprocessor(objPtr, this, arg0, arg1);
     }
 
-    void renderPreview(Bitmap bitmap){
-        render_preview(bitmap);
+    void renderPreview(){
+        render_preview(objPtr);
+    }
+
+    void setBitmap(Bitmap bitmap){
+        set_bitmap(objPtr, bitmap);
     }
 
     String stringFromJNI(){
@@ -51,7 +56,7 @@ public class Eventprocessor {
     private native long new_Eventprocessor();
     private native long delete_Eventprocessor(long jniCPtr);
     private native void set_camera_data_Eventprocessor(long jniCPtr, Eventprocessor eventprocessor, byte[] arg0, long arg1);
-    private native void render_preview(Bitmap bitmap);
+    private native void render_preview(long objPtr);
     private native void set_bitmap(long objPtr, Bitmap bitmap);
     private native String string_from_JNI ();
     private native void trigger_sepia(long objPtr, String path);

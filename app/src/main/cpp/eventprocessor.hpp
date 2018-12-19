@@ -5,17 +5,23 @@
 #ifndef FROG_EVENTPROCESSOR_H
 #define FROG_EVENTPROCESSOR_H
 
-#include <cstdint>
 #include <android/bitmap.h>
-
+#include <android/log.h>
+#include <string>
+#include <iostream>
+#include <cstdint>
 
 class EventProcessor {
 public:
-
-    // Constructor
-    uint64_t baseTime;
-
     EventProcessor() {}
+
+    void triggerSepia(std::string filepath);
+    void setBitmap(jobject bitmap);
+    void renderBitmapView(JNIEnv *env);
+
+private:
+    jobject jbitmap;
+
 };
 
 #endif //FROG_EVENTPROCESSOR_H

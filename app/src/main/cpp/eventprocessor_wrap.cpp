@@ -5,6 +5,12 @@
 #define LOG_TAG "eventprocessor"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_chronocam_atis_Eventprocessor_get_1JVM_1version(JNIEnv *env, jobject instance) {
+    return env->GetVersion();
+}
+
 extern "C" {
 JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_trigger_1sepia(JNIEnv *env, jobject instance,
@@ -30,16 +36,58 @@ Java_com_example_chronocam_atis_Eventprocessor_string_1from_1JNI(JNIEnv *env, jo
 
 JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_render_1preview(JNIEnv *env, jobject instance,
-                                                               jlong objPtr) {
-    EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
-    (eventProcessor)->renderBitmapView(env);
+                                                               jobject handle) {
+    EventProcessor* jniBitmap = (EventProcessor*) env->GetDirectBufferAddress(handle);
+    if (jniBitmap == NULL || jniBitmap->_storedBitmapPixels == NULL)
+        return;
+
+    int width = jniBitmap->_bitmapInfo.width, height = jniBitmap->_bitmapInfo.height, stride = jniBitmap->_bitmapInfo.stride;
+
+    int yy;
+    for (yy = 0;  yy < height; yy++){
+        uint16_t* line = (uint16_t*) jniBitmap->_storedBitmapPixels;
+
+        int xx;
+        for (xx = 0; xx < width; xx++){
+            line[xx] = 255;
+        }
+        jniBitmap->_storedBitmapPixels = (char*)jniBitmap->_storedBitmapPixels + stride;
+    }
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject instance,
                                                            jlong objPtr, jobject bitmap) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
-    (eventProcessor)->setBitmap(bitmap);
+
+    AndroidBitmapInfo bitmapInfo;
+    char* storedBitmapPixels = NULL;
+    //LOGD("reading bitmap info...");
+    int ret;
+    if ((ret = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo)) < 0) {
+        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+        return NULL;
+    }
+    //LOGD("width:%d height:%d stride:%d", bitmapInfo.width, bitmapInfo.height, bitmapInfo.stride);
+    if (bitmapInfo.format != ANDROID_BITMAP_FORMAT_A_8) {
+        LOGE("Bitmap format is not RGBA_8888!");
+        return NULL;
+    }
+    //read pixels of bitmap into native memory :
+    //LOGD("reading bitmap pixels...");
+    void* bitmapPixels;
+    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &bitmapPixels)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return NULL;
+    }
+    char* src = (char*) bitmapPixels;
+    storedBitmapPixels = new char[bitmapInfo.height * bitmapInfo.width];
+    int pixelsCount = bitmapInfo.height * bitmapInfo.width;
+    memcpy(storedBitmapPixels, src, sizeof(char) * pixelsCount);
+    AndroidBitmap_unlockPixels(env, bitmap);
+    eventProcessor->_bitmapInfo = bitmapInfo;
+    eventProcessor->_storedBitmapPixels = storedBitmapPixels;
+    return env->NewDirectByteBuffer(eventProcessor, 0);
 }
 
 JNIEXPORT jlong JNICALL

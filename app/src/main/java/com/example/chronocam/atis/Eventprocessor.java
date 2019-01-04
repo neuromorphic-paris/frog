@@ -3,6 +3,8 @@ package com.example.chronocam.atis;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+
 public class Eventprocessor {
     private static final String TAG = Eventprocessor.class.getName();
     static {
@@ -37,12 +39,12 @@ public class Eventprocessor {
         set_camera_data_Eventprocessor(objPtr, this, arg0, arg1);
     }
 
-    void renderPreview(){
-        render_preview(objPtr);
+    void renderPreview(ByteBuffer handle){
+        render_preview(handle);
     }
 
-    void setBitmap(Bitmap bitmap){
-        set_bitmap(objPtr, bitmap);
+    ByteBuffer setBitmap(Bitmap bitmap){
+        return set_bitmap(objPtr, bitmap);
     }
 
     String stringFromJNI(){
@@ -56,8 +58,9 @@ public class Eventprocessor {
     private native long new_Eventprocessor();
     private native long delete_Eventprocessor(long jniCPtr);
     private native void set_camera_data_Eventprocessor(long jniCPtr, Eventprocessor eventprocessor, byte[] arg0, long arg1);
-    private native void render_preview(long objPtr);
-    private native void set_bitmap(long objPtr, Bitmap bitmap);
-    private native String string_from_JNI ();
+    private native void render_preview(ByteBuffer handle);
+    private native ByteBuffer set_bitmap(long objPtr, Bitmap bitmap);
+    private native String string_from_JNI();
+    native int get_JVM_version();
     private native void trigger_sepia(long objPtr, String path);
 }

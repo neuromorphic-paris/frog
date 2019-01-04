@@ -13,15 +13,15 @@
 
 class EventProcessor {
 public:
-    EventProcessor() {}
+    void* _storedBitmapPixels;
+    AndroidBitmapInfo _bitmapInfo;
+
+    EventProcessor() {
+        _storedBitmapPixels = NULL;
+    }
 
     void triggerSepia(std::string filepath);
-    void setBitmap(jobject bitmap);
     void renderBitmapView(JNIEnv *env);
-
-private:
-    jobject jbitmap;
-
 };
 
 #endif //FROG_EVENTPROCESSOR_H

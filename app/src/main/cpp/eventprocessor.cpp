@@ -15,11 +15,7 @@ void EventProcessor::triggerSepia(std::string filepath) {
         }
     });
 }
-
-void EventProcessor::setBitmap(jobject bitmap) {
-    this->jbitmap = bitmap;
-}
-
+/*
 void EventProcessor::renderBitmapView(JNIEnv *env) {
     AndroidBitmapInfo  info;
     void*              pixels;
@@ -39,7 +35,7 @@ void EventProcessor::renderBitmapView(JNIEnv *env) {
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
 
-    /* Drawing rectangle */
+    // Drawing rectangle
     int width = info.width, height = info.height, stride = info.stride;
 
     int yy;
@@ -55,3 +51,4 @@ void EventProcessor::renderBitmapView(JNIEnv *env) {
 
     AndroidBitmap_unlockPixels(env, this->jbitmap);
 }
+*/

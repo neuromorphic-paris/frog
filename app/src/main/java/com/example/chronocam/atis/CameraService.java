@@ -21,7 +21,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class CameraService extends Service {
     private static final String TAG = CameraService.class.getName();
-    private final IBinder iBinder = new LocalBinder();
+    //private final IBinder iBinder = new LocalBinder();
 
     CameraPollingThread cameraPollingThread;
     Looper cameraPollingThreadLooper;
@@ -60,10 +60,12 @@ public class CameraService extends Service {
         startForeground(182903, notification);
 
         this.intent = intent;
-        buffer = new ArrayBlockingQueue<>(500000);
+        buffer = new ArrayBlockingQueue<>(50000);
 
         startProducer();
         startConsumer();
+
+        Toast.makeText(this, "Camera has been started successfully!", Toast.LENGTH_SHORT).show();
 
         return START_REDELIVER_INTENT;
     }

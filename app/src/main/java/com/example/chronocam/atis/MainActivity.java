@@ -2,13 +2,17 @@ package com.example.chronocam.atis;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
@@ -21,9 +25,9 @@ import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
-    static {
-         System.loadLibrary("atis_java"); // load libatis_java.so
-    }
+    //static {
+    //     System.loadLibrary("atis"); // load libatis_java.so
+    //}
     static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
@@ -33,12 +37,31 @@ public class MainActivity extends AppCompatActivity {
     Intent cameraServiceIntent;
     Eventprocessor eventprocessor;
 
+    //Camera Service
+    CameraService cameraService;
+    BroadcastReceiver gestureResultReceiver;
+
     Button startButton;
     TextView infoText;
     ImageView cameraImage;
     CameraPreview cameraPreview;
 
     String filePath;
+
+    boolean isServiceBound = false;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            CameraService.LocalBinder binder = (CameraService.LocalBinder) service;
+            cameraService = binder.getService();
+            isServiceBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isServiceBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +115,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        UsbDevice usbDevice = Util.getUsbDevice(usbManager);
+        if (usbDevice != null && checkPermissions(usbDevice)) {
+            startCameraService(false);
+        }else{
+            Log.i(TAG, "not USB device found.");
+        }
     }
 
     @Override
@@ -109,6 +138,56 @@ public class MainActivity extends AppCompatActivity {
         new AsyncEventProcessor().execute();
 
     }
+
+    public void startCameraService(boolean delay) {
+        cameraImage.setImageResource(R.mipmap.camera_ok);
+        new AsyncCameraStart().execute(delay);
+        Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
+        cameraPreview.setBackgroundColor(Color.WHITE);
+    }
+    public void stopCameraService(){
+        //if (cameraPreviewTimer != null) {
+        //    cameraPreviewTimer.cancel();
+        //    cameraPreviewTimer = null;
+        //}
+        if (isServiceBound) {
+            unbindService(serviceConnection);
+            isServiceBound = false;
+        }
+        if (cameraServiceIntent != null){
+            stopService(cameraServiceIntent);
+        }
+        cameraImage.setImageResource(R.mipmap.camera_ko);
+        //cameraPreview.setImageResource(0);
+        //resultTextView.setText("");
+        //resultIconView.setImageResource(0);
+    }
+    //Task to initiate camera
+    private class AsyncCameraStart extends AsyncTask<Boolean, Integer, Void> {
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Void doInBackground(Boolean... params) {
+            boolean delay = params[0];
+            if (delay) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
+            cameraServiceIntent.putExtra("usbDevice", Util.getUsbDevice(usbManager));
+            startService(cameraServiceIntent);
+            bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+            return null;
+        }
+    }
+
 
     private  class AsyncEventProcessor extends AsyncTask<Void, Void, Void> {
 
@@ -134,11 +213,7 @@ public class MainActivity extends AppCompatActivity {
         startButton.setEnabled(true);
         infoText.setText(getString(R.string.press_start_to_record));
     }
-
-    void stopCameraService() {
-
-    }
-
+    
     UsbDevice getUsbDevice() {
         HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
         if (!devices.isEmpty()) {

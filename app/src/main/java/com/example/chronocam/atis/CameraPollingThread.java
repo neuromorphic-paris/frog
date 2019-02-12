@@ -125,7 +125,7 @@ public class CameraPollingThread extends HandlerThread {
 
             AtisBiases biases = AtisBiases.from_file(paths[0]);
 
-            Eventprocessor eventprocessor = new Eventprocessor();
+            //Eventprocessor eventprocessor = new Eventprocessor();
             //eventprocessor.init(paths[1], paths[2], paths[3]);
 
             if (biases != null) {
@@ -145,7 +145,6 @@ public class CameraPollingThread extends HandlerThread {
                 Log.d(TAG, "start cam...");
                 cam_.start();
             }
-
 
             ToExchange toExchange = new ToExchange();
             //for (int c = 0; c < 2000; c++) {
@@ -201,9 +200,9 @@ public class CameraPollingThread extends HandlerThread {
             return;
         y = 239 - y;
         if (p > 0) {
-            //ProcessingThread.preview.setPixel(x, y, Color.BLACK);
+            ProcessingThread.preview.setPixel(x, y, Color.BLACK);
         } else {
-            //ProcessingThread.preview.setPixel(x, y, Color.TRANSPARENT);
+            ProcessingThread.preview.setPixel(x, y, Color.TRANSPARENT);
         }
         //bytePreview[x][y] = p;
 

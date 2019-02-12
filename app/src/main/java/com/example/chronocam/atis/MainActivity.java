@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         filePath = Util.copyResource(getApplicationContext(), "dvs.es");
         Log.d(TAG, filePath);
         cameraPreview = findViewById(R.id.camera_preview);
-        eventprocessor = cameraPreview.eventprocessor;
+        //eventprocessor = cameraPreview.eventprocessor;
 
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbBroadcastReceiver = new BroadcastReceiver() {
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(usbBroadcastReceiver, filter);
 
-        Log.d(TAG, eventprocessor.stringFromJNI());
+        //Log.d(TAG, eventprocessor.stringFromJNI());
 
         new AsyncEventProcessor().execute();
 
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            eventprocessor.triggerSepia(filePath);
+            //eventprocessor.triggerSepia(filePath);
             return null;
         }
     }

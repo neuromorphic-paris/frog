@@ -15,6 +15,7 @@ public class Eventprocessor {
         }
     }
     private transient long objPtr;
+    private transient ByteBuffer byteBuffer;
 
     public Eventprocessor() {
         try {
@@ -39,12 +40,12 @@ public class Eventprocessor {
         set_camera_data_Eventprocessor(objPtr, this, arg0, arg1);
     }
 
-    void renderPreview(ByteBuffer handle){
-        render_preview(handle);
+    void renderPreview(){
+        render_preview(this.byteBuffer);
     }
 
-    ByteBuffer setBitmap(Bitmap bitmap){
-        return set_bitmap(objPtr, bitmap);
+    void setBitmap(Bitmap bitmap){
+        this.byteBuffer = set_bitmap(objPtr, bitmap);
     }
 
     String stringFromJNI(){
@@ -52,7 +53,7 @@ public class Eventprocessor {
     }
 
     void triggerSepia(String filepath){
-        trigger_sepia(objPtr, filepath);
+        trigger_sepia(objPtr, byteBuffer, filepath);
     }
 
     private native long new_Eventprocessor();
@@ -62,5 +63,5 @@ public class Eventprocessor {
     private native ByteBuffer set_bitmap(long objPtr, Bitmap bitmap);
     private native String string_from_JNI();
     native int get_JVM_version();
-    private native void trigger_sepia(long objPtr, String path);
+    private native void trigger_sepia(long objPtr, ByteBuffer byteBuf, String path);
 }

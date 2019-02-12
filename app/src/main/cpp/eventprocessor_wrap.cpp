@@ -14,7 +14,8 @@ Java_com_example_chronocam_atis_Eventprocessor_get_1JVM_1version(JNIEnv *env, jo
 extern "C" {
 JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_trigger_1sepia(JNIEnv *env, jobject instance,
-                                                              jlong objPtr, jstring path_) {
+                                                              jlong objPtr, jobject byteBuf,
+                                                              jstring path_) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
 
     const char *path = env->GetStringUTFChars(path_, 0);
@@ -43,15 +44,15 @@ Java_com_example_chronocam_atis_Eventprocessor_render_1preview(JNIEnv *env, jobj
 
     int width = jniBitmap->_bitmapInfo.width, height = jniBitmap->_bitmapInfo.height, stride = jniBitmap->_bitmapInfo.stride;
 
+    int wheretoput = 0;
     int yy;
     for (yy = 0;  yy < height; yy++){
-        uint16_t* line = (uint16_t*) jniBitmap->_storedBitmapPixels;
+        uint32_t* line = (uint32_t*) jniBitmap->_storedBitmapPixels;
 
-        int xx;
-        for (xx = 0; xx < width; xx++){
-            line[xx] = 255;
+        for (int xx = 0; xx < width; xx++){
+            line[xx++] = 100;
         }
-        jniBitmap->_storedBitmapPixels = (char*)jniBitmap->_storedBitmapPixels + stride;
+        jniBitmap->_storedBitmapPixels = (uint32_t*)jniBitmap->_storedBitmapPixels + stride;
     }
 }
 
@@ -61,7 +62,7 @@ Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject 
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
 
     AndroidBitmapInfo bitmapInfo;
-    char* storedBitmapPixels = NULL;
+    uint32_t* storedBitmapPixels = NULL;
     //LOGD("reading bitmap info...");
     int ret;
     if ((ret = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo)) < 0) {
@@ -69,7 +70,7 @@ Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject 
         return NULL;
     }
     //LOGD("width:%d height:%d stride:%d", bitmapInfo.width, bitmapInfo.height, bitmapInfo.stride);
-    if (bitmapInfo.format != ANDROID_BITMAP_FORMAT_A_8) {
+    if (bitmapInfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) { //ANDROID_BITMAP_FORMAT_A_8
         LOGE("Bitmap format is not RGBA_8888!");
         return NULL;
     }
@@ -80,10 +81,10 @@ Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject 
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
         return NULL;
     }
-    char* src = (char*) bitmapPixels;
-    storedBitmapPixels = new char[bitmapInfo.height * bitmapInfo.width];
+    uint32_t* src = (uint32_t*) bitmapPixels;
+    storedBitmapPixels = new uint32_t[bitmapInfo.height * bitmapInfo.width];
     int pixelsCount = bitmapInfo.height * bitmapInfo.width;
-    memcpy(storedBitmapPixels, src, sizeof(char) * pixelsCount);
+    memcpy(storedBitmapPixels, src, sizeof(uint32_t) * pixelsCount);
     AndroidBitmap_unlockPixels(env, bitmap);
     eventProcessor->_bitmapInfo = bitmapInfo;
     eventProcessor->_storedBitmapPixels = storedBitmapPixels;

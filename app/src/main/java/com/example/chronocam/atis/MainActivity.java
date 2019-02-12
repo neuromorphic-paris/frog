@@ -22,7 +22,7 @@ import java.util.Iterator;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
     static {
-         //System.loadLibrary("atis_java"); // load libatis_java.so
+         System.loadLibrary("atis_java"); // load libatis_java.so
     }
     static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";

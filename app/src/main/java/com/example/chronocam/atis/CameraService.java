@@ -87,10 +87,12 @@ public class CameraService extends Service {
 
     //Init USB connection in camera polling thread.
     private void startProducer() {
+        Log.d(TAG, "Starting producer thread from service.");
     }
 
     //Set up GESTURE handler to MainActivity gesture receiver. Start the Processing Thread.
     private void startConsumer() {
+        Log.d(TAG, "Starting consumer thread from service.");
     }
 
     public boolean setCameraPolling(boolean flag) {

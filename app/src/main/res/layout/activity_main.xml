@@ -62,8 +62,8 @@
                 style="@style/Base.TextAppearance.AppCompat.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="false"
                 android:layout_gravity="center"
+                android:enabled="false"
                 android:focusableInTouchMode="false"
                 android:padding="10dp"
                 android:text="START" />
@@ -74,29 +74,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:visibility="invisible"
                 android:padding="10dp"
-                android:paddingEnd="0dp"
                 android:paddingStart="30dp"
-                android:src="@mipmap/camera_ko" />
+                android:paddingEnd="0dp"
+                android:src="@mipmap/camera_ko"/>
 
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/result_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="40dp" />
-
-        <TextView
-            android:id="@+id/result_text"
-            style="@style/Base.TextAppearance.AppCompat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:padding="15dp" />
 
     </LinearLayout>
 

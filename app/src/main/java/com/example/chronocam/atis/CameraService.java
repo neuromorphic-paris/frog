@@ -118,10 +118,12 @@ public class CameraService extends Service {
     }
 
     private void stopCameraThread() {
+        /*
         cameraPollingThread.setCameraAttached(false);
         cameraPollingThreadLooper.quit();
         processingThread.setCameraAttached(false);
         processingThread.quit();
+         */
     }
 
     class LocalBinder extends Binder {

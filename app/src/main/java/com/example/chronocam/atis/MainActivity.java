@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
@@ -16,8 +17,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver;
-    Intent cameraServiceIntent;
     Eventprocessor eventprocessor;
 
     //CAMERA preview
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Camera Service
     CameraService cameraService;
-    BroadcastReceiver gestureResultReceiver;
+    Intent cameraServiceIntent;
 
     Button startButton;
     TextView infoText;
@@ -86,50 +88,8 @@ public class MainActivity extends AppCompatActivity {
         cameraPreview = findViewById(R.id.camera_preview);
         //eventprocessor = cameraPreview.eventprocessor;
 
-        usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        usbBroadcastReceiver = new BroadcastReceiver() {
-            // see device_filter.xml for list of allowed devices
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                final String TAG = "usbBroadCastReceiver";
-                if (action != null) {
-                    switch (action) {
-                        case ACTION_USB_ATTACHED:
-                            Log.i(TAG, "USB device attached");
-                            UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                            if (checkPermissions(usbDevice)) {
-                                startCameraService(true);
-                            }
-                            break;
-                        case ACTION_USB_DETACHED:
-                            Log.i(TAG, "USB device detached");
-                            stopCameraService();
-                            break;
-                        case ACTION_USB_PERMISSION:
-                            Log.i(TAG, "Permission intent received");
-                            synchronized (this) {
-                                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                                    Log.d(TAG, "Permissions granted");
-                                    startCameraService(true);
-                                } else {
-                                    Log.d(TAG, "Permissions denied by user");
-                                    Toast.makeText(getApplicationContext(), R.string.request_grant_camera_permission, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            break;
-                        default:
-                            Log.w("BroadcastReceiver", "received unknown Intent");
-                    }
-                }
-            }
-        };
-        UsbDevice usbDevice = getUsbDevice();
-        if (usbDevice != null && checkPermissions(usbDevice)) {
-            startCameraService(false);
-        }else{
-            Log.i(TAG, "no USB device found.");
-        }
+        setUpUSBReceiver();
+
     }
 
     @Override
@@ -144,12 +104,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void startCameraService(boolean delay) {
         cameraImage.setImageResource(R.mipmap.camera_ok);
-        new AsyncCameraStart().execute(delay);
         Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
+        new AsyncCameraStart().execute(delay);
         cameraPreview.setBackgroundColor(Color.WHITE);
     }
 
-    public void stopCameraService(){
+    void stopCameraService(){
         //if (cameraPreviewTimer != null) {
         //    cameraPreviewTimer.cancel();
         //    cameraPreviewTimer = null;
@@ -200,6 +160,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         unregisterReceiver(usbBroadcastReceiver);
@@ -210,7 +180,56 @@ public class MainActivity extends AppCompatActivity {
         stopCameraService();
         super.onDestroy();
     }
-    
+
+    void setUpUSBReceiver(){
+        //USB Behaviour
+        //control the CameraService when camera is plugged in/removed
+        usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        usbBroadcastReceiver = new BroadcastReceiver() {
+            // see device_filter.xml for list of allowed devices
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                final String TAG = "BroadCastReceiver";
+                if (action != null) {
+                    switch (action) {
+                        case ACTION_USB_ATTACHED:
+                            Log.i(TAG, "USB device attached");
+                            UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                            if (checkPermissions(usbDevice)) {
+                                startCameraService(true);
+                            }
+                            break;
+                        case ACTION_USB_DETACHED:
+                            Log.i(TAG, "USB device detached");
+                            stopCameraService();
+                            break;
+                        case ACTION_USB_PERMISSION:
+                            Log.i(TAG, "Permission intent received");
+                            synchronized (this) {
+                                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                                    Log.d(TAG, "Permissions granted");
+                                    startCameraService(true);
+                                } else {
+                                    Log.d(TAG, "Permissions denied by user");
+                                }
+                            }
+                            break;
+                        default:
+                            Log.w("BroadcastReceiver", "received unknown Intent");
+                    }
+                }
+            }
+        };
+
+        UsbDevice usbDevice = getUsbDevice();
+        if (usbDevice != null && checkPermissions(usbDevice)) {
+            startCameraService(false);
+        }else{
+            Log.i(TAG, "no USB device found.");
+        }
+    }
+
     UsbDevice getUsbDevice() {
         HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
         if (!devices.isEmpty()) {

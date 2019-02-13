@@ -20,20 +20,6 @@ import static android.content.ContentValues.TAG;
 
 public class Util {
 
-    /*
-     * USB
-     */
-    public static UsbDevice getUsbDevice(UsbManager usbManager) {
-        HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
-        if (!devices.isEmpty()) {
-            Iterator<String> it = devices.keySet().iterator();
-            String deviceName = it.next();
-            return devices.get(deviceName);
-        }
-        return null;
-    }
-
-
     public static String copyResource(Context context, String resource) {
         if (resource.equals(""))
             return "";

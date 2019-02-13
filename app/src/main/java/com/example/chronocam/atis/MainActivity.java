@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             cameraService = binder.getService();
             isServiceBound = true;
         }
-
         @Override
         public void onServiceDisconnected(ComponentName name) {
             isServiceBound = false;
@@ -67,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (ACTION_USB_ATTACHED.equalsIgnoreCase(getIntent().getAction())) {
+            Log.d("onCreate", "created activity from intent");
+        }
 
         startButton = findViewById(R.id.start_recording_button);
         infoText = findViewById(R.id.text_info);
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        UsbDevice usbDevice = Util.getUsbDevice(usbManager);
+        UsbDevice usbDevice = getUsbDevice();
         if (usbDevice != null && checkPermissions(usbDevice)) {
             startCameraService(false);
         }else{
@@ -135,8 +138,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Log.d(TAG, eventprocessor.stringFromJNI());
 
-        new AsyncEventProcessor().execute();
-
     }
 
     public void startCameraService(boolean delay) {
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
         cameraPreview.setBackgroundColor(Color.WHITE);
     }
+
     public void stopCameraService(){
         //if (cameraPreviewTimer != null) {
         //    cameraPreviewTimer.cancel();
@@ -180,20 +182,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
-            cameraServiceIntent.putExtra("usbDevice", Util.getUsbDevice(usbManager));
+            cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
             startService(cameraServiceIntent);
             bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
-            return null;
-        }
-    }
-
-
-    private  class AsyncEventProcessor extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //eventprocessor.triggerSepia(filePath);
             return null;
         }
     }

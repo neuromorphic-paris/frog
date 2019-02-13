@@ -3,25 +3,31 @@ package com.example.chronocam.atis;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by gregorlenz on 05/12/17.
+ * Created by gregorlenz on 31/10/18.
  */
 
 public class CameraService extends Service {
     private static final String TAG = CameraService.class.getName();
-    //private final IBinder iBinder = new LocalBinder();
+    private final IBinder iBinder = new LocalBinder();
 
     CameraPollingThread cameraPollingThread;
     Looper cameraPollingThreadLooper;
@@ -31,7 +37,7 @@ public class CameraService extends Service {
 
     Handler resultHandler;
 
-    BlockingQueue<ChangeDetection> buffer;
+    BlockingQueue<CameraPollingThread.EventExchange> buffer;
 
     @Override
     public void onCreate() {
@@ -60,8 +66,9 @@ public class CameraService extends Service {
         startForeground(182903, notification);
 
         this.intent = intent;
-        buffer = new ArrayBlockingQueue<>(50000);
+        buffer = new ArrayBlockingQueue<>(5000);
 
+        //START
         startProducer();
         startConsumer();
 
@@ -70,21 +77,62 @@ public class CameraService extends Service {
         return START_REDELIVER_INTENT;
     }
 
-    void startProducer() {
-    }
-
-    void startConsumer() {
-    }
-
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public void onDestroy() {
+        stopCameraThread();
+        super.onDestroy();
+        Toast.makeText(this, "Camera service has stopped", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "camera service has stopped");
     }
 
-    public class LocalBinder extends Binder {
+    //Init USB connection in camera polling thread.
+    private void startProducer() {
+    }
+
+    //Set up GESTURE handler to MainActivity gesture receiver. Start the Processing Thread.
+    private void startConsumer() {
+    }
+
+    public boolean setCameraPolling(boolean flag) {
+        if (flag && !cameraPollingThread.isAlive()) {
+            startProducer();
+            Log.d(TAG, "CameraPollingThread started");
+            return true;
+        } else if (flag && cameraPollingThread.isAlive()) {
+            Log.d(TAG, "CameraPollingThread already running");
+            return false;
+        } else if (!flag && cameraPollingThread.isAlive()) {
+            stopCameraThread();
+            Log.d(TAG, "CameraPollingThread stopped");
+            return true;
+        } else if (!flag && !cameraPollingThread.isAlive()) {
+            Log.d(TAG, "CameraPollingThread cannot be stopped because it is not running");
+            return false;
+        } else return false;
+    }
+
+    public boolean isCameraPollingThreadRunning() {
+        return cameraPollingThread.isAlive();
+    }
+
+    private void stopCameraThread() {
+        cameraPollingThread.setCameraAttached(false);
+        cameraPollingThreadLooper.quit();
+        processingThread.setCameraAttached(false);
+        processingThread.quit();
+    }
+
+    class LocalBinder extends Binder {
         CameraService getService() {
             return CameraService.this;
         }
     }
+
+    //TODO implement bindings for activities
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return iBinder;
+    }
+
 }

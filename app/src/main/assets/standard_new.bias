@@ -1,0 +1,27 @@
+% ATIS v2 biases for ATIS camera		
+3000		% APSvrefL
+3200		% APSvrefH
+660		% APSbiasOut
+455		% APSbiasHyst
+620		% CtrlbiasLP
+520		% APSbiasTail
+950		% CtrlbiasLBBuff
+2000		% TDbiasCas
+400		% CtrlbiasDelTD
+450		% TDbiasDiffOff
+320		% CtrlbiasSeqDelAPS
+800		% TDbiasInv
+300		% CtrlbiasDelAPS
+625		% TDbiasDiffOn
+850		% biasSendReqPdY
+3050		% TDbiasFo
+1150		% biasSendReqPdX
+500		% TDbiasDiff
+1150		% CtrlbiasGB
+2680		% TDbiasBulk
+850		% TDbiasReqPuY
+2850		% TDbiasRefr
+1072		% TDbiasReqPuX
+2800		% TDbiasPR
+1100		% APSbiasReqPuY
+900		% APSbiasReqPuX

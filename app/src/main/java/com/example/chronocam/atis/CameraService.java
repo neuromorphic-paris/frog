@@ -88,11 +88,17 @@ public class CameraService extends Service {
     //Init USB connection in camera polling thread.
     private void startProducer() {
         Log.d(TAG, "Starting producer thread from service.");
+        UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        cameraPollingThread = new CameraPollingThread(intent, usbManager, buffer);
+        cameraPollingThread.start();
+        cameraPollingThreadLooper = cameraPollingThread.getLooper();
     }
 
     //Set up GESTURE handler to MainActivity gesture receiver. Start the Processing Thread.
     private void startConsumer() {
         Log.d(TAG, "Starting consumer thread from service.");
+        processingThread = new ProcessingThread(intent, resultHandler, buffer);
+        processingThread.start();
     }
 
     public boolean setCameraPolling(boolean flag) {
@@ -118,12 +124,10 @@ public class CameraService extends Service {
     }
 
     private void stopCameraThread() {
-        /*
         cameraPollingThread.setCameraAttached(false);
         cameraPollingThreadLooper.quit();
         processingThread.setCameraAttached(false);
         processingThread.quit();
-         */
     }
 
     class LocalBinder extends Binder {

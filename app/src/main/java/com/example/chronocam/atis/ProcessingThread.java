@@ -60,12 +60,7 @@ public class ProcessingThread extends HandlerThread{
 
     void processExchange() {
         String[] paths;
-        paths = intent.getStringArrayExtra("filePaths");
-        int p = 0;
-        for (String path : paths) {
-            paths[p] = path;
-            p++;
-        }
+        paths = intent.getStringArrayExtra("filePath");
         //eventprocessor = new Eventprocessor();
         //eventprocessor.init(paths[1], paths[2], paths[3]);
 

@@ -127,7 +127,7 @@ public class ActivityTest {
 
     @Test
     public void startCameraService_shouldStartCorrectServiceClass() {
-        mainActivity.startCameraService();
+        mainActivity.startCameraService(false);
         assertEquals(context.getString(R.string.prepare_camera), ShadowToast.getTextOfLatestToast());
         assertEquals(CameraService.class.getName(), shadowOf(mainActivity).getNextStartedService().getComponent().getClassName());
     }

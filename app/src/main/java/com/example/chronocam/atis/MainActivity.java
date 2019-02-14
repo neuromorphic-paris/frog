@@ -31,12 +31,14 @@ import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
-    //static {
-    //     System.loadLibrary("atis"); // load libatis_java.so
-    //}
+    static {
+         System.loadLibrary("atis_java"); // load libatis_java.so
+    }
     static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
+    final String ASSETS_FILE_BIASES = "standard_new.bias";
+
 
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView cameraImage;
     CameraPreview cameraPreview;
 
-    String filePath;
+    String cameraBiasFilePath;
 
     boolean isServiceBound = false;
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -82,14 +84,15 @@ public class MainActivity extends AppCompatActivity {
 
         infoText = findViewById(R.id.text_info);
         cameraImage = findViewById(R.id.image_status);
-
-        filePath = Util.copyResource(getApplicationContext(), "dvs.es");
-        Log.d(TAG, filePath);
         cameraPreview = findViewById(R.id.camera_preview);
+
+        //filePath = Util.copyResource(getApplicationContext(), "dvs.es");
+        //Log.d(TAG, filePath);
         //eventprocessor = cameraPreview.eventprocessor;
 
         setUpUSBReceiver();
 
+        cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
     }
 
     @Override
@@ -123,11 +126,10 @@ public class MainActivity extends AppCompatActivity {
         }
         cameraImage.setImageResource(R.mipmap.camera_ko);
         //cameraPreview.setImageResource(0);
-        //resultTextView.setText("");
-        //resultIconView.setImageResource(0);
     }
+
     //Task to initiate camera
-    private class AsyncCameraStart extends AsyncTask<Boolean, Integer, Void> {
+    public class AsyncCameraStart extends AsyncTask<Boolean, Integer, Void> {
         @Override
         protected void onPreExecute() {
         }
@@ -143,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             }
             cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
             cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
+            cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
             startService(cameraServiceIntent);
             bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
             return null;

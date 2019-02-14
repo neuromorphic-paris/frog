@@ -37,7 +37,6 @@ public class CameraPollingThread extends HandlerThread {
     private long time;
 
     //static Bitmap preview;
-    static byte[][] bytePreview;
     AtisInstance cam_;
     static byte[] bytes;
 
@@ -103,13 +102,7 @@ public class CameraPollingThread extends HandlerThread {
     private void pollCamera() {
         if (intent.hasExtra("usbDevice")) {
             UsbDevice usbDevice = intent.getParcelableExtra("usbDevice");
-            String[] paths;
-            paths = intent.getStringArrayExtra("filePaths");
-            int p = 0;
-            for (String path : paths) {
-                paths[p] = path;
-                p++;
-            }
+            String biasFilePath = intent.getStringExtra("filePath");
 
             UsbInterface intf = usbDevice.getInterface(0);
             UsbDeviceConnection connection = usbManager.openDevice(usbDevice);
@@ -123,7 +116,7 @@ public class CameraPollingThread extends HandlerThread {
             IS_Usb.set_usb(usb_android);
             IS_Usb.set_JNIEnv();
 
-            AtisBiases biases = AtisBiases.from_file(paths[0]);
+            AtisBiases biases = AtisBiases.from_file(biasFilePath);
 
             //Eventprocessor eventprocessor = new Eventprocessor();
             //eventprocessor.init(paths[1], paths[2], paths[3]);
@@ -206,11 +199,11 @@ public class CameraPollingThread extends HandlerThread {
         }
         //bytePreview[x][y] = p;
 
-        /*eventCount++;
+        eventCount++;
         if (eventCount % 10000 == 0) {
             Log.d(TAG, "10000 events received");
             eventCount = 0;
-        }*/
+        }
     }
 
     @Override

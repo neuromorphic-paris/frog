@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -16,11 +15,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +25,8 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Iterator;
+
+import butterknife.BindView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
@@ -52,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
     CameraService cameraService;
     Intent cameraServiceIntent;
 
-    Button startButton;
-    TextView infoText;
-    ImageView cameraImage;
-    CameraPreview cameraPreview;
+    @BindView(R.id.start_recording_button) Button startButton;
+    @BindView(R.id.text_info) TextView infoText;
+    @BindView(R.id.image_status) ImageView cameraImage;
+    @BindView(R.id.camera_preview) CameraPreview cameraPreview;
 
     String cameraBiasFilePath;
 
@@ -81,10 +80,6 @@ public class MainActivity extends AppCompatActivity {
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(getIntent().getAction())) {
             Log.d("onCreate", "created activity from intent");
         }
-
-        infoText = findViewById(R.id.text_info);
-        cameraImage = findViewById(R.id.image_status);
-        cameraPreview = findViewById(R.id.camera_preview);
 
         //filePath = Util.copyResource(getApplicationContext(), "dvs.es");
         //Log.d(TAG, filePath);
@@ -156,10 +151,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.d("onNewIntent", "new Intent received " + intent.getAction());
-        if (ACTION_USB_ATTACHED.equalsIgnoreCase(intent.getAction())) {
-        } else if (ACTION_USB_DETACHED.equalsIgnoreCase(intent.getAction())) {
-
-        }
     }
 
     @Override

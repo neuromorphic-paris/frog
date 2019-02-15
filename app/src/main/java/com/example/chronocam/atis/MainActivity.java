@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -15,9 +15,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,9 +28,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = MainActivity.class.getName();
+    private final String TAG = getClass().getName();
     static {
          System.loadLibrary("atis_java"); // load libatis_java.so
     }
@@ -38,14 +40,13 @@ public class MainActivity extends AppCompatActivity {
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
     final String ASSETS_FILE_BIASES = "standard_new.bias";
 
-
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver;
     Eventprocessor eventprocessor;
 
     //CAMERA preview
-    private CameraPreviewTimer cameraPreviewTimer;//Handles periodically camera preview updates
-    private Handler previewReceiver;//Handle timer response and updates the view
+    private CameraPreviewTimer cameraPreviewTimer; // Handles periodically camera preview updates
+    private Handler previewReceiver; // Handle timer response and updates the view
 
     //Camera Service
     CameraService cameraService;
@@ -53,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.start_recording_button) Button startButton;
     @BindView(R.id.text_info) TextView infoText;
-    @BindView(R.id.image_status) ImageView cameraImage;
-    @BindView(R.id.camera_preview) CameraPreview cameraPreview;
+    @BindView(R.id.image_status) ImageView cameraStatusImage;
+    @BindView(R.id.camera_preview) ImageView cameraPreview;
 
     String cameraBiasFilePath;
 
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(getIntent().getAction())) {
             Log.d("onCreate", "created activity from intent");
@@ -88,6 +90,17 @@ public class MainActivity extends AppCompatActivity {
         setUpUSBReceiver();
 
         cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
+
+        //Main thread handler to receive bitmaps from CameraPreviewTimer and display the result
+        previewReceiver = new Handler(getMainLooper()) {
+            @Override
+            public void handleMessage(Message message) {
+                Bitmap.createScaledBitmap((Bitmap) message.obj, 608, 480, false);
+                cameraPreview.setImageBitmap((Bitmap) message.obj);
+                cameraPreview.invalidate();
+            }
+        };
+
     }
 
     @Override
@@ -101,17 +114,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startCameraService(boolean delay) {
-        cameraImage.setImageResource(R.mipmap.camera_ok);
+        cameraStatusImage.setImageResource(R.mipmap.camera_ok);
         Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
         new AsyncCameraStart().execute(delay);
         cameraPreview.setBackgroundColor(Color.WHITE);
+        //startButton.setEnabled(true);
     }
 
     void stopCameraService(){
-        //if (cameraPreviewTimer != null) {
-        //    cameraPreviewTimer.cancel();
-        //    cameraPreviewTimer = null;
-        //}
+        if (cameraPreviewTimer != null) {
+            cameraPreviewTimer.cancel();
+            cameraPreviewTimer = null;
+        }
         if (isServiceBound) {
             unbindService(serviceConnection);
             isServiceBound = false;
@@ -119,8 +133,8 @@ public class MainActivity extends AppCompatActivity {
         if (cameraServiceIntent != null){
             stopService(cameraServiceIntent);
         }
-        cameraImage.setImageResource(R.mipmap.camera_ko);
-        //cameraPreview.setImageResource(0);
+        cameraStatusImage.setImageResource(R.mipmap.camera_ko);
+        cameraPreview.setImageResource(0);
     }
 
     //Task to initiate camera
@@ -143,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
             cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
             startService(cameraServiceIntent);
             bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+            cameraPreviewTimer = new CameraPreviewTimer(previewReceiver, 50);
             return null;
         }
     }
@@ -151,16 +167,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.d("onNewIntent", "new Intent received " + intent.getAction());
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

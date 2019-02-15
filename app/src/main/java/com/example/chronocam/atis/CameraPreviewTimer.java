@@ -21,12 +21,12 @@ class CameraPreviewTimer extends Timer {
 
         @Override
         public void run() {
-            //if (CameraPollingThread.preview != null) {
+            if (ProcessingThread.preview != null) {
                 message = Message.obtain();
-                //TODO message.obj = CameraPollingThread.preview;
+                message.obj = ProcessingThread.preview;
                 if (handler!=null)
                     handler.sendMessage(message);
-            //}
+            }
         }
     }
 }

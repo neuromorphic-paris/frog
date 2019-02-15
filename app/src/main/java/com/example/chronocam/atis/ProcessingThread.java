@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
@@ -91,6 +90,7 @@ public class ProcessingThread extends HandlerThread{
             globalSize+=size;
             Log.d(TAG, "Consumer: Processing Exchange with size: " + size + ", remaining buffer capacity: " + buffer.remainingCapacity());
             eventCount += size;
+
             //eventprocessor.set_camera_data(toExchange.data, size);
             process_data_raw(toExchange);
         } catch (InterruptedException e) {
@@ -126,11 +126,11 @@ public class ProcessingThread extends HandlerThread{
         }
         //bytePreview[x][y] = p;
 
-        /*count++;
-        if (count % 10000 == 0) {
+        eventCount++;
+        if (eventCount % 10000 == 0) {
             Log.d(TAG, "10000 events received");
-            count = 0;
-        }*/
+            eventCount = 0;
+        }
     }
 
     /*
@@ -144,8 +144,9 @@ public class ProcessingThread extends HandlerThread{
         isRecording = flag;
     }
 
-    void setPredict(boolean flag) {
-        shouldPredict = flag;
+    @Override
+    public boolean quit() {
+        return super.quit();
     }
 
 }

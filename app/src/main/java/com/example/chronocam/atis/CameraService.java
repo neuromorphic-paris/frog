@@ -10,14 +10,10 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -26,7 +22,7 @@ import java.util.concurrent.BlockingQueue;
  */
 
 public class CameraService extends Service {
-    private static final String TAG = CameraService.class.getName();
+    private final String TAG = getClass().getName();
     private final IBinder iBinder = new LocalBinder();
 
     CameraPollingThread cameraPollingThread;

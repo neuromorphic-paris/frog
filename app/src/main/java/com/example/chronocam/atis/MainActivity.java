@@ -44,11 +44,9 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver usbBroadcastReceiver;
     Eventprocessor eventprocessor;
 
-    //CAMERA preview
     private CameraPreviewTimer cameraPreviewTimer; // Handles periodically camera preview updates
     private Handler previewReceiver; // Handle timer response and updates the view
 
-    //Camera Service
     CameraService cameraService;
     Intent cameraServiceIntent;
 
@@ -182,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setUpUSBReceiver(){
-        //USB Behaviour
         //control the CameraService when camera is plugged in/removed
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbBroadcastReceiver = new BroadcastReceiver() {

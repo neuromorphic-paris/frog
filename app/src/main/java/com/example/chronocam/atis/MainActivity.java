@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +34,8 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
     private final String TAG = getClass().getName();
     static {
-         System.loadLibrary("atis_java"); // load libatis_java.so
+        //System.loadLibrary("atis_java"); // load libatis_java.so
+        System.loadLibrary("plasma");
     }
     static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.start_recording_button) Button startButton;
     @BindView(R.id.text_info) TextView infoText;
     @BindView(R.id.image_status) ImageView cameraStatusImage;
-    @BindView(R.id.camera_preview) ImageView cameraPreview;
+    @Nullable
+    @BindView(R.id.camera_preview) PlasmaView cameraPreview;
 
     String cameraBiasFilePath;
 
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message message) {
                 Bitmap.createScaledBitmap((Bitmap) message.obj, 608, 480, false);
-                cameraPreview.setImageBitmap((Bitmap) message.obj);
+                //cameraPreview.setImageBitmap((Bitmap) message.obj);
                 cameraPreview.invalidate();
             }
         };
@@ -132,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             stopService(cameraServiceIntent);
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
-        cameraPreview.setImageResource(0);
+        //cameraPreview.setImageResource(0);
     }
 
     //Task to initiate camera

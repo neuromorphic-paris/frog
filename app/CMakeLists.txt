@@ -10,19 +10,13 @@ cmake_minimum_required(VERSION 3.4.1)
 # and CMake builds them for you. When you build your app, Gradle
 # automatically packages shared libraries with your APK.
 
-add_library( # Specifies the name of the library.
-        eventprocessor
-
-        # Sets the library as a shared library.
+add_library(
+        plasma
         SHARED
-
-        # Provides a relative path to your source file(s).
-        src/main/cpp/eventprocessor_wrap.cpp
-        src/main/cpp/eventprocessor.cpp)
+        src/main/cpp/plasma.c)
 
 find_library( # Sets the name of the path variable.
         log-lib
-
         # Specifies the name of the NDK library that
         # you want CMake to locate.
         log)
@@ -32,8 +26,11 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        eventprocessor
-        -ljnigraphics
+        plasma
+        android
+        jnigraphics
+        log
+        #m
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})

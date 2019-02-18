@@ -1,12 +1,12 @@
 package com.example.chronocam.atis;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 class PlasmaView extends View {
     private Bitmap mBitmap;
@@ -18,7 +18,17 @@ class PlasmaView extends View {
 
     public PlasmaView(Context context, AttributeSet attributeSet) {
         super(context);
-        mBitmap = Bitmap.createBitmap(604, 480, Bitmap.Config.RGB_565);
+        int[] attrsArray = new int[] {
+                android.R.attr.id, // 0
+                android.R.attr.background, // 1
+                android.R.attr.layout_width, // 2
+                android.R.attr.layout_height // 3
+        };
+        TypedArray ta = context.obtainStyledAttributes(attributeSet, attrsArray);
+        int layout_width = ta. getLayoutDimension(2, ViewGroup.LayoutParams.MATCH_PARENT);
+        int layout_height = ta. getLayoutDimension(3, ViewGroup.LayoutParams.MATCH_PARENT);
+        ta.recycle();
+        mBitmap = Bitmap.createBitmap(layout_width, layout_height, Bitmap.Config.RGB_565);
         mStartTime = System.currentTimeMillis();
         setBitmap(mBitmap);
     }

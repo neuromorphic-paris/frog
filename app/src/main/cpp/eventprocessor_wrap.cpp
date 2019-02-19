@@ -118,5 +118,3 @@ Java_com_example_chronocam_atis_Eventprocessor_set_1camera_1data_1Eventprocessor
     env->ReleaseByteArrayElements(arg0_, arg0, 0);
 }
 
-
-}

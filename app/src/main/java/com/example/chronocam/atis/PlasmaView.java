@@ -32,7 +32,7 @@ class PlasmaView extends View {
     }
 
     @Override protected void onDraw(Canvas canvas) {
-        renderPlasma(System.currentTimeMillis() - mStartTime);
+        //renderPlasma(System.currentTimeMillis() - mStartTime);
         canvas.drawBitmap(mBitmap, 0, 0, null);
         // force a redraw, with a different time-based pattern.
         invalidate();

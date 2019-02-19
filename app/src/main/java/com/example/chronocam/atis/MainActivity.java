@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
     final String ASSETS_FILE_BIASES = "standard_new.bias";
+    String cameraBiasFilePath;
 
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver;
@@ -52,12 +53,10 @@ public class MainActivity extends AppCompatActivity {
     CameraService cameraService;
     Intent cameraServiceIntent;
 
-    @BindView(R.id.start_recording_button) Button startButton;
     @BindView(R.id.text_info) TextView infoText;
     @BindView(R.id.image_status) ImageView cameraStatusImage;
     @BindView(R.id.camera_preview) PlasmaView cameraPreview;
-
-    String cameraBiasFilePath;
+    @BindView(R.id.start_recording_button) Button startButton;
 
     boolean isServiceBound = false;
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -85,11 +84,12 @@ public class MainActivity extends AppCompatActivity {
 
         //filePath = Util.copyResource(getApplicationContext(), "dvs.es");
         //Log.d(TAG, filePath);
-        //eventprocessor = cameraPreview.eventprocessor;
 
         setUpUSBReceiver();
 
         cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
+
+        new TestTimer();
 
         //Main thread handler to receive bitmaps from CameraPreviewTimer and display the result
         previewReceiver = new Handler(getMainLooper()) {
@@ -162,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
+
+    //class Asyn
 
     @Override
     protected void onNewIntent(Intent intent) {

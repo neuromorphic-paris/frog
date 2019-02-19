@@ -16,10 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.text_info) TextView infoText;
     @BindView(R.id.image_status) ImageView cameraStatusImage;
-    @BindView(R.id.camera_preview) PlasmaView cameraPreview;
+    @BindView(R.id.camera_preview) CameraView cameraPreview;
     @BindView(R.id.start_recording_button) Button startButton;
 
     boolean isServiceBound = false;
@@ -163,7 +161,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //class Asyn
+    class AsyncSepia extends AsyncTask<Boolean, Integer, Void> {
+        @Override
+        protected Void doInBackground(Boolean... booleans) {
+
+            return null;
+        }
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {

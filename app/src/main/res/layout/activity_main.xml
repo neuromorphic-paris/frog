@@ -34,7 +34,7 @@
             android:paddingRight="10dp"
             android:src="@drawable/frog_banner" />
 
-        <com.example.chronocam.atis.PlasmaView
+        <com.example.chronocam.atis.CameraView
             android:id="@+id/camera_preview"
             android:layout_width="230dp"
             android:layout_height="182dp"

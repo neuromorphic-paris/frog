@@ -17,16 +17,14 @@ class PlasmaView extends View {
     private static native void renderPlasma(long time_ms);
 
     public PlasmaView(Context context, AttributeSet attributeSet) {
-        super(context);
+        super(context, attributeSet);
         int[] attrsArray = new int[] {
-                android.R.attr.id, // 0
-                android.R.attr.background, // 1
-                android.R.attr.layout_width, // 2
-                android.R.attr.layout_height // 3
+                android.R.attr.layout_width, // 0
+                android.R.attr.layout_height // 1
         };
         TypedArray ta = context.obtainStyledAttributes(attributeSet, attrsArray);
-        int layout_width = ta. getLayoutDimension(2, ViewGroup.LayoutParams.MATCH_PARENT);
-        int layout_height = ta. getLayoutDimension(3, ViewGroup.LayoutParams.MATCH_PARENT);
+        int layout_width = ta. getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
+        int layout_height = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
         mBitmap = Bitmap.createBitmap(layout_width, layout_height, Bitmap.Config.RGB_565);
         mStartTime = System.currentTimeMillis();

@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.start_recording_button) Button startButton;
     @BindView(R.id.text_info) TextView infoText;
     @BindView(R.id.image_status) ImageView cameraStatusImage;
-    @Nullable
     @BindView(R.id.camera_preview) PlasmaView cameraPreview;
 
     String cameraBiasFilePath;

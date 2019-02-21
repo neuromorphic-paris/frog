@@ -15,27 +15,11 @@ Java_com_example_chronocam_atis_Eventprocessor_get_1JVM_1version(JNIEnv *env, jo
 }
 
 void setPixel(sepia::dvs_event event, AndroidBitmapInfo* info, void* pixels){
-    /*
-    uint16_t x = event.x;
-    uint16_t y = event.y;
-    bool p = event.is_increase;
-    pixels = (char*)pixels + (info->width*y + x);
-    auto* point = (char*) pixels;
-    point = reinterpret_cast<char*>(15);
-     */
-    int x, y;
-    for (y=0;y<info->height;y++) {
-        auto * line = (uint32_t *)pixels;
-        for (x=0;x<info->width;x++) {
-            //set pixels Alpha, Blue, Green, Red (little Endian)
-            if(y == event.y && x == event.x){
-                if(event.is_increase){line[x] = 0xFF0000FF;}
-                else{line[x] = 0xFFFF0000;}
-            }
-        }
-        pixels = (char *)pixels + info->stride;
-    }
-
+    int x = event.x;
+    pixels = (char *)pixels + event.y * info->stride;
+    auto * line = (uint32_t *)pixels;
+    if(event.is_increase){line[x] = 0xFF0000FF;}
+    else{line[x] = 0xFFFF0000;}
 }
 
 void triggerSepia(const std::string &filepath, JNIEnv *env) {

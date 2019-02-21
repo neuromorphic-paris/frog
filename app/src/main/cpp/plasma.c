@@ -340,10 +340,10 @@ stats_endFrame( Stats*  s )
 
 jobject _bitmap;
 
-JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_CameraView_setBitmap(JNIEnv *env, jclass type, jobject bitmap) {
-    _bitmap = (*env)->NewGlobalRef(env, bitmap);
-}
+//JNIEXPORT void JNICALL
+//Java_com_example_chronocam_atis_CameraView_setBitmap(JNIEnv *env, jclass type, jobject bitmap) {
+//    _bitmap = (*env)->NewGlobalRef(env, bitmap);
+//}
 
 //JNIEXPORT void JNICALL Java_com_example_chronocam_atis_PlasmaView_renderPlasma(JNIEnv * env, jclass  obj,  jlong  time_ms)
 JNIEXPORT void JNICALL  Java_com_example_chronocam_atis_TestTimer_renderPlasma(JNIEnv *env, jclass type, jlong time_ms)

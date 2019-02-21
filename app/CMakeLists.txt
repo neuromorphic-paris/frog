@@ -1,19 +1,17 @@
-# Sets the minimum version of CMake required to build your native library.
-# This ensures that a certain set of CMake features is available to
-# your build.
-
 cmake_minimum_required(VERSION 3.4.1)
 
-# Specifies a library name, specifies whether the library is STATIC or
-# SHARED, and provides relative paths to the source code. You can
-# define multiple libraries by adding multiple add_library() commands,
-# and CMake builds them for you. When you build your app, Gradle
-# automatically packages shared libraries with your APK.
-
 add_library(
-        plasma
+        eventprocessor
         SHARED
-        src/main/cpp/plasma.c)
+        src/main/cpp/eventprocessor_wrap.cpp
+        #src/main/cpp/eventprocessor.cpp
+        #src/main/cpp/eventprocessor.hpp
+)
+
+#add_library(
+#        plasma
+#        SHARED
+#        src/main/cpp/plasma.c)
 
 find_library( # Sets the name of the path variable.
         log-lib
@@ -21,16 +19,12 @@ find_library( # Sets the name of the path variable.
         # you want CMake to locate.
         log)
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
-
 target_link_libraries( # Specifies the target library.
-        plasma
+        eventprocessor
+        #plasma
         android
         jnigraphics
         log
-        #m
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})

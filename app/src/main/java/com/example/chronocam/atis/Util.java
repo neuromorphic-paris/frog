@@ -1,11 +1,7 @@
 package com.example.chronocam.atis;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.AssetManager;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.util.Log;
 
 import java.io.File;
@@ -13,14 +9,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Iterator;
 
 import static android.content.ContentValues.TAG;
 
-public class Util {
+class Util {
 
-    public static String copyResource(Context context, String resource) {
+    static String copyResource(Context context, String resource) {
         if (resource.equals(""))
             return "";
         AssetManager assetManager = context.getAssets();

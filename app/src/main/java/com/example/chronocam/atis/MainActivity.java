@@ -33,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = getClass().getName();
     static {
         //System.loadLibrary("atis_java"); // load libatis_java.so
-        System.loadLibrary("plasma");
+        System.loadLibrary("eventprocessor");
     }
     static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
     final String ASSETS_FILE_BIASES = "standard_new.bias";
-    String cameraBiasFilePath;
+    String cameraBiasFilePath, exampleFilePath;
 
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver;
@@ -75,19 +75,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(getIntent().getAction())) {
-            Log.d("onCreate", "created activity from intent");
+            Log.d(TAG, "created activity from intent");
         }
 
-        //filePath = Util.copyResource(getApplicationContext(), "dvs.es");
-        //Log.d(TAG, filePath);
+        exampleFilePath = Util.copyResource(getApplicationContext(), "dvs.es");
+        Log.d(TAG, exampleFilePath);
+        cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
 
         setUpUSBReceiver();
 
-        cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
-
-        new TestTimer();
+        new AsyncSepia().execute();
+        //new TestTimer();
 
         //Main thread handler to receive bitmaps from CameraPreviewTimer and display the result
         previewReceiver = new Handler(getMainLooper()) {
@@ -161,10 +160,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    native void trigger_sepia(String path);
+
     class AsyncSepia extends AsyncTask<Boolean, Integer, Void> {
         @Override
         protected Void doInBackground(Boolean... booleans) {
-
+            trigger_sepia(exampleFilePath);
             return null;
         }
     }
@@ -184,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         stopCameraService();
+        CameraView.deleteBitmap();
         super.onDestroy();
     }
 

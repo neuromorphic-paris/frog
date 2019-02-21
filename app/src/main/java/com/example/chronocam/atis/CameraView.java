@@ -23,7 +23,7 @@ class CameraView extends View {
         int layout_width = ta. getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
         int layout_height = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
-        bitmap = Bitmap.createBitmap(layout_width, layout_height, Bitmap.Config.ALPHA_8);
+        bitmap = Bitmap.createBitmap(layout_width, layout_height, Bitmap.Config.ARGB_8888);
         setBitmap(bitmap);
     }
 

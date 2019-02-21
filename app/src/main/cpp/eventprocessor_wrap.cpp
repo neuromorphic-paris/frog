@@ -6,7 +6,7 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
-jobject _bitmap;
+static jobject _bitmap;
 
 extern "C"
 JNIEXPORT jint JNICALL
@@ -14,10 +14,27 @@ Java_com_example_chronocam_atis_Eventprocessor_get_1JVM_1version(JNIEnv *env, jo
     return env->GetVersion();
 }
 
-void setPixel(sepia::dvs_event event, void* pixels){
+void setPixel(sepia::dvs_event event, AndroidBitmapInfo* info, void* pixels){
+    /*
     uint16_t x = event.x;
     uint16_t y = event.y;
-    //int p = event.is_increase;
+    bool p = event.is_increase;
+    pixels = (char*)pixels + (info->width*y + x);
+    auto* point = (char*) pixels;
+    point = reinterpret_cast<char*>(15);
+     */
+    int x, y;
+    for (y=0;y<info->height;y++) {
+        auto * line = (uint32_t *)pixels;
+        for (x=0;x<info->width;x++) {
+            //set pixels Alpha, Blue, Green, Red (little Endian)
+            if(y == event.y && x == event.x){
+                if(event.is_increase){line[x] = 0xFF0000FF;}
+                else{line[x] = 0xFFFF0000;}
+            }
+        }
+        pixels = (char *)pixels + info->stride;
+    }
 
 }
 
@@ -25,37 +42,47 @@ void triggerSepia(const std::string &filepath, JNIEnv *env) {
     int counter = 0;
     JavaVM* jvm;
     env->GetJavaVM(&jvm);
-    JNIEnv *threadEnv;
+    JNIEnv *threadEnv = nullptr;
     bool isThreadAttached = false;
 
-    sepia::join_observable<sepia::type::dvs>(
-            sepia::filename_to_ifstream(filepath), [&](sepia::dvs_event dvs_event) {
-        if (!isThreadAttached) {
-            jvm->AttachCurrentThread(&threadEnv, NULL);
-            isThreadAttached = true;
-        }
+    sepia::join_observable<sepia::type::dvs>(sepia::filename_to_ifstream(filepath), [&](sepia::dvs_event dvs_event) {
+                if(dvs_event.t > 5000) {
+                    if (!isThreadAttached) {
+                        jvm->AttachCurrentThread(&threadEnv, nullptr);
+                        isThreadAttached = true;
+                    }
 
-        AndroidBitmapInfo info;
-        void*              pixels;
-        int ret;
-        if ((ret = AndroidBitmap_getInfo(threadEnv, _bitmap, &info)) < 0) {
-            LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
-            return;
-        }
-        /*
-        if ((ret = AndroidBitmap_lockPixels(env, _bitmap, &pixels)) < 0) {
-            LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
-        }
-        //setPixel(dvs_event, pixels);
-        AndroidBitmap_unlockPixels(env, _bitmap);
-        */
-        if (counter < 10) {LOGD("SEPIA: JNI bitmap width: %d, height: %d, stride: %d", info.width, info.height, info.stride);}
+                    AndroidBitmapInfo info;
+                    void *pixels;
+                    int ret;
+                    if ((ret = AndroidBitmap_getInfo(threadEnv, _bitmap, &info)) < 0) {
+                        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+                        return;
+                    }
 
-        if (dvs_event.is_increase) {
-            if (counter < 10) {LOGD("+"); counter++;}
-        } else {
-            if (counter < 10) {LOGD("-"); counter++;}
-        }
+                    if ((ret = AndroidBitmap_lockPixels(threadEnv, _bitmap, &pixels)) < 0) {
+                        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+                    }
+                    setPixel(dvs_event, &info, pixels);
+                    AndroidBitmap_unlockPixels(threadEnv, _bitmap);
+
+                    if (counter < 10) {
+                        LOGD("SEPIA: JNI bitmap width: %d, height: %d, stride: %d", info.width,
+                             info.height, info.stride);
+                    }
+
+                    if (dvs_event.is_increase) {
+                        if (counter < 10) {
+                            LOGD("+");
+                            counter++;
+                        }
+                    } else {
+                        if (counter < 10) {
+                            LOGD("-");
+                            counter++;
+                        }
+                    }
+                }
     }
     /*
     ,[&](std::exception_ptr exception_pointer) {

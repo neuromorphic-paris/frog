@@ -12,10 +12,10 @@
         android:src="@drawable/tree"
         android:scaleType="centerCrop"
         android:tint="@color/white"
-        android:tintMode="src_in"/>
+        android:tintMode="src_in"
+        android:contentDescription="@string/content_description_background"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
@@ -32,7 +32,8 @@
             android:background="@drawable/text_background_underline"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:src="@drawable/frog_banner" />
+            android:src="@drawable/frog_banner"
+            android:contentDescription="@string/content_description_logo"/>
 
         <com.example.chronocam.atis.CameraView
             android:id="@+id/camera_preview"
@@ -66,10 +67,11 @@
                 android:enabled="false"
                 android:focusableInTouchMode="false"
                 android:padding="10dp"
-                android:text="START" />
+                android:text="@string/start_button" />
 
             <ImageView
                 android:id="@+id/image_status"
+                android:contentDescription="@string/content_description_camera_status"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

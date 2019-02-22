@@ -78,12 +78,13 @@ public class MainActivity extends AppCompatActivity {
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(getIntent().getAction())) {
             Log.d(TAG, "created activity from intent");
         }
+        setUpUSBReceiver();
 
         exampleFilePath = Util.copyResource(getApplicationContext(), "dvs.es");
         Log.d(TAG, exampleFilePath);
         cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
 
-        setUpUSBReceiver();
+        cameraPreview.setBackgroundColor(Color.GRAY);
 
         new AsyncSepia().execute();
         //new TestTimer();

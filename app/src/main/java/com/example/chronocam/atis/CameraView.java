@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 class CameraView extends View {
-    private Bitmap bitmap;
+    private Bitmap bitmap, scaledBitmap;
+    private Integer viewWidth, viewHeigth;
     private static native void setBitmap(Bitmap bitmap);
     static native void deleteBitmap();
+    static native void resetBitmap();
 
     public CameraView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -20,15 +22,18 @@ class CameraView extends View {
                 android.R.attr.layout_height // 1
         };
         TypedArray ta = context.obtainStyledAttributes(attributeSet, attrsArray);
-        int layout_width = ta. getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
-        int layout_height = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
+        viewWidth = ta. getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
+        viewHeigth = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
-        bitmap = Bitmap.createBitmap(layout_width, layout_height, Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(320, 240, Bitmap.Config.ALPHA_8);
         setBitmap(bitmap);
     }
 
     @Override protected void onDraw(Canvas canvas) {
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        scaledBitmap = Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeigth, false);
+        canvas.drawBitmap(scaledBitmap, 0, 0, null);
+        scaledBitmap.recycle();
         invalidate();
     }
+
 }

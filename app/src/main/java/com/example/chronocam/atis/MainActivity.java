@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -15,9 +14,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -86,18 +85,13 @@ public class MainActivity extends AppCompatActivity {
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 
-        new AsyncSepia().execute();
-        //new TestTimer();
-
-        //Main thread handler to receive bitmaps from CameraPreviewTimer and display the result
-        previewReceiver = new Handler(getMainLooper()) {
+        startButton.setEnabled(true);
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void handleMessage(Message message) {
-                Bitmap.createScaledBitmap((Bitmap) message.obj, 608, 480, false);
-                //cameraPreview.setImageBitmap((Bitmap) message.obj);
-                cameraPreview.invalidate();
+            public void onClick(View view) {
+                new AsyncSepia().execute();
             }
-        };
+        });
 
     }
 
@@ -166,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
     class AsyncSepia extends AsyncTask<Boolean, Integer, Void> {
         @Override
         protected Void doInBackground(Boolean... booleans) {
+            CameraView.resetBitmap();
             trigger_sepia(exampleFilePath);
             return null;
         }

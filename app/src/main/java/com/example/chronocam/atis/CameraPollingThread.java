@@ -73,7 +73,6 @@ public class CameraPollingThread extends HandlerThread {
         if (intent != null) {
             pollCamera();
         }
-
     }
 
     @Override
@@ -104,9 +103,6 @@ public class CameraPollingThread extends HandlerThread {
             IS_Usb.set_JNIEnv();
 
             AtisBiases biases = AtisBiases.from_file(biasFilePath);
-
-            //Eventprocessor eventprocessor = new Eventprocessor();
-            //eventprocessor.init(paths[1], paths[2], paths[3]);
 
             if (biases != null) {
                 Atis atis = new Atis();
@@ -151,6 +147,7 @@ public class CameraPollingThread extends HandlerThread {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    usb_android.release();
                 }
             }
             Log.d(TAG, "ended the loop");

@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
         new AsyncCameraStart().execute(delay);
         cameraPreview.setBackgroundColor(Color.WHITE);
-        //startButton.setEnabled(true);
     }
 
     void stopCameraService(){

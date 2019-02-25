@@ -24,14 +24,15 @@ class CameraView extends View {
         viewHeigth = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
         bitmap = Bitmap.createBitmap(320, 240, Bitmap.Config.ALPHA_8);
+
+        //scaledBitmap = Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeigth, false);
+
         eventprocessor = new Eventprocessor();
         eventprocessor.setBitmap(bitmap);
     }
 
     @Override protected void onDraw(Canvas canvas) {
-        scaledBitmap = Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeigth, false);
-        canvas.drawBitmap(scaledBitmap, 0, 0, null);
-        scaledBitmap.recycle();
+        canvas.drawBitmap(bitmap, 0, 0, null);
         invalidate();
     }
 

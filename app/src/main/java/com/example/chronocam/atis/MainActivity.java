@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = getClass().getName();
     static {
         //System.loadLibrary("atis_java"); // load libatis_java.so
-        System.loadLibrary("eventprocessor");
     }
     static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
@@ -82,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         exampleFilePath = Util.copyResource(getApplicationContext(), "dvs.es");
         Log.d(TAG, exampleFilePath);
         cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
+
+        eventprocessor = new Eventprocessor();
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 
@@ -154,13 +155,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    native void trigger_sepia(String path);
-
     class AsyncSepia extends AsyncTask<Boolean, Integer, Void> {
         @Override
         protected Void doInBackground(Boolean... booleans) {
-            CameraView.resetBitmap();
-            trigger_sepia(exampleFilePath);
+            eventprocessor.resetBitmap();
+            eventprocessor.triggerSepia(exampleFilePath);
             return null;
         }
     }
@@ -180,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         stopCameraService();
-        CameraView.deleteBitmap();
+        eventprocessor.deleteBitmap();
         super.onDestroy();
     }
 

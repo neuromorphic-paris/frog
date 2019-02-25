@@ -61,7 +61,7 @@ public class CameraPollingThread extends HandlerThread {
             this.data = toExchange.data;
         }
     }
-    public CameraPollingThread(Intent intent, UsbManager usbManager, BlockingQueue blockingQueue) {
+    CameraPollingThread(Intent intent, UsbManager usbManager, BlockingQueue blockingQueue) {
         super(CameraPollingThread.class.getName());
         this.intent = intent;
         this.usbManager = usbManager;

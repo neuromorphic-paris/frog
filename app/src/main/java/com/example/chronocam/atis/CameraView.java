@@ -11,9 +11,7 @@ import android.view.ViewGroup;
 class CameraView extends View {
     private Bitmap bitmap, scaledBitmap;
     private Integer viewWidth, viewHeigth;
-    private static native void setBitmap(Bitmap bitmap);
-    static native void deleteBitmap();
-    static native void resetBitmap();
+    private Eventprocessor eventprocessor;
 
     public CameraView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -26,7 +24,8 @@ class CameraView extends View {
         viewHeigth = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
         bitmap = Bitmap.createBitmap(320, 240, Bitmap.Config.ALPHA_8);
-        setBitmap(bitmap);
+        eventprocessor = new Eventprocessor();
+        eventprocessor.setBitmap(bitmap);
     }
 
     @Override protected void onDraw(Canvas canvas) {

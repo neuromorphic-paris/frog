@@ -7,17 +7,18 @@ import java.nio.ByteBuffer;
 
 public class Eventprocessor {
     private static final String TAG = Eventprocessor.class.getName();
+
     static {
         try {
             System.loadLibrary("eventprocessor");
-        } catch (final UnsatisfiedLinkError e){
+        } catch (final UnsatisfiedLinkError e) {
             Log.e(TAG, "load library" + Log.getStackTraceString(e));
         }
     }
-    private transient long objPtr;
-    private transient ByteBuffer byteBuffer;
 
-    public Eventprocessor() {
+    private transient long objPtr;
+
+    Eventprocessor() {
         try {
             this.objPtr = new_Eventprocessor();
         } catch (UnsatisfiedLinkError e) {
@@ -36,32 +37,37 @@ public class Eventprocessor {
         }
     }
 
-    public void setCameraData(byte[] arg0, long arg1) {
-        set_camera_data_Eventprocessor(objPtr, this, arg0, arg1);
+    void setBitmap(Bitmap bitmap) {
+        set_bitmap(objPtr, bitmap);
     }
 
-    void renderPreview(){
-        render_preview(this.byteBuffer);
+    void resetBitmap() {
+        reset_bitmap(objPtr);
     }
 
-    void setBitmap(Bitmap bitmap){
-        this.byteBuffer = set_bitmap(objPtr, bitmap);
+    void deleteBitmap() {
+        delete_bitmap(objPtr);
     }
 
-    String stringFromJNI(){
-        return string_from_JNI();
+    void triggerSepia(String filepath) {
+        trigger_sepia(objPtr, filepath);
     }
 
-    void triggerSepia(String filepath){
-        trigger_sepia(objPtr, byteBuffer, filepath);
+    int getJvmVersion() {
+        return get_JVM_version();
     }
 
     private native long new_Eventprocessor();
-    private native long delete_Eventprocessor(long jniCPtr);
-    private native void set_camera_data_Eventprocessor(long jniCPtr, Eventprocessor eventprocessor, byte[] arg0, long arg1);
-    private native void render_preview(ByteBuffer handle);
-    private native ByteBuffer set_bitmap(long objPtr, Bitmap bitmap);
-    private native String string_from_JNI();
+
+    private native void delete_Eventprocessor(long jniCPtr);
+
+    private native void set_bitmap(long objPtr, Bitmap bitmap);
+
+    private native void reset_bitmap(long objPtr);
+
+    private native void delete_bitmap(long objPtr);
+
+    private native void trigger_sepia(long objPtr, String path);
+
     native int get_JVM_version();
-    private native void trigger_sepia(long objPtr, ByteBuffer byteBuf, String path);
 }

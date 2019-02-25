@@ -5,7 +5,7 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
-static jobject _bitmap;
+jobject EventProcessor::_bitmap;
 
 extern "C" {
 JNIEXPORT jlong JNICALL
@@ -27,10 +27,9 @@ Java_com_example_chronocam_atis_Eventprocessor_delete_1Eventprocessor(JNIEnv *en
 JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject instance,
                                                            jlong objPtr, jobject bitmap) {
-    _bitmap = env->NewGlobalRef(bitmap);
-
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
-    eventProcessor->save_bitmap_info(env, &_bitmap);
+    EventProcessor::_bitmap = env->NewGlobalRef(bitmap);
+    eventProcessor->save_bitmap_info(env);
 }
 
 JNIEXPORT void JNICALL
@@ -38,16 +37,16 @@ Java_com_example_chronocam_atis_Eventprocessor_reset_1bitmap(JNIEnv *env, jobjec
                                                              jlong objPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
     if (eventProcessor->_bitmap_info.width == 0){
-        eventProcessor->save_bitmap_info(env, &_bitmap);
+        eventProcessor->save_bitmap_info(env);
     }
-
-    eventProcessor->reset_bitmap(env, &_bitmap);
+    eventProcessor->reset_bitmap(env);
 }
 
 JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_delete_1bitmap(JNIEnv *env, jobject instance,
                                                               jlong jniCPtr) {
-    env->DeleteGlobalRef(_bitmap);
+    EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
+    env->DeleteGlobalRef(EventProcessor::_bitmap);
 }
 
 JNIEXPORT void JNICALL
@@ -57,7 +56,7 @@ Java_com_example_chronocam_atis_Eventprocessor_trigger_1sepia(JNIEnv *env, jobje
     const char *path = env->GetStringUTFChars(path_, nullptr);
     std::string esFilePath(path, 100);
     esFilePath.erase(std::find(esFilePath.begin(), esFilePath.end(), '\0'), esFilePath.end());
-    eventProcessor->trigger_sepia(env, esFilePath, &_bitmap);
+    eventProcessor->trigger_sepia(env, esFilePath);
     env->ReleaseStringUTFChars(path_, path);
 }
 

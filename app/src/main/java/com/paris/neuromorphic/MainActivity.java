@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver usbBroadcastReceiver;
     Eventprocessor eventprocessor;
 
-    private CameraPreviewTimer cameraPreviewTimer; // Handles periodically camera preview updates
-
     CameraService cameraService;
     Intent cameraServiceIntent;
 
@@ -89,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 new AsyncSepia().execute();
             }
         });
-
     }
 
     @Override
@@ -110,10 +107,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void stopCameraService(){
-        if (cameraPreviewTimer != null) {
-            cameraPreviewTimer.cancel();
-            cameraPreviewTimer = null;
-        }
         if (isServiceBound) {
             unbindService(serviceConnection);
             isServiceBound = false;
@@ -122,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
             stopService(cameraServiceIntent);
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
-        //cameraPreview.setImageResource(0);
     }
 
     //Task to initiate camera

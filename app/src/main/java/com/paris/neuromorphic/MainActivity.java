@@ -1,4 +1,4 @@
-package com.example.chronocam.atis;
+package com.paris.neuromorphic;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -12,7 +12,6 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     static {
         //System.loadLibrary("atis_java"); // load libatis_java.so
     }
-    static final String ACTION_USB_PERMISSION = "com.example.chronocam.atis.MainActivity.USB_PERMISSION";
+    static final String ACTION_USB_PERMISSION = "com.paris.neuromorphic.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
     final String ASSETS_FILE_BIASES = "standard_new.bias";

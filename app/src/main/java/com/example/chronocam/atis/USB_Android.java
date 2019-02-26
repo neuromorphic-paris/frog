@@ -4,7 +4,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.util.Log;
 
-class USB_Android implements IV_USB {
+public class USB_Android implements IV_USB {
 
     private static final String THIS_CLASS = "USBAndroid";
 
@@ -13,7 +13,7 @@ class USB_Android implements IV_USB {
     private UsbEndpoint endpoint;
     private int version;
 
-    USB_Android(UsbDeviceConnection connection, UsbDevice device, UsbEndpoint endpoint) {
+    public USB_Android(UsbDeviceConnection connection, UsbDevice device, UsbEndpoint endpoint) {
         this.endpoint = endpoint;
         this.connection = connection;
         this.usbDevice = device;
@@ -21,7 +21,7 @@ class USB_Android implements IV_USB {
         Log.w("Atis", "Version " + version);
     }
 
-    void release() {
+    public void release() {
         connection.close();
     }
 

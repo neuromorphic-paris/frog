@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chronocam.atis">
+    package="com.paris.neuromorphic">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -20,7 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Frog">
-        <activity android:name=".MainActivity"
+        <activity android:name="com.paris.neuromorphic.MainActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
@@ -42,7 +42,7 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <service
-            android:name=".CameraService"
+            android:name="com.paris.neuromorphic.CameraService"
             android:exported="false" />
     </application>
 

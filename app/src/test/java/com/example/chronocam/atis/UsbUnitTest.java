@@ -3,6 +3,8 @@ package com.example.chronocam.atis;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
+import com.paris.neuromorphic.MainActivity;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

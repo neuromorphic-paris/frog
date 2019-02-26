@@ -7,7 +7,7 @@
 
 extern "C" {
 JNIEXPORT jlong JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_new_1Eventprocessor(JNIEnv *env, jobject instance) {
+Java_com_paris_neuromorphic_Eventprocessor_new_1Eventprocessor(JNIEnv *env, jobject instance) {
     jlong jresult = 0;
     EventProcessor *result = nullptr;
     result = new EventProcessor();
@@ -16,14 +16,14 @@ Java_com_example_chronocam_atis_Eventprocessor_new_1Eventprocessor(JNIEnv *env, 
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_delete_1Eventprocessor(JNIEnv *env, jobject instance,
+Java_com_paris_neuromorphic_Eventprocessor_delete_1Eventprocessor(JNIEnv *env, jobject instance,
                                                                       jlong jniCPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     delete eventProcessor;
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject instance,
+Java_com_paris_neuromorphic_Eventprocessor_set_1bitmap(JNIEnv *env, jobject instance,
                                                            jlong objPtr, jobject bitmap) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
     EventProcessor::_bitmap = env->NewGlobalRef(bitmap);
@@ -31,7 +31,7 @@ Java_com_example_chronocam_atis_Eventprocessor_set_1bitmap(JNIEnv *env, jobject 
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_reset_1bitmap(JNIEnv *env, jobject instance,
+Java_com_paris_neuromorphic_Eventprocessor_reset_1bitmap(JNIEnv *env, jobject instance,
                                                              jlong objPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
     if (eventProcessor->_bitmap_info.width == 0) {
@@ -41,14 +41,14 @@ Java_com_example_chronocam_atis_Eventprocessor_reset_1bitmap(JNIEnv *env, jobjec
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_delete_1bitmap(JNIEnv *env, jobject instance,
+Java_com_paris_neuromorphic_Eventprocessor_delete_1bitmap(JNIEnv *env, jobject instance,
                                                               jlong jniCPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     env->DeleteGlobalRef(EventProcessor::_bitmap);
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_trigger_1sepia(JNIEnv *env, jobject instance,
+Java_com_paris_neuromorphic_Eventprocessor_trigger_1sepia(JNIEnv *env, jobject instance,
                                                               jlong jniCPtr, jstring path_) {
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     const char *path = env->GetStringUTFChars(path_, nullptr);
@@ -59,7 +59,7 @@ Java_com_example_chronocam_atis_Eventprocessor_trigger_1sepia(JNIEnv *env, jobje
 }
 
 JNIEXPORT jint JNICALL
-Java_com_example_chronocam_atis_Eventprocessor_get_1JVM_1version(JNIEnv *env, jobject instance) {
+Java_com_paris_neuromorphic_Eventprocessor_get_1JVM_1version(JNIEnv *env, jobject instance) {
     return env->GetVersion();
 }
 

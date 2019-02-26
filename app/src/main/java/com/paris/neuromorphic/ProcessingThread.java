@@ -1,4 +1,4 @@
-package com.example.chronocam.atis;
+package com.paris.neuromorphic;
 
 import android.content.Intent;
 import android.graphics.Bitmap;

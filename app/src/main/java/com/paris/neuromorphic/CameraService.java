@@ -1,4 +1,4 @@
-package com.example.chronocam.atis;
+package com.paris.neuromorphic;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -13,6 +13,8 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.chronocam.atis.*;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

@@ -1,9 +1,7 @@
-package com.example.chronocam.atis;
+package com.paris.neuromorphic;
 
 import android.graphics.Bitmap;
 import android.util.Log;
-
-import java.nio.ByteBuffer;
 
 public class Eventprocessor {
     private static final String TAG = Eventprocessor.class.getName();

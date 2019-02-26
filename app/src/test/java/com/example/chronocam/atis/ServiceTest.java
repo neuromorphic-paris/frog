@@ -1,5 +1,7 @@
 package com.example.chronocam.atis;
 
+import com.paris.neuromorphic.CameraService;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

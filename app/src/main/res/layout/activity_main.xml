@@ -23,7 +23,7 @@
         android:padding="8dp"
         android:theme="@style/Frog"
         android:weightSum="1"
-        tools:context="com.example.chronocam.atis.MainActivity">
+        tools:context="com.paris.neuromorphic.MainActivity">
 
         <ImageView
             android:id="@+id/logo_view"
@@ -35,7 +35,7 @@
             android:src="@drawable/frog_banner"
             android:contentDescription="@string/content_description_logo"/>
 
-        <com.example.chronocam.atis.CameraView
+        <com.paris.neuromorphic.CameraView
             android:id="@+id/camera_preview"
             android:layout_width="230dp"
             android:layout_height="182dp"

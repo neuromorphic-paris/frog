@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
+import com.paris.neuromorphic.CameraService;
+import com.paris.neuromorphic.MainActivity;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,8 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowToast;
-
-import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;

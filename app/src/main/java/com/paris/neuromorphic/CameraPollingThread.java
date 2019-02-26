@@ -1,4 +1,4 @@
-package com.example.chronocam.atis;
+package com.paris.neuromorphic;
 
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
@@ -12,6 +12,8 @@ import android.util.Log;
 import com.chronocam.libatis.Atis;
 import com.chronocam.libatis.AtisBiases;
 import com.chronocam.libatis.AtisInstance;
+import com.example.chronocam.atis.IS_Usb;
+import com.example.chronocam.atis.USB_Android;
 
 import java.util.concurrent.BlockingQueue;
 

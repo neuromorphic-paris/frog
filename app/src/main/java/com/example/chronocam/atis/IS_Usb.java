@@ -20,7 +20,7 @@ public class IS_Usb {
     private static String teststring_ = new String("not called from c yet");
     private static int ncalled_ = 0;
 
-    static String getStringCallback() {
+    public static String getStringCallback() {
         return teststring_;
     }
 

@@ -15,6 +15,8 @@ class EventProcessor {
 public:
     EventProcessor() = default;
 
+    uint64_t baseTime = 0;
+
     static jobject _bitmap;
 
     AndroidBitmapInfo _bitmap_info{0};
@@ -24,6 +26,8 @@ public:
     void trigger_sepia(JNIEnv *env, std::string filepath);
 
     void reset_bitmap(JNIEnv *pEnv);
+
+    void set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size);
 };
 
 #endif //FROG_EVENTPROCESSOR_H

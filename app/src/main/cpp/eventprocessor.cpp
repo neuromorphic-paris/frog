@@ -102,4 +102,34 @@ void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
     );
 }
 
+void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size) {
+    for (int i = 0; i < size;) {
+        unsigned char a = data[i++];
+        unsigned char b = data[i++];
+        unsigned char c = data[i++];
+        unsigned char d = data[i++];
+        //	event.pol currently contains the type of event
+        uint8_t pol = (uint8_t) ((d & 0xf0) >> 4);
+        if (pol == 8) {
+            baseTime = (uint64_t) (
+                    ((a & 0xff) | ((b & 0xff) << 8) | ((c & 0xff) << 16) | ((d & 0x0f) << 24))
+                            << 11);
+//        __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor ", "index=%u raw=%02X%02X%02X%02X, ts=%llu", i, a, b, c, d, (unsigned long long int) localBaseTime);
+        } else if (baseTime != 0) {
+            uint16_t y = 239 - (uint16_t) (a & 0xff);
+            uint16_t x = (uint16_t) ((b & 0xff) | ((c & 0x01) << 8));
+            uint64_t ts = baseTime + (((c & 0xff) >> 1) & 0x7f) | ((d & 0x0f) << 7);
+//		__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "index=%u raw=%02X%02X%02X%02X, ts=%llu, pol=%u, x=%03u, y=%03u", i, a, b, c, d, (unsigned long long int) ts, pol, x, y);
 
+            auto event = sepia::dvs_event{ts, x, y, static_cast<bool>(pol)};
+
+            void *pixels;
+            int ret;
+            if ((ret = AndroidBitmap_lockPixels(env, EventProcessor::_bitmap, &pixels)) < 0) {
+                LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+            }
+            setPixel(event, this->_bitmap_info, pixels);
+            AndroidBitmap_unlockPixels(env, EventProcessor::_bitmap);
+        }
+    }
+}

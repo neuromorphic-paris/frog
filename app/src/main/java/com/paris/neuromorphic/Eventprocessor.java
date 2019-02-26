@@ -51,6 +51,10 @@ public class Eventprocessor {
         trigger_sepia(objPtr, filepath);
     }
 
+    void setCameraData(byte[] data, long length){
+        set_camera_data(objPtr, data, length);
+    }
+
     int getJvmVersion() {
         return get_JVM_version();
     }
@@ -66,6 +70,8 @@ public class Eventprocessor {
     private native void delete_bitmap(long objPtr);
 
     private native void trigger_sepia(long objPtr, String path);
+
+    private native void set_camera_data(long objPtr, byte[] data, long length);
 
     native int get_JVM_version();
 }

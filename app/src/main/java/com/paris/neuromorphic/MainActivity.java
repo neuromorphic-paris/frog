@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         cameraStatusImage.setImageResource(R.mipmap.camera_ok);
         Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
         new AsyncCameraStart().execute(delay);
-        cameraPreview.setBackgroundColor(Color.WHITE);
     }
 
     void stopCameraService(){
@@ -115,9 +114,9 @@ public class MainActivity extends AppCompatActivity {
             stopService(cameraServiceIntent);
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
+        eventprocessor.resetBitmap();
     }
 
-    //Task to initiate camera
     public class AsyncCameraStart extends AsyncTask<Boolean, Integer, Void> {
         @Override
         protected void onPreExecute() {

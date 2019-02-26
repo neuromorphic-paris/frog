@@ -9,8 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 class CameraView extends View {
-    private Bitmap bitmap, scaledBitmap;
-    private Integer viewWidth, viewHeigth;
+    private Bitmap bitmap;
     private Eventprocessor eventprocessor;
 
     public CameraView(Context context, AttributeSet attributeSet) {
@@ -20,12 +19,10 @@ class CameraView extends View {
                 android.R.attr.layout_height // 1
         };
         TypedArray ta = context.obtainStyledAttributes(attributeSet, attrsArray);
-        viewWidth = ta. getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
-        viewHeigth = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
+        int viewWidth = ta. getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
+        int viewHeigth = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
-        bitmap = Bitmap.createBitmap(320, 240, Bitmap.Config.ALPHA_8);
-
-        //scaledBitmap = Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeigth, false);
+        bitmap = Bitmap.createBitmap(viewWidth, viewHeigth, Bitmap.Config.ALPHA_8);
 
         eventprocessor = new Eventprocessor();
         eventprocessor.setBitmap(bitmap);

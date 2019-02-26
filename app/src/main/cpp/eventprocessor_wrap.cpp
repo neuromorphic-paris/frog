@@ -5,8 +5,6 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
-jobject EventProcessor::_bitmap;
-
 extern "C" {
 JNIEXPORT jlong JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_new_1Eventprocessor(JNIEnv *env, jobject instance) {
@@ -36,7 +34,7 @@ JNIEXPORT void JNICALL
 Java_com_example_chronocam_atis_Eventprocessor_reset_1bitmap(JNIEnv *env, jobject instance,
                                                              jlong objPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
-    if (eventProcessor->_bitmap_info.width == 0){
+    if (eventProcessor->_bitmap_info.width == 0) {
         eventProcessor->save_bitmap_info(env);
     }
     eventProcessor->reset_bitmap(env);

@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     Eventprocessor eventprocessor;
 
     private CameraPreviewTimer cameraPreviewTimer; // Handles periodically camera preview updates
-    private Handler previewReceiver; // Handle timer response and updates the view
 
     CameraService cameraService;
     Intent cameraServiceIntent;
@@ -149,8 +148,6 @@ public class MainActivity extends AppCompatActivity {
             cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
             startService(cameraServiceIntent);
             bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-
-            cameraPreviewTimer = new CameraPreviewTimer(previewReceiver, 50);
             return null;
         }
     }

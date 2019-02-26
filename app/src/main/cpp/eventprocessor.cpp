@@ -5,6 +5,7 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
+jobject EventProcessor::_bitmap;
 
 void EventProcessor::save_bitmap_info(JNIEnv *env) {
     AndroidBitmapInfo info;
@@ -24,11 +25,9 @@ void EventProcessor::save_bitmap_info(JNIEnv *env) {
 void EventProcessor::reset_bitmap(JNIEnv *pEnv) {
     void *pixels;
     int ret;
-
-    if ((ret = AndroidBitmap_lockPixels(pEnv, this->_bitmap, &pixels)) < 0) {
+    if ((ret = AndroidBitmap_lockPixels(pEnv, EventProcessor::_bitmap, &pixels)) < 0) {
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
-
     int x, y;
     for (y = 0; y < this->_bitmap_info.height; y++) {
         auto *line = (uint32_t *) pixels;
@@ -37,18 +36,24 @@ void EventProcessor::reset_bitmap(JNIEnv *pEnv) {
         }
         pixels = (char *) pixels + this->_bitmap_info.stride;
     }
-
-    AndroidBitmap_unlockPixels(pEnv, this->_bitmap);
+    AndroidBitmap_unlockPixels(pEnv, EventProcessor::_bitmap);
 }
 
-void setPixel(sepia::dvs_event event, AndroidBitmapInfo *info, void *pixels) {
+void setPixel(sepia::dvs_event event, AndroidBitmapInfo info, void *pixels) {
     int x = event.x;
-    int scaleX = 1; //static_cast<int>(info->width/320)
-    int scaleY = 1; //static_cast<int>(info->height/240)
-    pixels = (char *) pixels + event.y * scaleY * info->stride;
+    const int scaleX = 3; //static_cast<int>(info.width/320);
+    const int scaleY = 3; //static_cast<int>(info.height/240);
+    pixels = (char *) pixels + event.y * scaleY * info.stride;
     auto *line = (char *) pixels;
-    if (event.is_increase) { line[x * scaleX] = static_cast<char>(0xFF); }
-    else { line[x * scaleX] = 0x00; }
+    if (event.is_increase) {
+        line[x * scaleX] = static_cast<char>(0xFF);
+        line[x * scaleX + 1] = static_cast<char>(0xFF);
+        line[x * scaleX + 2] = static_cast<char>(0xFF);
+    } else {
+        line[x * scaleX] = 0x00;
+        line[x * scaleX + 1] = 0x00;
+        line[x * scaleX + 2] = 0x00;
+    }
 }
 
 void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
@@ -67,33 +72,19 @@ void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
                                                          isThreadAttached = true;
                                                      }
 
-                                                     AndroidBitmapInfo info;
                                                      void *pixels;
                                                      int ret;
-                                                     if ((ret = AndroidBitmap_getInfo(threadEnv,
-                                                                                      this->_bitmap,
-                                                                                      &info)) < 0) {
-                                                         LOGE("AndroidBitmap_getInfo() failed ! error=%d",
-                                                              ret);
-                                                         return;
-                                                     }
-
                                                      if ((ret = AndroidBitmap_lockPixels(threadEnv,
-                                                                                         this->_bitmap,
+                                                                                         EventProcessor::_bitmap,
                                                                                          &pixels)) <
                                                          0) {
                                                          LOGE("AndroidBitmap_lockPixels() failed ! error=%d",
                                                               ret);
                                                      }
-                                                     setPixel(dvs_event, &info, pixels);
+                                                     setPixel(dvs_event, this->_bitmap_info,
+                                                              pixels);
                                                      AndroidBitmap_unlockPixels(threadEnv,
-                                                                                this->_bitmap);
-
-                                                     if (counter < 10) {
-                                                         LOGD("SEPIA: JNI bitmap width: %d, height: %d, stride: %d",
-                                                              info.width,
-                                                              info.height, info.stride);
-                                                     }
+                                                                                EventProcessor::_bitmap);
 
                                                      if (dvs_event.is_increase) {
                                                          if (counter < 10) {

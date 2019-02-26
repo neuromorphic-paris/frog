@@ -63,12 +63,14 @@ public class CameraPollingThread extends HandlerThread {
             this.data = toExchange.data;
         }
     }
+
     CameraPollingThread(Intent intent, UsbManager usbManager, BlockingQueue blockingQueue) {
         super(CameraPollingThread.class.getName());
         this.intent = intent;
         this.usbManager = usbManager;
         this.buffer = blockingQueue;
     }
+
     @Override
     protected void onLooperPrepared() {
         Log.d(TAG, "Looper prepared");

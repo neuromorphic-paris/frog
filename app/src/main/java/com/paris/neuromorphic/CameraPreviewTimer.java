@@ -24,7 +24,7 @@ class CameraPreviewTimer extends Timer {
             if (ProcessingThread.preview != null) {
                 message = Message.obtain();
                 message.obj = ProcessingThread.preview;
-                if (handler!=null)
+                if (handler != null)
                     handler.sendMessage(message);
             }
         }

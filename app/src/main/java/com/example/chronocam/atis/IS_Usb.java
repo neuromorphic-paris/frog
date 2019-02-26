@@ -1,6 +1,9 @@
 package com.example.chronocam.atis;
 
 public class IS_Usb {
+    static {
+        System.loadLibrary("atis_java"); // load libatis_java.so
+    }
     private static IV_USB iv_usb_;
 
     public static void set_usb(IV_USB iv_usb) {

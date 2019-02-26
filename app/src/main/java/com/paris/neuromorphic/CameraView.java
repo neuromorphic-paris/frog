@@ -14,13 +14,13 @@ class CameraView extends View {
 
     public CameraView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        int[] attrsArray = new int[] {
+        int[] attrsArray = new int[]{
                 android.R.attr.layout_width, // 0
                 android.R.attr.layout_height // 1
         };
         TypedArray ta = context.obtainStyledAttributes(attributeSet, attrsArray);
-        int viewWidth = ta. getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
-        int viewHeigth = ta. getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
+        int viewWidth = ta.getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
+        int viewHeigth = ta.getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
         bitmap = Bitmap.createBitmap(viewWidth, viewHeigth, Bitmap.Config.ALPHA_8);
 
@@ -28,7 +28,8 @@ class CameraView extends View {
         eventprocessor.setBitmap(bitmap);
     }
 
-    @Override protected void onDraw(Canvas canvas) {
+    @Override
+    protected void onDraw(Canvas canvas) {
         canvas.drawBitmap(bitmap, 0, 0, null);
         invalidate();
     }

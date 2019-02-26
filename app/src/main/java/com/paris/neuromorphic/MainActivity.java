@@ -29,9 +29,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = getClass().getName();
-    static {
-        //System.loadLibrary("atis_java"); // load libatis_java.so
-    }
+
     static final String ACTION_USB_PERMISSION = "com.paris.neuromorphic.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";

@@ -46,13 +46,20 @@ void setPixel(sepia::dvs_event event, AndroidBitmapInfo info, void *pixels) {
     pixels = (char *) pixels + event.y * scaleY * info.stride;
     auto *line = (char *) pixels;
     if (event.is_increase) {
-        line[x * scaleX] = static_cast<unsigned char>(0xFF);
-        line[x * scaleX + 1] = static_cast<unsigned char>(0xFF);
-        line[x * scaleX + 2] = static_cast<unsigned char>(0xFF);
+        auto white = static_cast<unsigned char>(0xFF);
+        for (int i = 0; i < scaleY; i++) {
+            for (int j = 0; j < scaleX; j++) {
+                line[x * scaleX + j] = white;
+            }
+            line = (char *) pixels + info.stride;
+        }
     } else {
-        line[x * scaleX] = 0x00;
-        line[x * scaleX + 1] = 0x00;
-        line[x * scaleX + 2] = 0x00;
+        for (int i = 0; i < scaleY; i++){
+            for (int j = 0; j < scaleX; j++) {
+                line[x * scaleX + j] = 0x00;
+            }
+            line = (char*) pixels + info.stride;
+        }
     }
 }
 

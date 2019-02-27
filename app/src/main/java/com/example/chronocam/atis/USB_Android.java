@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class USB_Android implements IV_USB {
 
-    private static final String THIS_CLASS = "USBAndroid";
+    private final String THIS_CLASS = getClass().getSimpleName();
 
     private UsbDevice usbDevice = null;
     private UsbDeviceConnection connection;
@@ -141,11 +141,9 @@ public class USB_Android implements IV_USB {
         if (connection == null) return 0;
         int r = connection.bulkTransfer(this.endpoint, data, max_size, timeout);
         if (r < 0) {
-            //conected = false;
             Log.d(THIS_CLASS, "bulkTransfer() FAIL");
             return -1;
         }
-        //c/onected = true;
         return r;
     }
 }

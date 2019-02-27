@@ -26,7 +26,6 @@ public class CameraPollingThread extends HandlerThread {
     private Intent intent;
     private UsbManager usbManager;
 
-    //Flags
     private volatile boolean isCameraAttached = true;
 
     //Counters
@@ -35,9 +34,7 @@ public class CameraPollingThread extends HandlerThread {
     private long iterationCount;
     private long time;
 
-    //static Bitmap preview;
-    AtisInstance cam_;
-    static byte[] bytes;
+    AtisInstance camera;
 
     private final BlockingQueue buffer;
 
@@ -114,20 +111,19 @@ public class CameraPollingThread extends HandlerThread {
                 Log.d(TAG, "open cam...");
                 Log.d(TAG, IS_Usb.getStringCallback());
 
-                cam_ = atis.open_atis_auto("", "");
+                camera = atis.open_atis_auto("", "");
 
                 Log.d(TAG, "set biases...");
-                cam_.set_biases(biases);
+                camera.set_biases(biases);
 
                 Log.d(TAG, "set couple...");
-                cam_.set_couple(false);
+                camera.set_couple(false);
 
                 Log.d(TAG, "start cam...");
-                cam_.start();
+                camera.start();
             }
 
             ToExchange toExchange = new ToExchange();
-            //for (int c = 0; c < 2000; c++) {
             while (isCameraAttached) {
                 try {
                     startTimeStamp = System.nanoTime();
@@ -151,7 +147,6 @@ public class CameraPollingThread extends HandlerThread {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    usb_android.release();
                 }
             }
             Log.d(TAG, "ended the loop");

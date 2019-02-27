@@ -44,7 +44,7 @@ public class Eventprocessor {
     }
 
     void deleteBitmap() {
-        delete_bitmap(objPtr);
+        delete_bitmap();
     }
 
     void triggerSepia(String filepath) {
@@ -67,7 +67,7 @@ public class Eventprocessor {
 
     private native void reset_bitmap(long objPtr);
 
-    private native void delete_bitmap(long objPtr);
+    private native void delete_bitmap();
 
     private native void trigger_sepia(long objPtr, String path);
 

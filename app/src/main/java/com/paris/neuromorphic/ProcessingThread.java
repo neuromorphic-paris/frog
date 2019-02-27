@@ -1,9 +1,5 @@
 package com.paris.neuromorphic;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
@@ -16,14 +12,14 @@ import java.util.concurrent.BlockingQueue;
 public class ProcessingThread extends HandlerThread{
     private String TAG = getClass().getName();
 
-    volatile boolean isCameraAttached = true;
+    private volatile boolean isCameraAttached = true;
 
     private final BlockingQueue buffer;
     private Eventprocessor eventprocessor;
 
     private int eventCount, maxCount, iterationCount;
 
-    ProcessingThread(Intent intent, Handler handler, BlockingQueue blockingQueue) {
+    ProcessingThread(BlockingQueue blockingQueue) {
         super(ProcessingThread.class.getName());
         buffer = blockingQueue;
         eventprocessor = new Eventprocessor();

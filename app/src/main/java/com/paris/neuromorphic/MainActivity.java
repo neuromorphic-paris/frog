@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
             isServiceBound = false;
         }
         if (cameraServiceIntent != null){
+            cameraService.setCameraPolling(false);
             stopService(cameraServiceIntent);
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
             cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
             cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
+            eventprocessor.resetBitmap();
             startService(cameraServiceIntent);
             bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
             return null;
@@ -164,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         stopCameraService();
-        eventprocessor.deleteBitmap();
         super.onDestroy();
+        eventprocessor.deleteBitmap();
     }
 
     void setUpUSBReceiver(){

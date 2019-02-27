@@ -11,7 +11,7 @@ Java_com_paris_neuromorphic_Eventprocessor_new_1Eventprocessor(JNIEnv *env, jobj
     jlong jresult = 0;
     EventProcessor *result = nullptr;
     result = new EventProcessor();
-    if (EventProcessor::_bitmap != NULL) {
+    if (EventProcessor::_bitmap != nullptr) {
         result->save_bitmap_info(env);
     }
     *(EventProcessor **) &jresult = result;
@@ -41,10 +41,10 @@ Java_com_paris_neuromorphic_Eventprocessor_reset_1bitmap(JNIEnv *env, jobject in
 }
 
 JNIEXPORT void JNICALL
-Java_com_paris_neuromorphic_Eventprocessor_delete_1bitmap(JNIEnv *env, jobject instance,
-                                                          jlong jniCPtr) {
-    EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
-    env->DeleteGlobalRef(EventProcessor::_bitmap);
+Java_com_paris_neuromorphic_Eventprocessor_delete_1bitmap(JNIEnv *env, jobject instance) {
+    if (EventProcessor::_bitmap != nullptr) {
+        env->DeleteGlobalRef(EventProcessor::_bitmap);
+    }
 }
 
 JNIEXPORT void JNICALL
@@ -66,7 +66,7 @@ Java_com_paris_neuromorphic_Eventprocessor_set_1camera_1data(JNIEnv *env, jobjec
     jbyte *camera_data = env->GetByteArrayElements(camera_data_, nullptr);
 
     (eventProcessor)->set_camera_data(env, (unsigned char *) camera_data,
-                                    (unsigned long) camera_data_length);
+                                      (unsigned long) camera_data_length);
 
     env->ReleaseByteArrayElements(camera_data_, camera_data, 0);
 }

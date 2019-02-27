@@ -10,6 +10,7 @@
 #include <string>
 #include <iostream>
 #include <cstdint>
+#include "sepia/source/sepia.hpp"
 
 class EventProcessor {
 public:
@@ -26,6 +27,8 @@ public:
     void trigger_sepia(JNIEnv *env, std::string filepath);
 
     void reset_bitmap(JNIEnv *pEnv);
+
+    void set_pixel(sepia::dvs_event, void *pixels);
 
     void set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size);
 };

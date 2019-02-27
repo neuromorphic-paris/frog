@@ -10,14 +10,15 @@ import java.util.concurrent.BlockingQueue;
  */
 
 public class ProcessingThread extends HandlerThread{
-    private String TAG = getClass().getName();
+    private String TAG = getClass().getSimpleName();
 
     private volatile boolean isCameraAttached = true;
 
+    private CameraPollingThread.EventExchange toExchange;
     private final BlockingQueue buffer;
     private Eventprocessor eventprocessor;
 
-    private int eventCount, maxCount, iterationCount;
+    private long startTimeStamp, currentTimeStamp;
 
     ProcessingThread(BlockingQueue blockingQueue) {
         super(ProcessingThread.class.getName());
@@ -36,16 +37,13 @@ public class ProcessingThread extends HandlerThread{
         Log.d(TAG, "Looper prepared");
         super.onLooperPrepared();
 
-        processExchange();
+        checkBufferForNewElements();
     }
 
-    int globalSize=0;
-
-    void processExchange() {
+    private void checkBufferForNewElements() {
         while (isCameraAttached) {
             if (!buffer.isEmpty()) {
-                processToExchange();
-
+                processBufferElement();
             } else {
                 try {
                     Thread.sleep(10);
@@ -57,20 +55,16 @@ public class ProcessingThread extends HandlerThread{
         }
     }
 
-    void processToExchange() {
+    private void processBufferElement() {
         try {
-            iterationCount++;
-            CameraPollingThread.EventExchange toExchange;
             toExchange = (CameraPollingThread.EventExchange) buffer.take();
-            int size = toExchange.size;
-            if (size == 16384) {
-                maxCount++;
-            }
-            globalSize+=size;
-            Log.d(TAG, "Consumer: Processing Exchange with size: " + size + ", remaining buffer capacity: " + buffer.remainingCapacity());
-            eventCount += size;
+            startTimeStamp = System.nanoTime();
+            eventprocessor.setCameraData(toExchange.data, toExchange.size);
+            currentTimeStamp = System.nanoTime();
 
-            eventprocessor.setCameraData(toExchange.data, size);
+            Log.d(TAG, "Consumer: Processing Exchange with size " + toExchange.size + " took "
+                    + (currentTimeStamp - startTimeStamp)/100000 + "ms, remaining buffer capacity: " + buffer.remainingCapacity());
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

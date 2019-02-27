@@ -116,10 +116,9 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
         unsigned char c = data[i++];
         unsigned char d = data[i++];
         //	event.pol currently contains the type of event
-        uint8_t pol = (uint8_t) ((d & 0xf0) >> 4);
+        auto pol = (uint8_t) ((d & 0xf0) >> 4);
         if (pol == 8) {
-            baseTime = (uint64_t) (
-                    ((a & 0xff) | ((b & 0xff) << 8) | ((c & 0xff) << 16) | ((d & 0x0f) << 24))
+            baseTime = (((a & 0xff) | ((b & 0xff) << 8) | ((c & 0xff) << 16) | ((d & 0x0f) << 24))
                             << 11);
 //        __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor ", "index=%u raw=%02X%02X%02X%02X, ts=%llu", i, a, b, c, d, (unsigned long long int) localBaseTime);
         } else if (baseTime != 0) {

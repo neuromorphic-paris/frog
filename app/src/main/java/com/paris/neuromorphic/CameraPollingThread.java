@@ -22,7 +22,7 @@ import java.util.concurrent.BlockingQueue;
  */
 
 public class CameraPollingThread extends HandlerThread {
-    private final String TAG = getClass().getName();
+    private final String TAG = getClass().getSimpleName();
     private Intent intent;
     private UsbManager usbManager;
 
@@ -52,8 +52,8 @@ public class CameraPollingThread extends HandlerThread {
     }
 
     class EventExchange {
-        int size = 0;
-        byte data[] = new byte[128 * 1024];
+        int size;
+        byte data[];
 
         EventExchange(ToExchange toExchange) {
             this.size = toExchange.size;

@@ -1,4 +1,4 @@
-package com.example.chronocam.atis;
+package com.paris.neuromorphic;
 
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;

@@ -1,4 +1,4 @@
-package com.example.chronocam.atis;
+package com.paris.neuromorphic;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

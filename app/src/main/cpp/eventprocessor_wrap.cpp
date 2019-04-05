@@ -37,7 +37,9 @@ JNIEXPORT void JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_reset_1bitmap(JNIEnv *env, jobject instance,
                                                          jlong objPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
-    eventProcessor->reset_bitmap(env);
+    if (EventProcessor::_bitmap != nullptr) {
+        eventProcessor->reset_bitmap(env);
+    }
 }
 
 JNIEXPORT void JNICALL

@@ -61,13 +61,7 @@ public class CameraService extends Service {
         this.intent = intent;
         buffer = new ArrayBlockingQueue<>(2000);
 
-        //START
-        startProducer();
-        startConsumer();
-
-        Toast.makeText(this, "Camera has been started successfully!", Toast.LENGTH_SHORT).show();
-
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     @Override
@@ -94,26 +88,29 @@ public class CameraService extends Service {
     }
 
     public boolean setCameraPolling(boolean flag) {
-        if (flag && !cameraPollingThread.isAlive()) {
+        if (flag && !isCameraPollingThreadRunning()) {
             startProducer();
             Log.d(TAG, "CameraPollingThread started");
             startConsumer();
             Log.d(TAG, "Consumer started");
             return true;
-        } else if (flag && cameraPollingThread.isAlive()) {
+        } else if (flag && isCameraPollingThreadRunning()) {
             Log.d(TAG, "CameraPollingThread already running");
             return false;
-        } else if (!flag && cameraPollingThread.isAlive()) {
+        } else if (!flag && isCameraPollingThreadRunning()) {
             stopCameraThreads();
             Log.d(TAG, "CameraPollingThread and consumer stopped");
             return true;
-        } else if (!flag && !cameraPollingThread.isAlive()) {
+        } else if (!flag && !isCameraPollingThreadRunning()) {
             Log.d(TAG, "CameraPollingThread cannot be stopped because it is not running");
             return false;
         } else return false;
     }
 
     public boolean isCameraPollingThreadRunning() {
+        if (cameraPollingThread == null) {
+            return false;
+        }
         return cameraPollingThread.isAlive();
     }
 

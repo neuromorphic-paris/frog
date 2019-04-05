@@ -25,6 +25,7 @@ public class CameraService extends Service {
     private final IBinder iBinder = new LocalBinder();
 
     CameraPollingThread cameraPollingThread;
+    FilePollingThread filePollingThread;
     ProcessingThread processingThread;
     Looper cameraPollingThreadLooper, processingThreadLooper;
 

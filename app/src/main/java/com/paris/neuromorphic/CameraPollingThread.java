@@ -29,10 +29,8 @@ public class CameraPollingThread extends HandlerThread {
     private volatile boolean isCameraAttached = true;
 
     //Counters
-    private long eventCount;
     private long maxCount;
     private long iterationCount;
-    private long time;
 
     AtisInstance camera;
 
@@ -134,6 +132,7 @@ public class CameraPollingThread extends HandlerThread {
                     if (size > 0) {
                         if (size == 16384) {
                             maxCount++;
+                            Log.i(TAG, "hit max package size " + maxCount + " times.");
                         }
                         iterationCount++;
                         EventExchange copyExchange = new EventExchange(toExchange);

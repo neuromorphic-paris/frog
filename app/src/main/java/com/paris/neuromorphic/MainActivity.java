@@ -106,6 +106,16 @@ public class MainActivity extends AppCompatActivity {
         bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    public void startCameraReplacementFilePolling() {
+        startCameraService();
+        if (cameraService != null) {
+
+        } else {
+            Log.e(TAG, "will need to use AsyncTask");
+        }
+        
+    }
+
     void stopCameraService(){
         if (isServiceBound) {
             unbindService(serviceConnection);

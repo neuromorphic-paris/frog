@@ -42,18 +42,18 @@ public class MainActivity extends AppCompatActivity {
 
     CameraService cameraService;
     Intent cameraServiceIntent;
+    boolean isServiceBound = false;
 
     @BindView(R.id.text_info) TextView infoText;
     @BindView(R.id.image_status) ImageView cameraStatusImage;
     @BindView(R.id.camera_preview) CameraView cameraPreview;
     @BindView(R.id.start_recording_button) Button startButton;
 
-    boolean isServiceBound = false;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            CameraService.LocalBinder binder = (CameraService.LocalBinder) service;
-            cameraService = binder.getService();
+            cameraService = ((CameraService.LocalBinder) service).getService();
+            Log.d(TAG, "Bound CameraService.");
             isServiceBound = true;
         }
         @Override
@@ -67,13 +67,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(getIntent().getAction())) {
             Log.d(TAG, "created activity from intent");
         }
-        setUpUSBReceiver();
 
         exampleFilePath = Util.copyResource(getApplicationContext(), "dvs.es");
-        Log.d(TAG, exampleFilePath);
+        Log.d(TAG, ".es example file path: " + exampleFilePath);
         cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
 
         eventprocessor = new Eventprocessor();
@@ -92,17 +92,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_USB_ATTACHED);
-        filter.addAction(ACTION_USB_DETACHED);
-        filter.addAction(ACTION_USB_PERMISSION);
-        registerReceiver(usbBroadcastReceiver, filter);
+        setUpUSBReceiver();
     }
 
-    public void startCameraService(boolean delay) {
+    public void startCameraService() {
         cameraStatusImage.setImageResource(R.mipmap.camera_ok);
         Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
-        new AsyncCameraStart().execute(delay);
+        cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
+        cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
+        cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
+        eventprocessor.resetBitmap();
+        startService(cameraServiceIntent);
+        bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     void stopCameraService(){
@@ -120,24 +121,13 @@ public class MainActivity extends AppCompatActivity {
 
     public class AsyncCameraStart extends AsyncTask<Boolean, Integer, Void> {
         @Override
-        protected void onPreExecute() {
-        }
-        @Override
         protected Void doInBackground(Boolean... params) {
-            boolean delay = params[0];
-            if (delay) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
-            cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
-            cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
-            eventprocessor.resetBitmap();
-            startService(cameraServiceIntent);
-            bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+            cameraService.setCameraPolling(true);
             return null;
         }
     }
@@ -185,7 +175,8 @@ public class MainActivity extends AppCompatActivity {
                             Log.i(TAG, "USB device attached");
                             UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                             if (checkPermissions(usbDevice)) {
-                                startCameraService(true);
+                                startCameraService();
+                                new AsyncCameraStart().execute();
                             }
                             break;
                         case ACTION_USB_DETACHED:
@@ -197,7 +188,8 @@ public class MainActivity extends AppCompatActivity {
                             synchronized (this) {
                                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                                     Log.d(TAG, "Permissions granted");
-                                    startCameraService(true);
+                                    startCameraService();
+                                    new AsyncCameraStart().execute();
                                 } else {
                                     Log.d(TAG, "Permissions denied by user");
                                 }
@@ -210,11 +202,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_USB_ATTACHED);
+        filter.addAction(ACTION_USB_DETACHED);
+        filter.addAction(ACTION_USB_PERMISSION);
+        registerReceiver(usbBroadcastReceiver, filter);
+
         UsbDevice usbDevice = getUsbDevice();
         if (usbDevice != null && checkPermissions(usbDevice)) {
-            startCameraService(false);
+            startCameraService();
+            new AsyncCameraStart().execute();
         }else{
-            Log.i(TAG, "no USB device found.");
+            Log.v(TAG, "no USB device found.");
         }
     }
 

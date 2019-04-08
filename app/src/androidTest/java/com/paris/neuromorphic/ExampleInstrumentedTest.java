@@ -1,22 +1,16 @@
 package com.paris.neuromorphic;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.RequiresDevice;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.view.View;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.*;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -27,22 +21,10 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> rule  = new ActivityTestRule<MainActivity>(MainActivity.class);
-
+    public ActivityScenarioRule<MainActivity> rule  = new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void useAppContext() throws Exception {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-        assertEquals("com.vision.neuromorphic.frog", appContext.getPackageName());
-    }
-
-    @RequiresDevice
-    @Test
-    public void testStartUp() throws Exception {
-        //MainActivity activity = rule.getActivity();
-        onView(withId(R.id.camera_preview)).check(matches((isDisplayed())));
-        //View testView = activity.findViewById(R.id.camera_preview);
-        //assertNotNull(testView);
+    public void testStartUp() {
+        onView(withId(R.id.logo_view)).check(matches((isDisplayed())));
     }
 }

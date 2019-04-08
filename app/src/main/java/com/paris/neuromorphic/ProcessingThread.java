@@ -3,6 +3,11 @@ package com.paris.neuromorphic;
 import android.os.HandlerThread;
 import android.util.Log;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -20,10 +25,20 @@ public class ProcessingThread extends HandlerThread{
 
     private long startTimeStamp, currentTimeStamp;
 
+    private Kryo kryo;
+    private Output output;
+
+    private String filePath = "/data/user/0/com.vision.neuromorphic.frog/files/recording.bin";
+
+
     ProcessingThread(BlockingQueue blockingQueue) {
         super(ProcessingThread.class.getName());
         buffer = blockingQueue;
         eventprocessor = new Eventprocessor();
+        kryo = new Kryo();
+        //kryo.setRegistrationRequired(false);
+        kryo.register(CameraPollingThread.EventExchange.class);
+        kryo.register(byte[].class);
     }
 
     @Override
@@ -41,9 +56,15 @@ public class ProcessingThread extends HandlerThread{
     }
 
     private void checkBufferForNewElements() {
+        try {
+            output = new Output(new FileOutputStream(filePath));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         while (isCameraAttached) {
             if (!buffer.isEmpty()) {
-                processBufferElement();
+                saveBufferElement();
+                //processBufferElement();
             } else {
                 try {
                     Thread.sleep(10);
@@ -53,7 +74,21 @@ public class ProcessingThread extends HandlerThread{
                 }
             }
         }
+        output.close();
     }
+
+    private void saveBufferElement(){
+        try {
+            toExchange = (CameraPollingThread.EventExchange) buffer.take();
+            kryo.writeObject(output, toExchange);
+            Log.i(TAG, "Consumer: Saved Exchange to file with size " + toExchange.size
+                     + ", remaining buffer capacity: " + buffer.remainingCapacity());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void processBufferElement() {
         try {

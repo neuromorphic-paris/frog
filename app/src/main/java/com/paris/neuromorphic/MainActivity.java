@@ -21,6 +21,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -84,7 +91,11 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AsyncSepia().execute();
+                try {
+                    startCameraReplacementFilePolling();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -106,14 +117,31 @@ public class MainActivity extends AppCompatActivity {
         bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void startCameraReplacementFilePolling() {
-        startCameraService();
+
+    public void startCameraReplacementFilePolling() throws FileNotFoundException {
+        //startCameraService();
         if (cameraService != null) {
 
         } else {
             Log.e(TAG, "will need to use AsyncTask");
         }
-        
+        String filePath = "/data/user/0/com.vision.neuromorphic.frog/files/recording.bin";
+
+        Input input = new Input(new FileInputStream(filePath));
+        Kryo kryo = new Kryo();
+        kryo.register(CameraPollingThread.EventExchange.class);
+        kryo.register(byte[].class);
+
+        long objectCounter = 0;
+
+        while (!input.end()){
+            CameraPollingThread.EventExchange object1 = kryo.readObject(input, CameraPollingThread.EventExchange.class);
+            objectCounter++;
+        }
+
+        Log.i(TAG, "input ended, counted " + objectCounter + " objects.");
+
+        input.close();
     }
 
     void stopCameraService(){

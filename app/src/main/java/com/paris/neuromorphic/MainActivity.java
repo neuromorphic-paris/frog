@@ -40,11 +40,12 @@ public class MainActivity extends AppCompatActivity {
     static final String ACTION_USB_PERMISSION = "com.paris.neuromorphic.MainActivity.USB_PERMISSION";
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
+    static final String ACTION_CAMERA_ACTIVATED = "com.paris.neuromorphic.camera.activated";
     final String ASSETS_FILE_BIASES = "standard_new.bias";
     String cameraBiasFilePath, exampleFilePath;
 
     UsbManager usbManager;
-    BroadcastReceiver usbBroadcastReceiver;
+    BroadcastReceiver usbBroadcastReceiver, serviceCallBackReceiver;
     Eventprocessor eventprocessor;
 
     CameraService cameraService;
@@ -104,10 +105,11 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         setUpUSBReceiver();
+        setUpServiceCallBackReceiver();
     }
 
     public void startCameraService() {
-        cameraStatusImage.setImageResource(R.mipmap.camera_ok);
+        cameraStatusImage.setImageResource(R.mipmap.camera_wait);
         Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
         cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
         cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
@@ -198,6 +200,21 @@ public class MainActivity extends AppCompatActivity {
         eventprocessor.deleteBitmap();
     }
 
+    void setUpServiceCallBackReceiver() {
+        serviceCallBackReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (Objects.requireNonNull(intent.getAction())) {
+                    case ACTION_CAMERA_ACTIVATED:
+                        cameraStatusImage.setImageResource(R.mipmap.camera_ok);
+                    default:
+                        Log.w("BroadcastReceiver", "received unknown Intent");
+                }
+            }
+        };
+        registerReceiver(serviceCallBackReceiver, new IntentFilter(ACTION_CAMERA_ACTIVATED));
+    }
+
     void setUpUSBReceiver(){
         //control the CameraService when camera is plugged in/removed
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
@@ -234,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             break;
                         default:
-                            Log.w("BroadcastReceiver", "received unknown Intent");
+                            Log.w(TAG, "received unknown Intent");
                     }
                 }
             }

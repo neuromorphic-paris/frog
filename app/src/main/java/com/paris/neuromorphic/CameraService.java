@@ -94,6 +94,7 @@ public class CameraService extends Service {
             Log.d(TAG, "CameraPollingThread started");
             startConsumer();
             Log.d(TAG, "Consumer started");
+            sendBroadcast(new Intent(MainActivity.ACTION_CAMERA_ACTIVATED));
             return true;
         } else if (flag && isCameraPollingThreadRunning()) {
             Log.d(TAG, "CameraPollingThread already running");
@@ -116,8 +117,10 @@ public class CameraService extends Service {
     }
 
     private void stopCameraThreads() {
-        cameraPollingThread.setCameraAttached(false);
-        cameraPollingThreadLooper.quit();
+        if (isCameraPollingThreadRunning()) {
+            cameraPollingThread.setCameraAttached(false);
+            cameraPollingThreadLooper.quit();
+        }
         processingThread.setCameraAttached(false);
         processingThreadLooper.quit();
     }

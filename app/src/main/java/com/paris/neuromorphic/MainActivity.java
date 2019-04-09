@@ -28,8 +28,10 @@ import com.esotericsoftware.kryo.io.Output;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -191,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         unregisterReceiver(usbBroadcastReceiver);
+        unregisterReceiver(serviceCallBackReceiver);
     }
 
     @Override

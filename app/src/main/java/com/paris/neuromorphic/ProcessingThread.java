@@ -8,6 +8,7 @@ import com.esotericsoftware.kryo.io.Output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -23,12 +24,13 @@ public class ProcessingThread extends HandlerThread{
     private final BlockingQueue buffer;
     private Eventprocessor eventprocessor;
 
-    private long startTimeStamp, currentTimeStamp;
+    private long startTimeStamp, currentTimeStamp, lastTimeStamp;
 
     private Kryo kryo;
     private Output output;
 
     private String filePath = "/data/user/0/com.vision.neuromorphic.frog/files/recording.bin";
+    DecimalFormat df = new DecimalFormat("####.##");
 
 
     ProcessingThread(BlockingQueue blockingQueue) {
@@ -63,8 +65,8 @@ public class ProcessingThread extends HandlerThread{
         }
         while (isCameraAttached) {
             if (!buffer.isEmpty()) {
-                saveBufferElement();
-                //processBufferElement();
+                //saveBufferElement();
+                processBufferElement();
             } else {
                 try {
                     Thread.sleep(10);
@@ -89,7 +91,6 @@ public class ProcessingThread extends HandlerThread{
         }
     }
 
-
     private void processBufferElement() {
         try {
             toExchange = (CameraPollingThread.EventExchange) buffer.take();
@@ -97,8 +98,11 @@ public class ProcessingThread extends HandlerThread{
             eventprocessor.setCameraData(toExchange.data, toExchange.size);
             currentTimeStamp = System.nanoTime();
 
-            Log.d(TAG, "Consumer: Processing Exchange with size " + toExchange.size + " took "
-                    + (currentTimeStamp - startTimeStamp)/100000 + "ms, remaining buffer capacity: " + buffer.remainingCapacity());
+            Log.d(TAG, "Consumer: Processing Exchange with size " + dataPacket.length + " took "
+                    + df.format((currentTimeStamp - startTimeStamp)/1000000f) + "ms, it's been "
+                    + df.format((startTimeStamp - lastTimeStamp)/1000000f) + "ms since last call, remaining buffer capacity: "
+                    + buffer.remainingCapacity());
+            lastTimeStamp = currentTimeStamp;
 
         } catch (InterruptedException e) {
             e.printStackTrace();

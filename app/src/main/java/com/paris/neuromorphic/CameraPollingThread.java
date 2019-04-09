@@ -15,6 +15,8 @@ import com.chronocam.libatis.AtisInstance;
 import com.example.chronocam.atis.IS_Usb;
 import com.example.chronocam.atis.USB_Android;
 
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -43,6 +45,8 @@ public class CameraPollingThread extends HandlerThread {
 
     private static final int PACKET_SIZE = 128 * 1024;
     private static final int TIMEOUT = 100;
+    DecimalFormat df = new DecimalFormat("####.##");
+
 
     static class ToExchange {
         int size = 0;
@@ -137,18 +141,21 @@ public class CameraPollingThread extends HandlerThread {
                         iterationCount++;
                         EventExchange copyExchange = new EventExchange(toExchange);
 
-                        Log.d(TAG, "Producer: Iteration " + iterationCount + " took " + (currentTimeStamp - lastTimeStamp) + "ns, bulkTransfer took " + (currentTimeStamp - startTimeStamp) + "ns, size: " + size);
-                        lastTimeStamp = currentTimeStamp;
+                        Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
+                                + df.format((currentTimeStamp - lastTimeStamp)/1000000f)
+                                + "ms, bulkTransfer of size " + size + " took "
+                                + df.format((currentTimeStamp - startTimeStamp)/1000000f) + "ms");
 
                         //put events into buffer
                         buffer.put(copyExchange);
                         toExchange.size = 0;
+                        lastTimeStamp = currentTimeStamp;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            Log.d(TAG, "ended the loop");
+            Log.d(TAG, "ended cameraIsAttached while loop");
         }
     }
 

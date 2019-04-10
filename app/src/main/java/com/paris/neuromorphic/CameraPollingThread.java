@@ -38,7 +38,7 @@ public class CameraPollingThread extends HandlerThread {
     //Timestamps
     private long startTimeStamp, currentTimeStamp, lastTimeStamp;
 
-    private static final int PACKET_SIZE = 128 * 1024;
+    private static final int PACKET_SIZE = 16 * 1024; //until Android 9, everything gets truncated to 16k
     private static final int TIMEOUT = 100;
     DecimalFormat df = new DecimalFormat("####.##");
 
@@ -125,14 +125,14 @@ public class CameraPollingThread extends HandlerThread {
                 if (buffer.remainingCapacity() != 0) {
                 try {
                     startTimeStamp = System.nanoTime();
-                    toExchange.size = usb_android.bulkTransfer(0x81, toExchange.data, toExchange.data.length, TIMEOUT);
+                    toExchange.size = usb_android.bulkTransfer(0x81, toExchange.data, PACKET_SIZE, TIMEOUT);
                     currentTimeStamp = System.nanoTime();
 
                     int size = toExchange.size;
                     if (size > 0) {
-                        if (size >= 16384) {
+                        if (size >= PACKET_SIZE) {
                             maxCount++;
-                            Log.i(TAG, "hit big (>=16k) package size " + maxCount + " times.");
+                            Log.i(TAG, "hit maximum package size " + maxCount + " times.");
                         }
                         iterationCount++;
                         EventExchange copyExchange = new EventExchange(toExchange);
@@ -147,7 +147,7 @@ public class CameraPollingThread extends HandlerThread {
                         toExchange.size = 0;
                         lastTimeStamp = currentTimeStamp;
                     } else {
-                        Log.d(TAG, "Hit big package size " + maxCount + " times.");
+                        Log.d(TAG, "Hit max package size " + maxCount + " times.");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -13,6 +13,7 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.TokenWatcher;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -125,16 +126,30 @@ public class MainActivity extends AppCompatActivity {
     public void startCameraReplacementFilePolling() throws FileNotFoundException {
         //startCameraService();
         if (cameraService != null) {
-
         } else {
             Log.e(TAG, "will need to use AsyncTask");
         }
-        String filePath = "/data/user/0/com.vision.neuromorphic.frog/files/recording.bin";
+        long startTimestamp = System.nanoTime();
+        String filePath = getApplicationContext().getFilesDir().getPath() + "/recording.bin";
 
-        Input input = new Input(new FileInputStream(filePath));
+        /*
         Kryo kryo = new Kryo();
         kryo.register(CameraPollingThread.EventExchange.class);
         kryo.register(byte[].class);
+        Output output = new Output(new FileOutputStream(filePath));
+
+        CameraPollingThread.ToExchange toExchange = new CameraPollingThread.ToExchange();
+        toExchange.size = 45;
+        kryo.writeObject(output, toExchange);
+        toExchange = null;
+
+        toExchange = new CameraPollingThread.ToExchange();
+        toExchange.size = 32;
+        kryo.writeObject(output, toExchange);
+
+        output.close();
+
+        Input input = new Input(new FileInputStream(filePath));
 
         long objectCounter = 0;
 
@@ -146,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "input ended, counted " + objectCounter + " objects.");
 
         input.close();
+
+        */
     }
 
     void stopCameraService(){

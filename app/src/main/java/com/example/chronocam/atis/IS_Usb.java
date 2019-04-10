@@ -16,7 +16,7 @@ public class IS_Usb {
 
     public final static void callfromc(int jarg1) {
         ncalled_++;
-        teststring_ = new String("i was  called from c " + Integer.toString(ncalled_));
+        teststring_ = new String("I was  called from c " + Integer.toString(ncalled_));
         System.out.println("ICI Java");
     }
 

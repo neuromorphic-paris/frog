@@ -31,17 +31,12 @@ public class CameraPollingThread extends HandlerThread {
     private volatile boolean isCameraAttached = true;
 
     //Counters
-    private long maxCount;
-    private long iterationCount;
-
-    AtisInstance camera;
+    private long maxCount, iterationCount;
 
     private final BlockingQueue buffer;
 
     //Timestamps
-    private long startTimeStamp;
-    private long currentTimeStamp;
-    private long lastTimeStamp;
+    private long startTimeStamp, currentTimeStamp, lastTimeStamp;
 
     private static final int PACKET_SIZE = 128 * 1024;
     private static final int TIMEOUT = 100;
@@ -113,7 +108,7 @@ public class CameraPollingThread extends HandlerThread {
                 Log.d(TAG, "open cam...");
                 Log.d(TAG, IS_Usb.getStringCallback());
 
-                camera = atis.open_atis_auto("", "");
+                AtisInstance camera = atis.open_atis_auto("", "");
 
                 Log.d(TAG, "set biases...");
                 camera.set_biases(biases);
@@ -127,6 +122,7 @@ public class CameraPollingThread extends HandlerThread {
 
             ToExchange toExchange = new ToExchange();
             while (isCameraAttached) {
+                if (buffer.remainingCapacity() != 0) {
                 try {
                     startTimeStamp = System.nanoTime();
                     toExchange.size = usb_android.bulkTransfer(0x81, toExchange.data, toExchange.data.length, TIMEOUT);
@@ -134,9 +130,9 @@ public class CameraPollingThread extends HandlerThread {
 
                     int size = toExchange.size;
                     if (size > 0) {
-                        if (size == 16384) {
+                        if (size >= 16384) {
                             maxCount++;
-                            Log.i(TAG, "hit max package size " + maxCount + " times.");
+                            Log.i(TAG, "hit big (>=16k) package size " + maxCount + " times.");
                         }
                         iterationCount++;
                         EventExchange copyExchange = new EventExchange(toExchange);
@@ -150,9 +146,18 @@ public class CameraPollingThread extends HandlerThread {
                         buffer.put(copyExchange);
                         toExchange.size = 0;
                         lastTimeStamp = currentTimeStamp;
+                    } else {
+                        Log.d(TAG, "Hit big package size " + maxCount + " times.");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+                } else {
+                    try {
+                        Thread.sleep(20);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             Log.d(TAG, "ended cameraIsAttached while loop");

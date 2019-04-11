@@ -10,17 +10,20 @@
 #include <string>
 #include <iostream>
 #include <cstdint>
+#include <chrono>
 #include "sepia/source/sepia.hpp"
 
 class EventProcessor {
 public:
     EventProcessor() = default;
 
-    uint64_t baseTime = 0;
+    uint64_t _baseTime = 0;
 
     static jobject _bitmap;
 
     AndroidBitmapInfo _bitmap_info{0};
+    const int _scaleX = 3; //static_cast<int>(info.width/320);
+    const int _scaleY = 3; //static_cast<int>(info.height/240);
 
     void save_bitmap_info(JNIEnv *env);
 

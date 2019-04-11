@@ -101,7 +101,7 @@ public class ProcessingThread extends HandlerThread{
             currentTimeStamp = System.nanoTime();
 
             iterationCounter++;
-            Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + dataPacket.length + " took "
+            Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
                     + df.format((currentTimeStamp - startTimeStamp)/1000000f) + "ms, it's been "
                     + df.format((startTimeStamp - lastTimeStamp)/1000000f) + "ms since last call, remaining buffer capacity: "
                     + buffer.remainingCapacity());

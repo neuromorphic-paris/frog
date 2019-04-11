@@ -108,33 +108,61 @@ void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
 }
 
 void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size) {
+    std::chrono::system_clock::time_point start_method = std::chrono::system_clock::now();
+
+    std::chrono::system_clock::time_point start_coordinates;
+    std::chrono::system_clock::time_point start_locking;
+    std::chrono::system_clock::time_point start_set_pixel, end_set_pixel;
+    auto time_coordinates = std::chrono::duration<double, std::milli>::zero();
+
+    std::vector<sepia::dvs_event> all_events;
+    all_events.reserve(size);
+
     for (int i = 0; i < size;) {
+        start_coordinates = std::chrono::system_clock::now();
+
         unsigned char a = data[i++];
         unsigned char b = data[i++];
         unsigned char c = data[i++];
         unsigned char d = data[i++];
-        //	event.pol currently contains the type of event
-        auto pol = (uint8_t) ((d & 0xf0) >> 4);
+        auto pol = (unsigned char) ((d & 0xf0u) >> 4u);
         if (pol == 8) {
-            baseTime = (((a & 0xff) | ((b & 0xff) << 8) | ((c & 0xff) << 16) | ((d & 0x0f) << 24))
-                            << 11);
-//        __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor ", "index=%u raw=%02X%02X%02X%02X, ts=%llu", i, a, b, c, d, (unsigned long long int) localBaseTime);
-        } else if (baseTime != 0) {
-            uint16_t y = 239 - (uint16_t) (a & 0xff);
-            uint16_t x = (uint16_t) ((b & 0xff) | ((c & 0x01) << 8));
-            uint64_t ts = baseTime + (((c & 0xff) >> 1) & 0x7f) | ((d & 0x0f) << 7);
-//		__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "index=%u raw=%02X%02X%02X%02X, ts=%llu, pol=%u, x=%03u, y=%03u", i, a, b, c, d, (unsigned long long int) ts, pol, x, y);
-
-            auto event = sepia::dvs_event{ts, x, y, static_cast<bool>(pol)};
-            void *pixels;
-            int ret;
-            if ((ret = AndroidBitmap_lockPixels(env, EventProcessor::_bitmap, &pixels)) < 0) {
-                LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+            this->_baseTime = (((a & 0xffu) | ((b & 0xffu) << 8u) | ((c & 0xffu) << 16u)
+                    | ((d & 0x0fu) << 24u)) << 11u);
+            //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor ", "index=%u raw=%02X%02X%02X%02X, ts=%llu", i, a, b, c, d, (unsigned long long int) localBaseTime);
+        } else if (this->_baseTime != 0) {
+            auto y = (unsigned short) (a & 0xffu);
+            if (y <= 239) {
+                y = static_cast<uint16_t>(239u - y);
+            } else {
+                __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "Mirroring for y-axis does not work for y=%d", y);
             }
+            auto x = (unsigned short) ((b & 0xffu) | ((c & 0x01u) << 8u));
+            uint64_t ts = this->_baseTime + (((c & 0xffu) >> 1u) & 0x7fu) | ((d & 0x0fu) << 7u);
+            //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "index=%u raw=%02X%02X%02X%02X, ts=%llu, pol=%u, x=%03u, y=%03u", i, a, b, c, d, (unsigned long long int) ts, pol, x, y);
+            auto event = sepia::dvs_event{ts, x, y, static_cast<bool>(pol)};
+            all_events.push_back(event);
 
-            set_pixel(event, pixels);
-
-            AndroidBitmap_unlockPixels(env, EventProcessor::_bitmap);
         }
+        time_coordinates = (time_coordinates + (std::chrono::system_clock::now() - start_coordinates));
     }
+    void *pixels;
+    int ret;
+
+    start_locking = std::chrono::system_clock::now();
+    if ((ret = AndroidBitmap_lockPixels(env, EventProcessor::_bitmap, &pixels)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+    }
+    start_set_pixel = std::chrono::system_clock::now();
+    for(auto event : all_events){
+        set_pixel(event, pixels);
+    }
+    end_set_pixel = std::chrono::system_clock::now();
+
+    AndroidBitmap_unlockPixels(env, EventProcessor::_bitmap);
+
+    std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() - start_locking);
+    std::chrono::duration<double, std::milli> time_set_pixel = (end_set_pixel - start_set_pixel);
+    std::chrono::duration<double, std::milli> end = std::chrono::system_clock::now() - start_method;
+    LOGD("Total parsing time for %lu events %fms, setting the pixel %fms and locking overall %fms. Method execution time %fms", size, time_coordinates.count(), time_set_pixel.count(), time_locking.count(), end.count());
 }

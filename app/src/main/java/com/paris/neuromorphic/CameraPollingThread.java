@@ -16,8 +16,7 @@ import com.example.chronocam.atis.IS_Usb;
 import com.example.chronocam.atis.USB_Android;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by gregorlenz on 26/12/17.
@@ -33,10 +32,10 @@ public class CameraPollingThread extends HandlerThread {
     //Counters
     private long maxCount, iterationCount;
 
-    private final BlockingQueue buffer;
+    private final ArrayBlockingQueue buffer;
 
     //Timestamps
-    private long startTimeStamp, currentTimeStamp, lastTimeStamp;
+    private long startTimeStamp, endTimestamp, endTransferTimestamp, lastTimeStamp;
 
     private static final int PACKET_SIZE = 16 * 1024; //until Android 9, everything gets truncated to 16k
     private static final int TIMEOUT = 100;
@@ -58,7 +57,7 @@ public class CameraPollingThread extends HandlerThread {
         }
     }
 
-    CameraPollingThread(Intent intent, UsbManager usbManager, BlockingQueue blockingQueue) {
+    CameraPollingThread(Intent intent, UsbManager usbManager, ArrayBlockingQueue blockingQueue) {
         super(CameraPollingThread.class.getName());
         this.intent = intent;
         this.usbManager = usbManager;
@@ -126,7 +125,7 @@ public class CameraPollingThread extends HandlerThread {
                 try {
                     startTimeStamp = System.nanoTime();
                     toExchange.size = usb_android.bulkTransfer(0x81, toExchange.data, PACKET_SIZE, TIMEOUT);
-                    currentTimeStamp = System.nanoTime();
+                    endTransferTimestamp = System.nanoTime();
 
                     int size = toExchange.size;
                     if (size > 0) {
@@ -136,16 +135,21 @@ public class CameraPollingThread extends HandlerThread {
                         }
                         iterationCount++;
                         EventExchange copyExchange = new EventExchange(toExchange);
-
-                        Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
-                                + df.format((currentTimeStamp - lastTimeStamp)/1000000f)
-                                + "ms, bulkTransfer of size " + size + " took "
-                                + df.format((currentTimeStamp - startTimeStamp)/1000000f) + "ms");
-
-                        //put events into buffer
                         buffer.put(copyExchange);
+
+                        endTimestamp = System.nanoTime();
+                        Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
+                                + df.format((endTimestamp - startTimeStamp)/1000000f)
+                                + "ms, bulkTransfer of size " + size + " took "
+                                + df.format((endTransferTimestamp - startTimeStamp)/1000000f)
+                                + "ms, it's been "
+                                + df.format((startTimeStamp - lastTimeStamp)/1000000f)
+                                + "ms since last call.");
+
+                        lastTimeStamp = endTimestamp;
+
                         toExchange.size = 0;
-                        lastTimeStamp = currentTimeStamp;
+
                     } else {
                         Log.d(TAG, "Hit max package size " + maxCount + " times.");
                     }

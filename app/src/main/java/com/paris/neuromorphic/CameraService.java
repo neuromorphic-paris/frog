@@ -14,7 +14,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by gregorlenz on 31/10/18.
@@ -31,7 +30,7 @@ public class CameraService extends Service {
 
     private Intent intent;
 
-    BlockingQueue<CameraPollingThread.EventExchange> buffer;
+    ArrayBlockingQueue<CameraPollingThread.EventExchange> buffer;
 
     @Override
     public void onCreate() {

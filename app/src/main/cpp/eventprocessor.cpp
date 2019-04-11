@@ -164,5 +164,5 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
     std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() - start_locking);
     std::chrono::duration<double, std::milli> time_set_pixel = (end_set_pixel - start_set_pixel);
     std::chrono::duration<double, std::milli> end = std::chrono::system_clock::now() - start_method;
-    LOGD("Total parsing time for %lu events %fms, setting the pixel %fms and locking overall %fms. Method execution time %fms", size, time_coordinates.count(), time_set_pixel.count(), time_locking.count(), end.count());
+    //LOGD("Total parsing time for %lu events %fms, setting the pixel %fms and locking overall %fms. Method execution time %fms", size, time_coordinates.count(), time_set_pixel.count(), time_locking.count(), end.count());
 }

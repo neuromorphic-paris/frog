@@ -75,7 +75,7 @@ Java_com_paris_neuromorphic_Eventprocessor_set_1camera_1data(JNIEnv *env, jobjec
     end_copying = std::chrono::system_clock::now();
 
     std::chrono::duration<double, std::milli> time_copying = end_copying - start_copying;
-    LOGD("within wrap .cpp, locking and parsing takes %fms", time_copying.count());
+    //LOGD("within wrap .cpp, locking and parsing takes %fms", time_copying.count());
 }
 
 JNIEXPORT jint JNICALL

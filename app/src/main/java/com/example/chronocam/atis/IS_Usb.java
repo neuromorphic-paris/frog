@@ -2,8 +2,13 @@ package com.example.chronocam.atis;
 
 public class IS_Usb {
     static {
-        System.loadLibrary("atis_java"); // load libatis_java.so
+        try {
+            System.loadLibrary("atis_java"); // load libatis_java.so
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
     private static IV_USB iv_usb_;
 
     public static void set_usb(IV_USB iv_usb) {
@@ -51,5 +56,3 @@ public class IS_Usb {
         iv_usb_.control_transfer_write_data(command, address, index, val);
     }
 }
-
-

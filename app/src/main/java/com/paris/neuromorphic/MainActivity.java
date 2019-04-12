@@ -13,7 +13,6 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.TokenWatcher;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,14 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
@@ -55,10 +47,14 @@ public class MainActivity extends AppCompatActivity {
     Intent cameraServiceIntent;
     boolean isServiceBound = false;
 
-    @BindView(R.id.text_info) TextView infoText;
-    @BindView(R.id.image_status) ImageView cameraStatusImage;
-    @BindView(R.id.camera_preview) CameraView cameraPreview;
-    @BindView(R.id.start_recording_button) Button startButton;
+    @BindView(R.id.text_info)
+    TextView infoText;
+    @BindView(R.id.image_status)
+    ImageView cameraStatusImage;
+    @BindView(R.id.camera_preview)
+    CameraView cameraPreview;
+    @BindView(R.id.start_recording_button)
+    Button startButton;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -67,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Bound CameraService.");
             isServiceBound = true;
         }
+
         @Override
         public void onServiceDisconnected(ComponentName name) {
             isServiceBound = false;
@@ -165,12 +162,12 @@ public class MainActivity extends AppCompatActivity {
         */
     }
 
-    void stopCameraService(){
+    void stopCameraService() {
         if (isServiceBound) {
             unbindService(serviceConnection);
             isServiceBound = false;
         }
-        if (cameraServiceIntent != null){
+        if (cameraServiceIntent != null) {
             cameraService.setCameraPolling(false);
             stopService(cameraServiceIntent);
         }
@@ -235,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(serviceCallBackReceiver, new IntentFilter(ACTION_CAMERA_ACTIVATED));
     }
 
-    void setUpUSBReceiver(){
+    void setUpUSBReceiver() {
         //control the CameraService when camera is plugged in/removed
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbBroadcastReceiver = new BroadcastReceiver() {
@@ -267,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
                                     new AsyncCameraStart().execute();
                                 } else {
                                     Log.d(TAG, "Permissions denied by user");
+                                    Toast.makeText(getApplicationContext(), R.string.request_grant_camera_permission, Toast.LENGTH_SHORT).show();
                                 }
                             }
                             break;
@@ -287,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         if (usbDevice != null && checkPermissions(usbDevice)) {
             startCameraService();
             new AsyncCameraStart().execute();
-        }else{
+        } else {
             Log.v(TAG, "no USB device found.");
         }
     }

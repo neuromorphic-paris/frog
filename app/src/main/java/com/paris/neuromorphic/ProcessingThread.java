@@ -15,7 +15,7 @@ import java.util.concurrent.BlockingQueue;
  * Created by Gregor on 12/12/2018.
  */
 
-public class ProcessingThread extends HandlerThread{
+public class ProcessingThread extends HandlerThread {
     private String TAG = getClass().getSimpleName();
 
     private volatile boolean isCameraAttached = true;
@@ -72,12 +72,12 @@ public class ProcessingThread extends HandlerThread{
         output.close();
     }
 
-    private void saveBufferElement(){
+    private void saveBufferElement() {
         try {
             toExchange = (CameraPollingThread.ToExchange) buffer.take();
             kryo.writeObject(output, toExchange);
             Log.i(TAG, "Consumer: Saved Exchange to file with size " + toExchange.size
-                     + ", remaining buffer capacity: " + buffer.remainingCapacity());
+                    + ", remaining buffer capacity: " + buffer.remainingCapacity());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,8 +93,8 @@ public class ProcessingThread extends HandlerThread{
 
             iterationCounter++;
             Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
-                    + df.format((currentTimeStamp - startTimeStamp)/1000000f) + "ms, it's been "
-                    + df.format((startTimeStamp - lastTimeStamp)/1000000f) + "ms since last call, remaining buffer capacity: "
+                    + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
+                    + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
                     + buffer.remainingCapacity());
             lastTimeStamp = currentTimeStamp;
 

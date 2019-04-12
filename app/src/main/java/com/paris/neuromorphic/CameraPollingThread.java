@@ -110,37 +110,36 @@ public class CameraPollingThread extends HandlerThread {
 
             while (isCameraAttached) {
                 if (buffer.remainingCapacity() != 0) {
-                try {
-                    ToExchange toExchange = new ToExchange();
-                    startTimeStamp = System.nanoTime();
-                    toExchange.size = usb_android.bulkTransfer(0x81, toExchange.data, PACKET_SIZE, TIMEOUT);
-                    endTransferTimestamp = System.nanoTime();
+                    try {
+                        ToExchange toExchange = new ToExchange();
+                        startTimeStamp = System.nanoTime();
+                        toExchange.size = usb_android.bulkTransfer(0x81, toExchange.data, PACKET_SIZE, TIMEOUT);
+                        endTransferTimestamp = System.nanoTime();
 
-                    if (toExchange.size > 0) {
-                        if (toExchange.size >= PACKET_SIZE) {
-                            maxCount++;
-                            Log.i(TAG, "hit maximum package size " + maxCount + " times.");
+                        if (toExchange.size > 0) {
+                            if (toExchange.size >= PACKET_SIZE) {
+                                maxCount++;
+                                Log.i(TAG, "hit maximum package size " + maxCount + " times.");
+                            }
+                            iterationCount++;
+                            buffer.put(toExchange);
+
+                            endTimestamp = System.nanoTime();
+                            Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
+                                    + df.format((endTimestamp - startTimeStamp) / 1000000f)
+                                    + "ms, bulkTransfer of size " + toExchange.size + " took "
+                                    + df.format((endTransferTimestamp - startTimeStamp) / 1000000f)
+                                    + "ms, it's been "
+                                    + df.format((startTimeStamp - lastTimeStamp) / 1000000f)
+                                    + "ms since last call.");
+
+                            lastTimeStamp = endTimestamp;
+                        } else {
+                            Log.d(TAG, "Hit max package size " + maxCount + " times.");
                         }
-                        iterationCount++;
-                        buffer.put(toExchange);
-
-                        endTimestamp = System.nanoTime();
-                        Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
-                                + df.format((endTimestamp - startTimeStamp)/1000000f)
-                                + "ms, bulkTransfer of size " + toExchange.size + " took "
-                                + df.format((endTransferTimestamp - startTimeStamp)/1000000f)
-                                + "ms, it's been "
-                                + df.format((startTimeStamp - lastTimeStamp)/1000000f)
-                                + "ms since last call.");
-
-                        lastTimeStamp = endTimestamp;
-
-                    } else {
-                        Log.d(TAG, "Hit max package size " + maxCount + " times.");
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 } else {
                     try {
                         Thread.sleep(20);

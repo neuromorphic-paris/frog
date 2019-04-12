@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
-import com.paris.neuromorphic.CameraService;
-import com.paris.neuromorphic.MainActivity;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -128,7 +125,7 @@ public class ActivityTest {
 
     @Test
     public void startCameraService_shouldStartCorrectServiceClass() {
-        mainActivity.startCameraService(false);
+        mainActivity.startCameraService();
         assertEquals(context.getString(R.string.prepare_camera), ShadowToast.getTextOfLatestToast());
         assertEquals(CameraService.class.getName(), shadowOf(mainActivity).getNextStartedService().getComponent().getClassName());
     }

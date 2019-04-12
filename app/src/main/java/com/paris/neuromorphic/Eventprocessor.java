@@ -3,6 +3,13 @@ package com.paris.neuromorphic;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Eventprocessor {
     private static final String TAG = Eventprocessor.class.getName();
 
@@ -36,11 +43,19 @@ public class Eventprocessor {
     }
 
     void setBitmap(Bitmap bitmap) {
-        set_bitmap(objPtr, bitmap);
+        if (isEventProcessorLibraryLoaded()) {
+            set_bitmap(objPtr, bitmap);
+        } else {
+            Log.e(TAG, "libeventprocessor is not loaded");
+        }
     }
 
     void resetBitmap() {
-        reset_bitmap(objPtr);
+        if (isEventProcessorLibraryLoaded()) {
+            reset_bitmap(objPtr);
+        } else {
+            Log.e(TAG, "libeventprocessor is not loaded");
+        }
     }
 
     void deleteBitmap() {
@@ -51,7 +66,7 @@ public class Eventprocessor {
         trigger_sepia(objPtr, filepath);
     }
 
-    void setCameraData(byte[] data, long length){
+    void setCameraData(byte[] data, long length) {
         set_camera_data(objPtr, data, length);
     }
 
@@ -74,4 +89,28 @@ public class Eventprocessor {
     private native void set_camera_data(long objPtr, byte[] data, long length);
 
     native int get_JVM_version();
+
+    // Robolectric cannot load shared libraries
+    boolean isEventProcessorLibraryLoaded() {
+        try {
+            Set<String> libs = new HashSet<String>();
+            String mapsFile = "/proc/" + android.os.Process.myPid() + "/maps";
+            BufferedReader reader = new BufferedReader(new FileReader(mapsFile));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.endsWith(".so")) {
+                    int n = line.lastIndexOf(" ");
+                    libs.add(line.substring(n + 1));
+                }
+            }
+            return libs.contains("/data/app/com.vision.neuromorphic.frog-2/lib/arm64/libeventprocessor.so")
+                    || libs.contains("set/data/app/com.vision.neuromorphic.frog/lib/arm64/libeventprocessor.so;");
+        } catch (FileNotFoundException e) {
+            // Do some error handling...
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

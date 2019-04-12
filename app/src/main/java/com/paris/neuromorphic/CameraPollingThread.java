@@ -32,7 +32,7 @@ public class CameraPollingThread extends HandlerThread {
     //Counters
     private long maxCount, iterationCount;
 
-    private final ArrayBlockingQueue buffer;
+    private final ArrayBlockingQueue<ToExchange> buffer;
 
     //Timestamps
     private long startTimeStamp, endTimestamp, endTransferTimestamp, lastTimeStamp;
@@ -41,23 +41,12 @@ public class CameraPollingThread extends HandlerThread {
     private static final int TIMEOUT = 100;
     DecimalFormat df = new DecimalFormat("####.##");
 
-
-    static class ToExchange {
+    class ToExchange {
         int size = 0;
         byte data[] = new byte[PACKET_SIZE];
     }
 
-    class EventExchange {
-        int size;
-        byte data[];
-
-        EventExchange(ToExchange toExchange) {
-            this.size = toExchange.size;
-            this.data = toExchange.data;
-        }
-    }
-
-    CameraPollingThread(Intent intent, UsbManager usbManager, ArrayBlockingQueue blockingQueue) {
+    CameraPollingThread(Intent intent, UsbManager usbManager, ArrayBlockingQueue<ToExchange> blockingQueue) {
         super(CameraPollingThread.class.getName());
         this.intent = intent;
         this.usbManager = usbManager;
@@ -119,36 +108,32 @@ public class CameraPollingThread extends HandlerThread {
                 camera.start();
             }
 
-            ToExchange toExchange = new ToExchange();
             while (isCameraAttached) {
                 if (buffer.remainingCapacity() != 0) {
                 try {
+                    ToExchange toExchange = new ToExchange();
                     startTimeStamp = System.nanoTime();
                     toExchange.size = usb_android.bulkTransfer(0x81, toExchange.data, PACKET_SIZE, TIMEOUT);
                     endTransferTimestamp = System.nanoTime();
 
-                    int size = toExchange.size;
-                    if (size > 0) {
-                        if (size >= PACKET_SIZE) {
+                    if (toExchange.size > 0) {
+                        if (toExchange.size >= PACKET_SIZE) {
                             maxCount++;
                             Log.i(TAG, "hit maximum package size " + maxCount + " times.");
                         }
                         iterationCount++;
-                        EventExchange copyExchange = new EventExchange(toExchange);
-                        buffer.put(copyExchange);
+                        buffer.put(toExchange);
 
                         endTimestamp = System.nanoTime();
                         Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
                                 + df.format((endTimestamp - startTimeStamp)/1000000f)
-                                + "ms, bulkTransfer of size " + size + " took "
+                                + "ms, bulkTransfer of size " + toExchange.size + " took "
                                 + df.format((endTransferTimestamp - startTimeStamp)/1000000f)
                                 + "ms, it's been "
                                 + df.format((startTimeStamp - lastTimeStamp)/1000000f)
                                 + "ms since last call.");
 
                         lastTimeStamp = endTimestamp;
-
-                        toExchange.size = 0;
 
                     } else {
                         Log.d(TAG, "Hit max package size " + maxCount + " times.");

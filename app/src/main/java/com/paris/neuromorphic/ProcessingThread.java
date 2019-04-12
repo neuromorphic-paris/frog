@@ -20,7 +20,7 @@ public class ProcessingThread extends HandlerThread{
 
     private volatile boolean isCameraAttached = true;
 
-    private CameraPollingThread.EventExchange toExchange;
+    private CameraPollingThread.ToExchange toExchange;
     private final BlockingQueue buffer;
     private Eventprocessor eventprocessor;
 
@@ -41,7 +41,7 @@ public class ProcessingThread extends HandlerThread{
         eventprocessor = new Eventprocessor();
         kryo = new Kryo();
         //kryo.setRegistrationRequired(false);
-        kryo.register(CameraPollingThread.EventExchange.class);
+        kryo.register(CameraPollingThread.ToExchange.class);
         kryo.register(byte[].class);
     }
 
@@ -66,24 +66,15 @@ public class ProcessingThread extends HandlerThread{
             e.printStackTrace();
         }
         while (isCameraAttached) {
-            if (!buffer.isEmpty()) {
-                //saveBufferElement();
-                processBufferElement();
-            } else {
-                try {
-                    Thread.sleep(10);
-                    //Log.d(TAG, "Just resting my eyes...");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            //saveBufferElement();
+            processBufferElement();
         }
         output.close();
     }
 
     private void saveBufferElement(){
         try {
-            toExchange = (CameraPollingThread.EventExchange) buffer.take();
+            toExchange = (CameraPollingThread.ToExchange) buffer.take();
             kryo.writeObject(output, toExchange);
             Log.i(TAG, "Consumer: Saved Exchange to file with size " + toExchange.size
                      + ", remaining buffer capacity: " + buffer.remainingCapacity());
@@ -95,7 +86,7 @@ public class ProcessingThread extends HandlerThread{
 
     private void processBufferElement() {
         try {
-            toExchange = (CameraPollingThread.EventExchange) buffer.take();
+            toExchange = (CameraPollingThread.ToExchange) buffer.take();
             startTimeStamp = System.nanoTime();
             eventprocessor.setCameraData(toExchange.data, toExchange.size);
             currentTimeStamp = System.nanoTime();

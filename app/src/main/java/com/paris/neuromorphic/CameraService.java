@@ -30,7 +30,7 @@ public class CameraService extends Service {
 
     private Intent intent;
 
-    ArrayBlockingQueue<CameraPollingThread.EventExchange> buffer;
+    ArrayBlockingQueue<CameraPollingThread.ToExchange> buffer;
 
     @Override
     public void onCreate() {
@@ -39,7 +39,6 @@ public class CameraService extends Service {
     //using a service to make ATIS polling activity-independent
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "Camera is starting...", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Camera service starting...");
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -59,7 +58,7 @@ public class CameraService extends Service {
         startForeground(182903, notification);
 
         this.intent = intent;
-        buffer = new ArrayBlockingQueue<>(2000);
+        buffer = new ArrayBlockingQueue<>(2000, true);
 
         return START_STICKY;
     }

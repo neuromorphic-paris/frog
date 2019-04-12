@@ -91,9 +91,9 @@ public class Eventprocessor {
     native int get_JVM_version();
 
     // Robolectric cannot load shared libraries
-    boolean isEventProcessorLibraryLoaded() {
+    private boolean isEventProcessorLibraryLoaded() {
         try {
-            Set<String> libs = new HashSet<String>();
+            Set<String> libs = new HashSet<>();
             String mapsFile = "/proc/" + android.os.Process.myPid() + "/maps";
             BufferedReader reader = new BufferedReader(new FileReader(mapsFile));
             String line;
@@ -106,7 +106,7 @@ public class Eventprocessor {
             return libs.contains("/data/app/com.vision.neuromorphic.frog-2/lib/arm64/libeventprocessor.so")
                     || libs.contains("set/data/app/com.vision.neuromorphic.frog/lib/arm64/libeventprocessor.so;");
         } catch (FileNotFoundException e) {
-            // Do some error handling...
+            Log.e(TAG, "cannot check libraries, are you running unit tests?");
         } catch (IOException e) {
             e.printStackTrace();
         }

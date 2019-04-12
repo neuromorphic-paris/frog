@@ -13,7 +13,6 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,8 +25,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 
+import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = getClass().getName();
@@ -89,14 +90,11 @@ public class MainActivity extends AppCompatActivity {
         cameraPreview.setBackgroundColor(Color.GRAY);
 
         startButton.setEnabled(true);
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    startCameraReplacementFilePolling();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+        startButton.setOnClickListener(view -> {
+            try {
+                startCameraReplacementFilePolling();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
         });
     }
@@ -118,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
         startService(cameraServiceIntent);
         bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
-
 
     public void startCameraReplacementFilePolling() throws FileNotFoundException {
         //startCameraService();

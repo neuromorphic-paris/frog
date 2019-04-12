@@ -9,11 +9,12 @@ import android.hardware.usb.UsbManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.concurrent.ArrayBlockingQueue;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by gregorlenz on 31/10/18.

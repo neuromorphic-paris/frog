@@ -20,7 +20,7 @@ public class ProcessingThread extends HandlerThread {
 
     private volatile boolean isCameraAttached = true;
 
-    private CameraPollingThread.ToExchange toExchange;
+    private ToExchange toExchange;
     private final BlockingQueue buffer;
     private Eventprocessor eventprocessor;
 
@@ -41,8 +41,9 @@ public class ProcessingThread extends HandlerThread {
         eventprocessor = new Eventprocessor();
         kryo = new Kryo();
         //kryo.setRegistrationRequired(false);
-        kryo.register(CameraPollingThread.ToExchange.class);
+        kryo.register(ToExchange.class);
         kryo.register(byte[].class);
+        Log.d(TAG, filePath);
     }
 
     @Override
@@ -70,15 +71,15 @@ public class ProcessingThread extends HandlerThread {
             processBufferElement();
         }
         output.close();
+        super.quit();
     }
 
     private void saveBufferElement() {
         try {
-            toExchange = (CameraPollingThread.ToExchange) buffer.take();
+            toExchange = (ToExchange) buffer.take();
             kryo.writeObject(output, toExchange);
             Log.i(TAG, "Consumer: Saved Exchange to file with size " + toExchange.size
                     + ", remaining buffer capacity: " + buffer.remainingCapacity());
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,7 +87,7 @@ public class ProcessingThread extends HandlerThread {
 
     private void processBufferElement() {
         try {
-            toExchange = (CameraPollingThread.ToExchange) buffer.take();
+            toExchange = (ToExchange) buffer.take();
             startTimeStamp = System.nanoTime();
             eventprocessor.setCameraData(toExchange.data, toExchange.size);
             currentTimeStamp = System.nanoTime();
@@ -97,7 +98,6 @@ public class ProcessingThread extends HandlerThread {
                     + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
                     + buffer.remainingCapacity());
             lastTimeStamp = currentTimeStamp;
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -105,6 +105,7 @@ public class ProcessingThread extends HandlerThread {
 
     void setCameraAttached(boolean flag) {
         isCameraAttached = flag;
+        output.close();
     }
 
     @Override

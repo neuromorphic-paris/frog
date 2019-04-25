@@ -37,14 +37,9 @@ public class CameraPollingThread extends HandlerThread {
     //Timestamps
     private long startTimeStamp, endTimestamp, endTransferTimestamp, lastTimeStamp;
 
-    private static final int PACKET_SIZE = 16 * 1024; //until Android 9, everything gets truncated to 16k
+    static final int PACKET_SIZE = 16 * 1024; //until Android 9, everything gets truncated to 16k
     private static final int TIMEOUT = 100;
     DecimalFormat df = new DecimalFormat("####.##");
-
-    class ToExchange {
-        int size = 0;
-        byte data[] = new byte[PACKET_SIZE];
-    }
 
     CameraPollingThread(Intent intent, UsbManager usbManager, ArrayBlockingQueue<ToExchange> blockingQueue) {
         super(CameraPollingThread.class.getName());

@@ -31,7 +31,7 @@ public class CameraService extends Service {
 
     private Intent intent;
 
-    ArrayBlockingQueue<CameraPollingThread.ToExchange> buffer;
+    ArrayBlockingQueue<ToExchange> buffer;
 
     @Override
     public void onCreate() {
@@ -121,7 +121,7 @@ public class CameraService extends Service {
             cameraPollingThreadLooper.quit();
         }
         processingThread.setCameraAttached(false);
-        processingThreadLooper.quit();
+        //processingThreadLooper.quitSafely();
     }
 
     class LocalBinder extends Binder {

@@ -20,7 +20,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
@@ -123,40 +129,21 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "will need to use AsyncTask");
         }
-        long startTimestamp = System.nanoTime();
         String filePath = getApplicationContext().getFilesDir().getPath() + "/recording.bin";
+        Log.d(TAG, filePath);
 
-        /*
         Kryo kryo = new Kryo();
-        kryo.register(CameraPollingThread.EventExchange.class);
+        kryo.register(ToExchange.class);
         kryo.register(byte[].class);
-        Output output = new Output(new FileOutputStream(filePath));
-
-        CameraPollingThread.ToExchange toExchange = new CameraPollingThread.ToExchange();
-        toExchange.size = 45;
-        kryo.writeObject(output, toExchange);
-        toExchange = null;
-
-        toExchange = new CameraPollingThread.ToExchange();
-        toExchange.size = 32;
-        kryo.writeObject(output, toExchange);
-
-        output.close();
 
         Input input = new Input(new FileInputStream(filePath));
-
         long objectCounter = 0;
-
         while (!input.end()){
-            CameraPollingThread.EventExchange object1 = kryo.readObject(input, CameraPollingThread.EventExchange.class);
+            ToExchange object1 = kryo.readObject(input, ToExchange.class);
             objectCounter++;
         }
-
         Log.i(TAG, "input ended, counted " + objectCounter + " objects.");
-
         input.close();
-
-        */
     }
 
     void stopCameraService() {

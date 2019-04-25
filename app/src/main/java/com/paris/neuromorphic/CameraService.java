@@ -12,6 +12,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import androidx.annotation.Nullable;
@@ -106,6 +111,27 @@ public class CameraService extends Service {
             Log.d(TAG, "CameraPollingThread cannot be stopped because it is not running");
             return false;
         } else return false;
+    }
+
+    public void startPlaybackThread() {
+        startConsumer();
+
+        Kryo kryo = new Kryo();
+        kryo.register(ToExchange.class);
+        kryo.register(byte[].class);
+
+        try {
+            Input input = new Input(new FileInputStream(ProcessingThread.filePath));
+            long objectCounter = 0;
+            while (!input.end()){
+                ToExchange object1 = kryo.readObject(input, ToExchange.class);
+                objectCounter++;
+            }
+            Log.i(TAG, "input ended, counted " + objectCounter + " objects.");
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isCameraPollingThreadRunning() {

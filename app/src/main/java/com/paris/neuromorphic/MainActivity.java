@@ -14,19 +14,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
@@ -124,26 +117,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startCameraReplacementFilePolling() throws FileNotFoundException {
-        //startCameraService();
-        if (cameraService != null) {
-        } else {
-            Log.e(TAG, "will need to use AsyncTask");
-        }
-        String filePath = getApplicationContext().getFilesDir().getPath() + "/recording.bin";
-        Log.d(TAG, filePath);
-
-        Kryo kryo = new Kryo();
-        kryo.register(ToExchange.class);
-        kryo.register(byte[].class);
-
-        Input input = new Input(new FileInputStream(filePath));
-        long objectCounter = 0;
-        while (!input.end()){
-            ToExchange object1 = kryo.readObject(input, ToExchange.class);
-            objectCounter++;
-        }
-        Log.i(TAG, "input ended, counted " + objectCounter + " objects.");
-        input.close();
+        startCameraService();
+        new AsyncPlaybackStart().execute();
     }
 
     void stopCameraService() {
@@ -157,6 +132,19 @@ public class MainActivity extends AppCompatActivity {
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
         eventprocessor.resetBitmap();
+    }
+
+    public class AsyncPlaybackStart extends AsyncTask<Boolean, Integer, Void> {
+        @Override
+        protected Void doInBackground(Boolean... params) {
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            cameraService.startPlaybackThread();
+            return null;
+        }
     }
 
     public class AsyncCameraStart extends AsyncTask<Boolean, Integer, Void> {

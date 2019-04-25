@@ -31,7 +31,7 @@ public class ProcessingThread extends HandlerThread {
     private Kryo kryo;
     private Output output;
 
-    private String filePath = "/data/user/0/com.vision.neuromorphic.frog/files/recording.bin";
+    static final String filePath = "/data/user/0/com.vision.neuromorphic.frog/files/recording.bin";
     DecimalFormat df = new DecimalFormat("####.##");
 
 
@@ -40,7 +40,6 @@ public class ProcessingThread extends HandlerThread {
         buffer = blockingQueue;
         eventprocessor = new Eventprocessor();
         kryo = new Kryo();
-        //kryo.setRegistrationRequired(false);
         kryo.register(ToExchange.class);
         kryo.register(byte[].class);
         Log.d(TAG, filePath);

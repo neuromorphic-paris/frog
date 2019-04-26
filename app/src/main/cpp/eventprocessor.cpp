@@ -146,6 +146,9 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
 
     AndroidBitmap_unlockPixels(env, this->_bitmap);
 
+    for(auto event : all_events){
+        processEvent(event.t, event.x, event.y);
+    }
     std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() - start_locking);
     std::chrono::duration<double, std::milli> time_set_pixel = (end_set_pixel - start_set_pixel);
     std::chrono::duration<double, std::milli> end = std::chrono::system_clock::now() - start_method;

@@ -10,9 +10,8 @@ void EventProcessor::gesture_init(std::string l1ProtoPath, std::string gestureSi
     // loads prototypes for both layer 1 from the corresponding text file
     // loads known class signature from the signature text file.
 
-//  __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor init L1 ", "%s", l1ProtoPath.c_str());
-//  __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor init L2 ", "%s", l2ProtoPath.c_str());
-//  __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor init SIG ", "%s", gestureSigPath.c_str());
+  __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "init L1 path: %s", l1ProtoPath.c_str());
+  __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "init SIG path: %s", gestureSigPath.c_str());
 
     // gesture mode (simple or full ?)
     this->gesture_mode = gest_mode;

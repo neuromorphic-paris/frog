@@ -125,10 +125,12 @@ public class CameraService extends Service {
             long objectCounter = 0;
             while (!input.end()){
                 ToExchange object1 = kryo.readObject(input, ToExchange.class);
-                try {
-                    buffer.put(object1);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (objectCounter > 400) {
+                    try {
+                        buffer.put(object1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 objectCounter++;
             }

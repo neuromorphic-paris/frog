@@ -80,23 +80,10 @@ public:
 
     // Predict the current gesture class
     void predict(char *cpredict);
-    std::vector<float> predict(); // for OFFLINE C++ main.cpp
 
     // Flush the input and output memories of the EventProcessor.
     // Must be called after each gesture sample
     void flush();
-
-    uint64_t getPastDenoiseFilter();
-    uint64_t getPastBackgroundRemover();
-    uint64_t getPastRefrac();
-
-    void setDoDenoise(bool b);
-
-    void setDoBackgroundRemoval(bool b);
-
-    void setDoRefractoryPeriod(bool b);
-
-    std::vector<float> getSaved_signature();
 
     std::vector<float> getKnnProbaVector();
 
@@ -111,7 +98,7 @@ private:
     std::vector<float> backgroundMemory;
     std::vector<float> backgroundLUT;
     std::vector<uint64_t> backgroundLastUpdate;
-    int decay_out = (int) 3 * GRID_TAU - 1;
+    int decay_out = static_cast<int>(3 * GRID_TAU - 1);
     bool doRemoveBackground{};
     // refractory period
     std::vector<uint64_t> refractoryMemory;

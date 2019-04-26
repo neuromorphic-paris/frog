@@ -79,6 +79,25 @@ Java_com_paris_neuromorphic_Eventprocessor_set_1camera_1data(JNIEnv *env, jclass
     //LOGD("within wrap .cpp, locking and parsing takes %fms", time_copying.count());
 }
 
+JNIEXPORT void JNICALL
+Java_com_paris_neuromorphic_Eventprocessor_gestures_1init(JNIEnv *env, jclass type, jlong objPtr,
+                                                          jstring arg0_, jstring arg1_,
+                                                          jobject denoise, jobject bgDenoise,
+                                                          jobject refrac, jint gest_mode) {
+    EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
+    const char *l1ProtoPath = env->GetStringUTFChars(arg0_, 0);
+    const char *gestureSigPath = env->GetStringUTFChars(arg1_, 0);
+
+    std::string stdL1ProtoPath(l1ProtoPath, 100);
+    stdL1ProtoPath.erase(std::find(stdL1ProtoPath.begin(), stdL1ProtoPath.end(), '\0'), stdL1ProtoPath.end());
+    std::string stdGestureSigPath(gestureSigPath, 100);
+    stdGestureSigPath.erase(std::find( stdGestureSigPath.begin(), stdGestureSigPath.end(), '\0'), stdGestureSigPath.end());
+    (eventProcessor)->gesture_init(stdL1ProtoPath, stdGestureSigPath, denoise, bgDenoise, refrac, gest_mode);
+
+    env->ReleaseStringUTFChars(arg0_, l1ProtoPath);
+    env->ReleaseStringUTFChars(arg1_, gestureSigPath);
+}
+
 JNIEXPORT jint JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_get_1JVM_1version(JNIEnv *env, jclass instance) {
     return env->GetVersion();

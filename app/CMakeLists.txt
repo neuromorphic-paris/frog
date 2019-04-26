@@ -6,6 +6,7 @@ add_library(
         src/main/cpp/eventprocessor_wrap.cpp
         src/main/cpp/eventprocessor.cpp
         src/main/cpp/eventprocessor.hpp
+        src/main/cpp/eventprocessor1L.cpp
 )
 
 find_library(

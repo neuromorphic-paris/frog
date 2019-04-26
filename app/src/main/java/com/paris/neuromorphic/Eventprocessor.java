@@ -52,7 +52,7 @@ public class Eventprocessor {
             }
             set_bitmap(objPtr, bitmap);
         } else {
-            Log.e(TAG, "libeventprocessor is not loaded");
+            Log.e(TAG, "libeventprocessor is not loaded when trying to setBitmap");
         }
     }
 
@@ -64,7 +64,7 @@ public class Eventprocessor {
             }
             reset_bitmap(objPtr);
         } else {
-            Log.e(TAG, "libeventprocessor is not loaded");
+            Log.e(TAG, "libeventprocessor is not loaded when trying to resetBitmap");
         }
     }
 
@@ -78,6 +78,10 @@ public class Eventprocessor {
 
     static void setCameraData(byte[] data, long length) {
         set_camera_data(objPtr, data, length);
+    }
+
+    static void gesturesInitialisation(String prototypesPath, String signaturesPath, boolean doDenoise, boolean doBgDenoise, boolean refractoryPeriod, int gestMode) {
+        gestures_init(objPtr, prototypesPath, signaturesPath, doDenoise, doBgDenoise, refractoryPeriod, gestMode);
     }
 
     int getJvmVersion() {
@@ -99,6 +103,8 @@ public class Eventprocessor {
     private static native void set_camera_data(long objPtr, byte[] data, long length);
 
     private static native int get_JVM_version();
+
+    private static native void gestures_init(long objPtr, String arg0, String arg1, Boolean denoise, Boolean bgDenoise, Boolean refrac, int gest_mode);
 
     // Robolectric cannot load shared libraries
     private static boolean isEventProcessorLibraryLoaded() {

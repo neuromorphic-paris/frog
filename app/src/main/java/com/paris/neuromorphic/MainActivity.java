@@ -37,7 +37,10 @@ public class MainActivity extends AppCompatActivity {
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
     static final String ACTION_CAMERA_ACTIVATED = "com.paris.neuromorphic.camera.activated";
     final String ASSETS_FILE_BIASES = "standard_new.bias";
-    String cameraBiasFilePath, exampleFilePath;
+    final String ASSETS_FILE_PROTOTYPE_L1 = "fixed-20180216.prototypes";
+    final String ASSETS_FILE_SIGNATURES = "fixed-20180427-bg4-300-dn10000-5-2.signatures";//Updated by JM 2018-04-27
+
+    String cameraBiasFilePath, exampleFilePath, prototypesFilePath, signaturesFilePath;
 
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver, serviceCallBackReceiver;
@@ -82,8 +85,11 @@ public class MainActivity extends AppCompatActivity {
         exampleFilePath = Util.copyResource(getApplicationContext(), "dvs.es");
         Log.d(TAG, ".es example file path: " + exampleFilePath);
         cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
+        prototypesFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_PROTOTYPE_L1);
+        signaturesFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_SIGNATURES);
 
         Eventprocessor.newEventprocessor();
+        Eventprocessor.gesturesInitialisation(prototypesFilePath, signaturesFilePath, true, true, false, 6);
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 

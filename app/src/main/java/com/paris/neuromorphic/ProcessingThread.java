@@ -60,16 +60,16 @@ public class ProcessingThread extends HandlerThread {
     }
 
     private void checkBufferForNewElements() {
-        try {
-            output = new Output(new FileOutputStream(filePath));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    output = new Output(new FileOutputStream(filePath));
+        //} catch (FileNotFoundException e) {
+        //    e.printStackTrace();
+        //}
         while (isCameraAttached) {
             //saveBufferElement();
             processBufferElement();
         }
-        output.close();
+        //output.close();
         super.quit();
     }
 

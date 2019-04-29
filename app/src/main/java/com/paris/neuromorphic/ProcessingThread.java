@@ -2,6 +2,7 @@ package com.paris.neuromorphic;
 
 import android.os.HandlerThread;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
@@ -79,16 +80,20 @@ public class ProcessingThread extends HandlerThread {
         while (isCameraAttached) {
             try {
                 toExchange = (ToExchange) buffer.take();
-                startTimeStamp = System.nanoTime();
-                Eventprocessor.setCameraData(toExchange.data, toExchange.size);
-                currentTimeStamp = System.nanoTime();
+                if (toExchange.size == 13) {
+                    Log.i(TAG, Eventprocessor.predict());
+                } else {
+                    startTimeStamp = System.nanoTime();
+                    Eventprocessor.setCameraData(toExchange.data, toExchange.size);
+                    currentTimeStamp = System.nanoTime();
 
-                iterationCounter++;
-                Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
-                        + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
-                        + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
-                        + buffer.remainingCapacity());
-                lastTimeStamp = currentTimeStamp;
+                    iterationCounter++;
+                    Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
+                            + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
+                            + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
+                            + buffer.remainingCapacity());
+                    lastTimeStamp = currentTimeStamp;
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

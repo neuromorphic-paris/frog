@@ -134,6 +134,11 @@ public class CameraService extends Service {
                 }
                 objectCounter++;
             }
+            ToExchange poisonPill = new ToExchange();
+            poisonPill.size = 13;
+            try {
+                buffer.put(poisonPill);
+            } catch (Exception e) {}
             Log.i(TAG, "input ended, counted " + objectCounter + " objects.");
             input.close();
         } catch (FileNotFoundException e) {

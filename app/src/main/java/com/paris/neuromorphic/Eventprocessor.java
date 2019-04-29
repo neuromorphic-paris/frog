@@ -84,6 +84,10 @@ public class Eventprocessor {
         gestures_init(objPtr, prototypesPath, signaturesPath, doDenoise, doBgDenoise, refractoryPeriod, gestMode);
     }
 
+    static String predict(){
+        return predict(objPtr);
+    }
+
     int getJvmVersion() {
         return get_JVM_version();
     }

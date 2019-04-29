@@ -103,8 +103,13 @@ public class Eventprocessor {
                     libs.add(line.substring(n + 1));
                 }
             }
-            return libs.contains("/data/app/com.vision.neuromorphic.frog-2/lib/arm64/libeventprocessor.so")
-                    || libs.contains("set/data/app/com.vision.neuromorphic.frog/lib/arm64/libeventprocessor.so;");
+            for (String element:libs) {
+                Log.d(TAG, element);
+                if (element.contains("libeventprocessor.so")) {
+                    return true;
+                }
+            }
+            return false;
         } catch (FileNotFoundException e) {
             Log.e(TAG, "cannot check libraries, are you running unit tests?");
         } catch (IOException e) {

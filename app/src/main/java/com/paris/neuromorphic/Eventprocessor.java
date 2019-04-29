@@ -21,18 +21,20 @@ public class Eventprocessor {
         }
     }
 
-    private transient long objPtr;
+    private static transient long objPtr = 0;
 
-    Eventprocessor() {
-        try {
-            this.objPtr = new_Eventprocessor();
-        } catch (UnsatisfiedLinkError e) {
-            this.objPtr = 0;
+    static void newEventprocessor(){
+        if (objPtr == 0) {
+            try {
+                objPtr = new_Eventprocessor();
+            } catch (UnsatisfiedLinkError e) {
+                objPtr = 0;
+            }
         }
     }
 
     protected static long getCPtr(Eventprocessor obj) {
-        return (obj == null) ? 0 : obj.objPtr;
+        return (obj == null) ? 0 : objPtr;
     }
 
     public synchronized void delete() {
@@ -42,31 +44,39 @@ public class Eventprocessor {
         }
     }
 
-    void setBitmap(Bitmap bitmap) {
+    static void setBitmap(Bitmap bitmap) {
         if (isEventProcessorLibraryLoaded()) {
+            if (objPtr == 0) {
+                newEventprocessor();
+                Log.d(TAG, "Created new Eventprocessor from setBitmap");
+            }
             set_bitmap(objPtr, bitmap);
         } else {
             Log.e(TAG, "libeventprocessor is not loaded");
         }
     }
 
-    void resetBitmap() {
+    static void resetBitmap() {
         if (isEventProcessorLibraryLoaded()) {
+            if (objPtr == 0) {
+                newEventprocessor();
+                Log.d(TAG, "Created new Eventprocessor from resetBitmap");
+            }
             reset_bitmap(objPtr);
         } else {
             Log.e(TAG, "libeventprocessor is not loaded");
         }
     }
 
-    void deleteBitmap() {
-        delete_bitmap();
+    static void deleteBitmap() {
+        delete_bitmap(objPtr);
     }
 
-    void triggerSepia(String filepath) {
+    static void triggerSepia(String filepath) {
         trigger_sepia(objPtr, filepath);
     }
 
-    void setCameraData(byte[] data, long length) {
+    static void setCameraData(byte[] data, long length) {
         set_camera_data(objPtr, data, length);
     }
 
@@ -74,24 +84,24 @@ public class Eventprocessor {
         return get_JVM_version();
     }
 
-    private native long new_Eventprocessor();
+    private static native long new_Eventprocessor();
 
-    private native void delete_Eventprocessor(long jniCPtr);
+    private static native void delete_Eventprocessor(long jniCPtr);
 
-    private native void set_bitmap(long objPtr, Bitmap bitmap);
+    private static native void set_bitmap(long objPtr, Bitmap bitmap);
 
-    private native void reset_bitmap(long objPtr);
+    private static native void reset_bitmap(long objPtr);
 
-    private native void delete_bitmap();
+    private static native void delete_bitmap(long objPtr);
 
-    private native void trigger_sepia(long objPtr, String path);
+    private static native void trigger_sepia(long objPtr, String path);
 
-    private native void set_camera_data(long objPtr, byte[] data, long length);
+    private static native void set_camera_data(long objPtr, byte[] data, long length);
 
-    native int get_JVM_version();
+    private static native int get_JVM_version();
 
     // Robolectric cannot load shared libraries
-    private boolean isEventProcessorLibraryLoaded() {
+    private static boolean isEventProcessorLibraryLoaded() {
         try {
             Set<String> libs = new HashSet<>();
             String mapsFile = "/proc/" + android.os.Process.myPid() + "/maps";

@@ -19,7 +19,7 @@ public:
 
     uint64_t _baseTime = 0;
 
-    static jobject _bitmap;
+    jobject _bitmap = nullptr;
 
     AndroidBitmapInfo _bitmap_info{0};
     const int _scaleX = 3; //static_cast<int>(info.width/320);

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 class CameraView extends View {
     private Bitmap bitmap;
-    private Eventprocessor eventprocessor;
 
     public CameraView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -24,8 +23,7 @@ class CameraView extends View {
         ta.recycle();
         bitmap = Bitmap.createBitmap(viewWidth, viewHeigth, Bitmap.Config.ALPHA_8);
 
-        eventprocessor = new Eventprocessor();
-        eventprocessor.setBitmap(bitmap);
+        Eventprocessor.setBitmap(bitmap);
     }
 
     @Override

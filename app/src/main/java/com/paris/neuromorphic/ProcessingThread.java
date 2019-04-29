@@ -22,7 +22,6 @@ public class ProcessingThread extends HandlerThread {
 
     private ToExchange toExchange;
     private final BlockingQueue buffer;
-    private Eventprocessor eventprocessor;
 
     private long startTimeStamp, currentTimeStamp, lastTimeStamp;
 
@@ -38,7 +37,6 @@ public class ProcessingThread extends HandlerThread {
     ProcessingThread(BlockingQueue blockingQueue) {
         super(ProcessingThread.class.getName());
         buffer = blockingQueue;
-        eventprocessor = new Eventprocessor();
         kryo = new Kryo();
         kryo.register(ToExchange.class);
         kryo.register(byte[].class);
@@ -88,7 +86,7 @@ public class ProcessingThread extends HandlerThread {
         try {
             toExchange = (ToExchange) buffer.take();
             startTimeStamp = System.nanoTime();
-            eventprocessor.setCameraData(toExchange.data, toExchange.size);
+            Eventprocessor.setCameraData(toExchange.data, toExchange.size);
             currentTimeStamp = System.nanoTime();
 
             iterationCounter++;

@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     UsbManager usbManager;
     BroadcastReceiver usbBroadcastReceiver, serviceCallBackReceiver;
-    Eventprocessor eventprocessor;
 
     CameraService cameraService;
     Intent cameraServiceIntent;
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, ".es example file path: " + exampleFilePath);
         cameraBiasFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_BIASES);
 
-        eventprocessor = new Eventprocessor();
+        Eventprocessor.newEventprocessor();
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
         cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
         cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
-        eventprocessor.resetBitmap();
+        Eventprocessor.resetBitmap();
         startService(cameraServiceIntent);
         bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -131,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             stopService(cameraServiceIntent);
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
-        eventprocessor.resetBitmap();
+        Eventprocessor.resetBitmap();
     }
 
     public class AsyncPlaybackStart extends AsyncTask<Boolean, Integer, Void> {
@@ -163,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
     class AsyncSepia extends AsyncTask<Boolean, Integer, Void> {
         @Override
         protected Void doInBackground(Boolean... booleans) {
-            eventprocessor.resetBitmap();
-            eventprocessor.triggerSepia(exampleFilePath);
+            Eventprocessor.resetBitmap();
+            Eventprocessor.triggerSepia(exampleFilePath);
             return null;
         }
     }
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         stopCameraService();
         super.onDestroy();
-        eventprocessor.deleteBitmap();
+        Eventprocessor.deleteBitmap();
     }
 
     void setUpServiceCallBackReceiver() {

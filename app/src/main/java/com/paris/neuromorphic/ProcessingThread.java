@@ -104,7 +104,10 @@ public class ProcessingThread extends HandlerThread {
 
     void setCameraAttached(boolean flag) {
         isCameraAttached = flag;
-        output.close();
+
+        if (output != null) {
+            output.close();
+        }
     }
 
     @Override

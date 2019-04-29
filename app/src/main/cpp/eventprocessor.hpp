@@ -93,7 +93,6 @@ private:
     std::vector<uint64_t> inputMemoryL1;
     // denoise memory filter
     std::vector<uint64_t> denoiseMemory;
-    bool doDenoise{};
     // background remover
     std::vector<float> backgroundMemory;
     std::vector<float> backgroundLUT;
@@ -103,6 +102,7 @@ private:
     // refractory period
     std::vector<uint64_t> refractoryMemory;
     bool doRefractory{};
+    bool _doDenoise;
 
     // output polarities memory (size N+1 polarities)
     std::vector<float> outputMemory;

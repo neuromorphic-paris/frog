@@ -32,7 +32,7 @@ void EventProcessor::gesture_init(std::string l1ProtoPath, std::string gestureSi
 
     this->denoiseMemory.resize(INPUT_X * INPUT_Y);
     std::fill(denoiseMemory.begin(), denoiseMemory.end(), -NOISE_FILTER_TIME - 1);
-    this->doDenoise = denoise;
+    this->_doDenoise = denoise;
 
     this->outputMemory.resize(LAYER1_CEN);
     this->distancesKnn.resize(this->KNEIGH);
@@ -130,31 +130,6 @@ void EventProcessor::gesture_init(std::string l1ProtoPath, std::string gestureSi
     // // END DEBUG
 }
 
-// #############################################################################
-void EventProcessor::setDoDenoise(bool b)
-{
-    if (b) {
-        std::cout << "Denoiser enabled." << std::endl;
-    } else { std::cout << "Denoiser disabled." << std::endl;}
-    this->doDenoise = b;
-}
-
-// #############################################################################
-void EventProcessor::setDoBackgroundRemoval(bool b)
-{
-    if (b) {
-        std::cout << "Background remover enabled." << std::endl;
-    } else { std::cout << "Background remover disabled." << std::endl;}
-    this->doRemoveBackground = b;
-}
-// #############################################################################
-void EventProcessor::setDoRefractoryPeriod(bool b)
-{
-    if (b) {
-        std::cout << "Refractory period enabled." << std::endl;
-    } else { std::cout << "Refractory period disabled." << std::endl;}
-    this->doRefractory = b;
-}
 // #############################################################################
 
 void EventProcessor::initAndroidKeycodes()
@@ -266,7 +241,7 @@ std::vector<float> EventProcessor::loadClassSignatures(std::string _path)
 
 void EventProcessor::processEvent(uint64_t ts, uint16_t x, uint16_t y)
 {
-//		__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "ts=%llu, x=%03u, y=%03u", (unsigned long long int) ts, x, y);
+	//__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "ts=%llu, x=%03u, y=%03u", (unsigned long long int) ts, x, y);
 
     // REFRACTORY PERIOD
     if (this->doRefractory) {
@@ -279,7 +254,7 @@ void EventProcessor::processEvent(uint64_t ts, uint16_t x, uint16_t y)
     }
 
     // DENOISER
-    if (this->doDenoise) {
+    if (this->_doDenoise) {
         // denoising
         int neighboor = 0;
         // store event in denoise memory
@@ -569,13 +544,6 @@ std::vector<float> EventProcessor::getOutputPolVector()
 
 // #############################################################################
 
-std::vector<float> EventProcessor::getSaved_signature()
-{
-    return this->saved_signature;
-}
-
-// #############################################################################
-
 void EventProcessor::flush()
 {
     this->flushInputs();
@@ -607,28 +575,4 @@ void EventProcessor::flushInputs()
 void EventProcessor::flushOutput()
 {
     std::fill(this->outputMemory.begin(), this->outputMemory.end(), 0.0);
-}
-
-// #############################################################################
-
-uint64_t EventProcessor::getPastDenoiseFilter()
-{
-    // returns the number of event that got past the denoise filter
-    return this->pastDenoiseFilter;
-}
-
-// #############################################################################
-
-uint64_t EventProcessor::getPastRefrac()
-{
-    // returns the number of event that got past the refractory period
-    return this->pastRefrac;
-}
-
-// #############################################################################
-
-uint64_t EventProcessor::getPastBackgroundRemover()
-{
-    // returns the number of event that got past the bg remover
-    return this->pastBackgroundRemover;
 }

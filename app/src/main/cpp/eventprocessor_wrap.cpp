@@ -82,8 +82,8 @@ Java_com_paris_neuromorphic_Eventprocessor_set_1camera_1data(JNIEnv *env, jclass
 JNIEXPORT void JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_gestures_1init(JNIEnv *env, jclass type, jlong objPtr,
                                                           jstring arg0_, jstring arg1_,
-                                                          jobject denoise, jobject bgDenoise,
-                                                          jobject refrac, jint gest_mode) {
+                                                          jboolean denoise, jboolean bgDenoise,
+                                                          jboolean refrac, jint gest_mode) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
     const char *l1ProtoPath = env->GetStringUTFChars(arg0_, 0);
     const char *gestureSigPath = env->GetStringUTFChars(arg1_, 0);
@@ -101,6 +101,19 @@ Java_com_paris_neuromorphic_Eventprocessor_gestures_1init(JNIEnv *env, jclass ty
 JNIEXPORT jint JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_get_1JVM_1version(JNIEnv *env, jclass instance) {
     return env->GetVersion();
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_paris_neuromorphic_Eventprocessor_predict(JNIEnv *env, jclass type, jlong jniCPtr) {
+    //	DOWN, HOME, LEFT, RIGHT, SELECT, UP
+    jstring jpredict = env->NewStringUTF("0.000000,0.000000,0.000000,0.000000,0.000000,0.000000");
+    char* cpredict = (char *)env->GetStringUTFChars(jpredict, nullptr);
+    EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
+    (eventProcessor)->predict(cpredict);
+    jpredict = env->NewStringUTF(cpredict);
+    env->ReleaseStringUTFChars(jpredict, cpredict);
+
+    return jpredict;
 }
 
 }

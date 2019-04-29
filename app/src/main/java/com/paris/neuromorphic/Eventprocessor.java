@@ -104,7 +104,9 @@ public class Eventprocessor {
 
     private static native int get_JVM_version();
 
-    private static native void gestures_init(long objPtr, String arg0, String arg1, Boolean denoise, Boolean bgDenoise, Boolean refrac, int gest_mode);
+    private static native void gestures_init(long objPtr, String arg0, String arg1, boolean denoise, boolean bgDenoise, boolean refrac, int gest_mode);
+
+    private static native String predict(long jniCPtr);
 
     // Robolectric cannot load shared libraries
     private static boolean isEventProcessorLibraryLoaded() {

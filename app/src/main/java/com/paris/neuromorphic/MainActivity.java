@@ -36,9 +36,12 @@ public class MainActivity extends AppCompatActivity {
     static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
     static final String ACTION_CAMERA_ACTIVATED = "com.paris.neuromorphic.camera.activated";
+    static final String ACTION_GESTURE_RESULT = "com.paris.neuromorphic.gesture.prediction.result";
+    static final String EXTRA_GESTURE_RESULT = "gestureResult";
+    final int GESTURE_DURATION = 1500;
     final String ASSETS_FILE_BIASES = "standard_new.bias";
     final String ASSETS_FILE_PROTOTYPE_L1 = "fixed-20180216.prototypes";
-    final String ASSETS_FILE_SIGNATURES = "fixed-20180427-bg4-300-dn10000-5-2.signatures";//Updated by JM 2018-04-27
+    final String ASSETS_FILE_SIGNATURES = "fixed-20180427-bg4-300-dn10000-5-2.signatures";
 
     String cameraBiasFilePath, exampleFilePath, prototypesFilePath, signaturesFilePath;
 
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         cameraPreview.setBackgroundColor(Color.GRAY);
 
         startRecordingButton.setOnClickListener(view -> {
-            cameraService.triggerRecording(1500);
+            cameraService.triggerRecording(GESTURE_DURATION);
         });
 
         playbackButton.setOnClickListener(view -> {
@@ -207,12 +210,17 @@ public class MainActivity extends AppCompatActivity {
                     case ACTION_CAMERA_ACTIVATED:
                         cameraStatusImage.setImageResource(R.mipmap.camera_ok);
                         startRecordingButton.setEnabled(true);
+                    case ACTION_GESTURE_RESULT:
+                        Log.d(TAG, "within receiver, received the reception " + intent.getStringExtra(MainActivity.EXTRA_GESTURE_RESULT));
                     default:
                         Log.w("BroadcastReceiver", "received unknown Intent");
                 }
             }
         };
-        registerReceiver(serviceCallBackReceiver, new IntentFilter(ACTION_CAMERA_ACTIVATED));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_CAMERA_ACTIVATED);
+        filter.addAction(ACTION_GESTURE_RESULT);
+        registerReceiver(serviceCallBackReceiver, filter);
     }
 
     void setUpUSBReceiver() {

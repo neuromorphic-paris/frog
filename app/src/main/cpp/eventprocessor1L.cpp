@@ -429,6 +429,7 @@ void EventProcessor::predict(char *cpredict)
     //	Added this for cleanliness Andrew
 
     this->_baseTime = 0;
+    sprintf(cpredict, "%f,%f,%f,%f,%f,%f", knnProbaVector[0], knnProbaVector[1], knnProbaVector[2], knnProbaVector[3], knnProbaVector[4], knnProbaVector[5]);
     __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "%f,%f,%f,%f,%f,%f", knnProbaVector[0], knnProbaVector[1], knnProbaVector[2], knnProbaVector[3], knnProbaVector[4], knnProbaVector[5]);
 }
 

@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,7 +34,6 @@ public class CameraService extends Service {
     private final IBinder iBinder = new LocalBinder();
 
     CameraPollingThread cameraPollingThread;
-    FilePollingThread filePollingThread;
     ProcessingThread processingThread;
     Looper cameraPollingThreadLooper, processingThreadLooper;
 
@@ -89,7 +90,16 @@ public class CameraService extends Service {
 
     private void startConsumer() {
         Log.d(TAG, "Starting consumer thread from service.");
-        processingThread = new ProcessingThread(buffer);
+        Handler resultHandler = new Handler(getMainLooper()){
+            @Override
+            public void handleMessage(Message message){
+                Intent intent = new Intent(MainActivity.ACTION_GESTURE_RESULT);
+                intent.putExtra(MainActivity.EXTRA_GESTURE_RESULT, (String) message.obj);
+                sendBroadcast(intent);
+                Toast.makeText(getApplicationContext(), (String) message.obj, Toast.LENGTH_SHORT).show();
+            }
+        };
+        processingThread = new ProcessingThread(buffer, resultHandler);
         processingThread.start();
         processingThreadLooper = processingThread.getLooper();
     }

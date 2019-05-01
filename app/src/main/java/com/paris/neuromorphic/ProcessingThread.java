@@ -1,13 +1,13 @@
 package com.paris.neuromorphic;
 
+import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.concurrent.BlockingQueue;
@@ -23,6 +23,7 @@ public class ProcessingThread extends HandlerThread {
 
     private ToExchange toExchange;
     private final BlockingQueue buffer;
+    private Handler resultHandler;
 
     private long startTimeStamp, currentTimeStamp, lastTimeStamp;
 
@@ -35,9 +36,10 @@ public class ProcessingThread extends HandlerThread {
     DecimalFormat df = new DecimalFormat("####.##");
 
 
-    ProcessingThread(BlockingQueue blockingQueue) {
+    ProcessingThread(BlockingQueue blockingQueue, Handler resultHandler) {
         super(ProcessingThread.class.getName());
-        buffer = blockingQueue;
+        this.buffer = blockingQueue;
+        this.resultHandler = resultHandler;
         kryo = new Kryo();
         kryo.register(ToExchange.class);
         kryo.register(byte[].class);
@@ -57,7 +59,6 @@ public class ProcessingThread extends HandlerThread {
 
         //saveBufferElements();
         processBufferElements();
-
         super.quit();
     }
 
@@ -66,6 +67,7 @@ public class ProcessingThread extends HandlerThread {
             output = new Output(new FileOutputStream(filePath));
             while (isCameraAttached) {
                 toExchange = (ToExchange) buffer.take();
+                toExchange.isRecorded = true;
                 kryo.writeObject(output, toExchange);
                 Log.i(TAG, "Consumer: Saved Exchange to file with size " + toExchange.size
                         + ", remaining buffer capacity: " + buffer.remainingCapacity());
@@ -81,17 +83,23 @@ public class ProcessingThread extends HandlerThread {
             try {
                 toExchange = (ToExchange) buffer.take();
                 if (toExchange.size == 13) {
-                    Log.i(TAG, Eventprocessor.predict());
+                    String gesture = Eventprocessor.predict();
+                    Message message = Message.obtain();
+                    message.obj = gesture;
+                    resultHandler.sendMessage(message);
+                    Log.i(TAG, gesture);
                 } else {
                     startTimeStamp = System.nanoTime();
                     Eventprocessor.setCameraData(toExchange.data, toExchange.size, toExchange.isRecorded);
                     currentTimeStamp = System.nanoTime();
 
                     iterationCounter++;
-/*                    Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
-                            + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
-                            + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
-                            + buffer.remainingCapacity());*/
+                /*
+                Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
+                        + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
+                        + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
+                        + buffer.remainingCapacity());
+                        */
                     lastTimeStamp = currentTimeStamp;
                 }
             } catch (InterruptedException e) {

@@ -2,8 +2,6 @@
 #include <sstream>
 #include "eventprocessor.hpp"
 
-// #############################################################################
-
 void EventProcessor::gesture_init(std::string l1ProtoPath, std::string gestureSigPath, bool denoise, bool bg_denoise, bool refrac, int gest_mode)
 {
     // The constructor sets all vectors,
@@ -431,9 +429,7 @@ void EventProcessor::predict(char *cpredict)
     //	Added this for cleanliness Andrew
 
     this->_baseTime = 0;
-    sprintf(cpredict, "%f,%f,%f,%f,%f,%f", knnProbaVector[0], knnProbaVector[1], knnProbaVector[2], knnProbaVector[3], knnProbaVector[4], knnProbaVector[5]);
-
-
+    __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "%f,%f,%f,%f,%f,%f", knnProbaVector[0], knnProbaVector[1], knnProbaVector[2], knnProbaVector[3], knnProbaVector[4], knnProbaVector[5]);
 }
 
 // #############################################################################

@@ -76,8 +76,8 @@ public class Eventprocessor {
         trigger_sepia(objPtr, filepath);
     }
 
-    static void setCameraData(byte[] data, long length) {
-        set_camera_data(objPtr, data, length);
+    static void setCameraData(byte[] data, long length, boolean isRecorded) {
+        set_camera_data(objPtr, data, length, isRecorded);
     }
 
     static void gesturesInitialisation(String prototypesPath, String signaturesPath, boolean doDenoise, boolean doBgDenoise, boolean refractoryPeriod, int gestMode) {
@@ -104,7 +104,7 @@ public class Eventprocessor {
 
     private static native void trigger_sepia(long objPtr, String path);
 
-    private static native void set_camera_data(long objPtr, byte[] data, long length);
+    private static native void set_camera_data(long objPtr, byte[] data, long length, boolean isRecorded);
 
     private static native int get_JVM_version();
 

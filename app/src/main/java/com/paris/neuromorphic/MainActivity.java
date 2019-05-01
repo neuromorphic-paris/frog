@@ -56,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.camera_preview)
     CameraView cameraPreview;
     @BindView(R.id.start_recording_button)
-    Button startButton;
+    Button startRecordingButton;
+    @BindView(R.id.playback_button)
+    Button playbackButton;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -93,8 +95,11 @@ public class MainActivity extends AppCompatActivity {
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 
-        startButton.setEnabled(true);
-        startButton.setOnClickListener(view -> {
+        startRecordingButton.setOnClickListener(view -> {
+            cameraService.triggerRecording(1500);
+        });
+
+        playbackButton.setOnClickListener(view -> {
             try {
                 startCameraReplacementFilePolling();
             } catch (FileNotFoundException e) {
@@ -201,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (Objects.requireNonNull(intent.getAction())) {
                     case ACTION_CAMERA_ACTIVATED:
                         cameraStatusImage.setImageResource(R.mipmap.camera_ok);
+                        startRecordingButton.setEnabled(true);
                     default:
                         Log.w("BroadcastReceiver", "received unknown Intent");
                 }

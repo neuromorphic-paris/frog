@@ -64,14 +64,14 @@ Java_com_paris_neuromorphic_Eventprocessor_trigger_1sepia(JNIEnv *env, jclass in
 JNIEXPORT void JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_set_1camera_1data(JNIEnv *env, jclass instance,
                                                              jlong objPtr, jbyteArray camera_data_,
-                                                             jlong camera_data_length) {
+                                                             jlong camera_data_length, jboolean is_recorded) {
     std::chrono::system_clock::time_point start_copying, end_copying;
 
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
 
     start_copying = std::chrono::system_clock::now();
     jbyte *camera_data = env->GetByteArrayElements(camera_data_, nullptr);
-    (eventProcessor)->set_camera_data(env, (unsigned char *) camera_data, (unsigned long) camera_data_length);
+    (eventProcessor)->set_camera_data(env, (unsigned char *) camera_data, (unsigned long) camera_data_length, is_recorded);
     env->ReleaseByteArrayElements(camera_data_, camera_data, 0);
     end_copying = std::chrono::system_clock::now();
 

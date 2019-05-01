@@ -17,6 +17,8 @@ import com.esotericsoftware.kryo.io.Input;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import androidx.annotation.Nullable;
@@ -138,12 +140,25 @@ public class CameraService extends Service {
             poisonPill.size = 13;
             try {
                 buffer.put(poisonPill);
-            } catch (Exception e) {}
+            } catch (Exception e) {e.printStackTrace();}
             Log.i(TAG, "input ended, counted " + objectCounter + " objects.");
             input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public void triggerRecording(int duration) {
+        cameraPollingThread.setRecordingStatus(true);
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                cameraPollingThread.setRecordingStatus(false);
+                cameraPollingThread.triggerPrediction();
+            }
+        };
+        timer.schedule(timerTask, duration);
     }
 
     public boolean isCameraPollingThreadRunning() {

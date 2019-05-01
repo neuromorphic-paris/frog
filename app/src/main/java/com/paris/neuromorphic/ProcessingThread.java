@@ -84,14 +84,14 @@ public class ProcessingThread extends HandlerThread {
                     Log.i(TAG, Eventprocessor.predict());
                 } else {
                     startTimeStamp = System.nanoTime();
-                    Eventprocessor.setCameraData(toExchange.data, toExchange.size);
+                    Eventprocessor.setCameraData(toExchange.data, toExchange.size, toExchange.isRecorded);
                     currentTimeStamp = System.nanoTime();
 
                     iterationCounter++;
-                    Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
+/*                    Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
                             + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
                             + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
-                            + buffer.remainingCapacity());
+                            + buffer.remainingCapacity());*/
                     lastTimeStamp = currentTimeStamp;
                 }
             } catch (InterruptedException e) {

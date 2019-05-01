@@ -94,7 +94,7 @@ void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
     );
 }
 
-void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size) {
+void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size, bool is_recorded) {
     std::chrono::system_clock::time_point start_method = std::chrono::system_clock::now();
 
     std::chrono::system_clock::time_point start_coordinates;
@@ -146,8 +146,10 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
 
     AndroidBitmap_unlockPixels(env, this->_bitmap);
 
-    for(auto event : all_events){
-        processEvent(event.t, event.x, event.y);
+    if (is_recorded) {
+        for (auto event : all_events) {
+            processEvent(event.t, event.x, event.y);
+        }
     }
     std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() - start_locking);
     std::chrono::duration<double, std::milli> time_set_pixel = (end_set_pixel - start_set_pixel);

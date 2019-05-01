@@ -28,6 +28,7 @@ public class CameraPollingThread extends HandlerThread {
     private UsbManager usbManager;
 
     private volatile boolean isCameraAttached = true;
+    private volatile boolean isRecording = false;
 
     //Counters
     private long maxCount, iterationCount;
@@ -64,6 +65,20 @@ public class CameraPollingThread extends HandlerThread {
 
     void setCameraAttached(boolean flag) {
         isCameraAttached = flag;
+    }
+
+    void setRecordingStatus(boolean flag) {
+        isRecording = flag;
+    }
+
+    void triggerPrediction() {
+        ToExchange poisonPill = new ToExchange();
+        poisonPill.size = 13;
+        try {
+            buffer.put(poisonPill);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void pollCamera() {
@@ -117,17 +132,21 @@ public class CameraPollingThread extends HandlerThread {
                                 Log.i(TAG, "hit maximum package size " + maxCount + " times.");
                             }
                             iterationCount++;
+                            if (isRecording) {
+                                toExchange.isRecorded = true;
+                            }
                             buffer.put(toExchange);
 
                             endTimestamp = System.nanoTime();
-                            Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
+
+                            /*Log.d(TAG, "Producer: Iteration " + iterationCount + " took "
                                     + df.format((endTimestamp - startTimeStamp) / 1000000f)
                                     + "ms, bulkTransfer of size " + toExchange.size + " took "
                                     + df.format((endTransferTimestamp - startTimeStamp) / 1000000f)
                                     + "ms, it's been "
                                     + df.format((startTimeStamp - lastTimeStamp) / 1000000f)
                                     + "ms since last call.");
-
+                            */
                             lastTimeStamp = endTimestamp;
                         } else {
                             Log.d(TAG, "Hit max package size " + maxCount + " times.");

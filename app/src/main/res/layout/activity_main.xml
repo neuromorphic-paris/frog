@@ -81,6 +81,16 @@
                 android:src="@mipmap/camera_ko"/>
 
         </LinearLayout>
+        <Button
+            android:id="@+id/playback_button"
+            style="@style/Base.TextAppearance.AppCompat.Button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:enabled="true"
+            android:focusableInTouchMode="false"
+            android:padding="10dp"
+            android:text="@string/playback_button" />
 
     </LinearLayout>
 

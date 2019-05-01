@@ -10,7 +10,8 @@
 
     <string name="no_camera_connected">Please connect an ATIS camera</string>
     <string name="press_start_to_record">Press START to record 3s</string>
-    <string name="start_button">Start the plane</string>
+    <string name="start_button">Record 2s</string>
+    <string name="playback_button">Playback recording</string>
     <string name="content_description_camera_status">Display whether camera is connected or not.</string>
     <string name="content_description_logo">Display the logo!</string>
     <string name="content_description_background">Display the background!</string>

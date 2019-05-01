@@ -64,7 +64,7 @@ public:
 
     void set_pixel(sepia::dvs_event, void *pixels);
 
-    void set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size);
+    void set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size, bool isRecorded);
 
     void gesture_init(std::string stdL1ProtoPath, std::string stdGestureSigPath, bool denoise, bool bgDenoise, bool refrac, int gest_mode);
 

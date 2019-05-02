@@ -111,14 +111,12 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
     std::chrono::system_clock::time_point start_coordinates;
     std::chrono::system_clock::time_point start_locking;
     std::chrono::system_clock::time_point start_set_pixel, end_set_pixel;
-    auto time_coordinates = std::chrono::duration<double, std::milli>::zero();
 
     std::vector<sepia::dvs_event> all_events;
     all_events.reserve(size);
 
+    start_coordinates = std::chrono::system_clock::now();
     for (int i = 0; i < size;) {
-        start_coordinates = std::chrono::system_clock::now();
-
         unsigned char a = data[i++];
         unsigned char b = data[i++];
         unsigned char c = data[i++];
@@ -140,10 +138,10 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
             //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "index=%u raw=%02X%02X%02X%02X, ts=%llu, pol=%u, x=%03u, y=%03u", i, a, b, c, d, (unsigned long long int) ts, pol, x, y);
             auto event = sepia::dvs_event{ts, x, y, static_cast<bool>(pol)};
             all_events.push_back(event);
-
         }
-        time_coordinates = (time_coordinates + (std::chrono::system_clock::now() - start_coordinates));
     }
+    std::chrono::duration<double, std::milli> time_coordinates = std::chrono::system_clock::now() - start_coordinates;
+
     void *pixels;
     int ret;
 
@@ -162,5 +160,5 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
     std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() - start_locking);
     std::chrono::duration<double, std::milli> time_set_pixel = (end_set_pixel - start_set_pixel);
     std::chrono::duration<double, std::milli> end = std::chrono::system_clock::now() - start_method;
-    //LOGD("Total parsing time for %lu events %fms, setting the pixel %fms and locking overall %fms. Method execution time %fms", size, time_coordinates.count(), time_set_pixel.count(), time_locking.count(), end.count());
+    LOGD("Total parsing time for %lu events %fms, setting the pixel %fms and locking overall %fms. Method execution time %fms", size, time_coordinates.count(), time_set_pixel.count(), time_locking.count(), end.count());
 }

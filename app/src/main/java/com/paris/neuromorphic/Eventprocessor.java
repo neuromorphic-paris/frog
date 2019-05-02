@@ -114,7 +114,7 @@ public class Eventprocessor {
                 }
             }
             for (String element:libs) {
-                Log.d(TAG, element);
+                //Log.d(TAG, element);
                 if (element.contains("libeventprocessor.so")) {
                     return true;
                 }

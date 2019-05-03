@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 class CameraView extends View {
     private Bitmap bitmap;
+    int viewWidth, viewHeigth;
 
     public CameraView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -18,17 +19,17 @@ class CameraView extends View {
                 android.R.attr.layout_height // 1
         };
         TypedArray ta = context.obtainStyledAttributes(attributeSet, attrsArray);
-        int viewWidth = ta.getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
-        int viewHeigth = ta.getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
+        viewWidth = ta.getLayoutDimension(0, ViewGroup.LayoutParams.MATCH_PARENT);
+        viewHeigth = ta.getLayoutDimension(1, ViewGroup.LayoutParams.MATCH_PARENT);
         ta.recycle();
-        bitmap = Bitmap.createBitmap(viewWidth, viewHeigth, Bitmap.Config.ALPHA_8);
+        bitmap = Bitmap.createBitmap(304, 240, Bitmap.Config.ALPHA_8);
 
         Eventprocessor.setBitmap(bitmap);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        canvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeigth, false), 0, 0, null);
         invalidate();
     }
 

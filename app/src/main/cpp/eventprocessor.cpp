@@ -38,23 +38,12 @@ void EventProcessor::reset_bitmap(JNIEnv *pEnv) {
 
 void EventProcessor::set_pixel(sepia::dvs_event event, void *pixels) {
     int x = event.x;
-    pixels = (char *) pixels + event.y * this->_scaleY * this->_bitmap_info.stride;
-    auto *line = (char *) pixels; // select the desired scaled line of pixels
-    if (event.is_increase) { // put for loops for each branch for efficiency reasons
-        auto white = static_cast<unsigned char>(0xFF);
-        for (int i = 0; i < this->_scaleY; i++) { // write a square of pixels related to scale factors.
-            for (int j = 0; j < this->_scaleX; j++) {
-                line[x * this->_scaleX + j] = white;
-            }
-            line = (char *) pixels + this->_bitmap_info.stride;
-        }
+    pixels = (char *) pixels + event.y * this->_bitmap_info.stride;
+    auto *line = (char *) pixels;
+    if (event.is_increase) {
+        line[x] = static_cast<char>(0xFF); //white
     } else {
-        for (int i = 0; i < this->_scaleY; i++){
-            for (int j = 0; j < this->_scaleX; j++) {
-                line[x * this->_scaleX + j] = 0x00;
-            }
-            line = (char*) pixels + this->_bitmap_info.stride;
-        }
+        line[x] = 0x00;
     }
 }
 

@@ -22,8 +22,8 @@ public:
     jobject _bitmap = nullptr;
 
     AndroidBitmapInfo _bitmap_info{0};
-    const int _scaleX = 3; //static_cast<int>(info.width/320);
-    const int _scaleY = 3; //static_cast<int>(info.height/240);
+    const int _scaleX = 1; //static_cast<int>(info.width/320);
+    const int _scaleY = 1; //static_cast<int>(info.height/240);
 
     void save_bitmap_info(JNIEnv *env);
 

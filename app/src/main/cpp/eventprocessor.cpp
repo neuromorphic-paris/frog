@@ -113,7 +113,7 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
     std::chrono::system_clock::time_point start_set_pixel, end_set_pixel;
 
     std::vector<sepia::dvs_event> all_events;
-    all_events.reserve(size);
+    all_events.reserve(size/4);
 
     start_coordinates = std::chrono::system_clock::now();
     for (int i = 0; i < size;) {

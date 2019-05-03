@@ -54,49 +54,44 @@ public class ProcessingThread extends HandlerThread {
         Log.d(TAG, "Looper prepared");
         super.onLooperPrepared();
 
-        checkBufferForNewElements();
-    }
+        //saveBufferElements();
+        processBufferElements();
 
-    private void checkBufferForNewElements() {
-        //try {
-        //    output = new Output(new FileOutputStream(filePath));
-        //} catch (FileNotFoundException e) {
-        //    e.printStackTrace();
-        //}
-        while (isCameraAttached) {
-            //saveBufferElement();
-            processBufferElement();
-        }
-        //output.close();
         super.quit();
     }
 
-    private void saveBufferElement() {
+    private void saveBufferElements() {
         try {
-            toExchange = (ToExchange) buffer.take();
-            kryo.writeObject(output, toExchange);
-            Log.i(TAG, "Consumer: Saved Exchange to file with size " + toExchange.size
-                    + ", remaining buffer capacity: " + buffer.remainingCapacity());
+            output = new Output(new FileOutputStream(filePath));
+            while (isCameraAttached) {
+                toExchange = (ToExchange) buffer.take();
+                kryo.writeObject(output, toExchange);
+                Log.i(TAG, "Consumer: Saved Exchange to file with size " + toExchange.size
+                        + ", remaining buffer capacity: " + buffer.remainingCapacity());
+            }
+            output.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void processBufferElement() {
-        try {
-            toExchange = (ToExchange) buffer.take();
-            startTimeStamp = System.nanoTime();
-            Eventprocessor.setCameraData(toExchange.data, toExchange.size);
-            currentTimeStamp = System.nanoTime();
+    private void processBufferElements() {
+        while (isCameraAttached) {
+            try {
+                toExchange = (ToExchange) buffer.take();
+                startTimeStamp = System.nanoTime();
+                Eventprocessor.setCameraData(toExchange.data, toExchange.size);
+                currentTimeStamp = System.nanoTime();
 
-            iterationCounter++;
-            Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
-                    + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
-                    + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
-                    + buffer.remainingCapacity());
-            lastTimeStamp = currentTimeStamp;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+                iterationCounter++;
+                Log.d(TAG, "Consumer: Processing Exchange no. " + iterationCounter + " with size " + toExchange.size + " took "
+                        + df.format((currentTimeStamp - startTimeStamp) / 1000000f) + "ms, it's been "
+                        + df.format((startTimeStamp - lastTimeStamp) / 1000000f) + "ms since last call, remaining buffer capacity: "
+                        + buffer.remainingCapacity());
+                lastTimeStamp = currentTimeStamp;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

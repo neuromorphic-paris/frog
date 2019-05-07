@@ -128,13 +128,26 @@ void *threadFunction(EventProcessor *eventProcessor) {
     JNIEnv *threadEnv = nullptr;
     eventProcessor->jvm->AttachCurrentThread(&threadEnv,
                                              nullptr);
-    while (eventProcessor->is_processing) {
+    LOGD("Attached worker thread...");
+    u_long event_counter = 0;
+    for (;;) {
         sepia::dvs_event event = {};
         if (eventProcessor->_fifo.pull(event)) {
-            LOGD("t: %u", event.t);
+            if (event.x == 1000) {
+                jstring jpredict = threadEnv->NewStringUTF("0.000000,0.000000,0.000000,0.000000,0.000000,0.000000");
+                char *cpredict = (char *) threadEnv->GetStringUTFChars(jpredict, nullptr);
+                eventProcessor->predict(cpredict);
+                jpredict = threadEnv->NewStringUTF(cpredict);
+                threadEnv->ReleaseStringUTFChars(jpredict, cpredict);
+                break;
+            }
+            eventProcessor->processEvent(event.t, event.x, event.y);
+            event_counter++;
         };
     }
-
+    LOGD("Detaching worker thread after having processed %lu", event_counter);
+    LOGD("Plotted %lu events.", eventProcessor->_event_counter);
+    eventProcessor->_event_counter = 0;
     eventProcessor->jvm->DetachCurrentThread();
     return nullptr;
 }
@@ -144,20 +157,16 @@ Java_com_paris_neuromorphic_Eventprocessor_create_1thread(JNIEnv *env, jclass ty
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     env->GetJavaVM(&eventProcessor->jvm);
 
-    eventProcessor->_fifo.push(sepia::dvs_event{1, 2, 2, false});
-    eventProcessor->_fifo.push(sepia::dvs_event{2, 3, 3, false});
-    eventProcessor->_fifo.push(sepia::dvs_event{5, 4, 4, false});
-
     std::thread my_thread(threadFunction, eventProcessor);
 
-    LOGD("before join");
-    //my_thread.detach();
-    LOGD("after join");
-    //sleep(1);
+    my_thread.detach();
+}
 
-    //eventProcessor->is_processing = false;
-    my_thread.join();
-
+JNIEXPORT void JNICALL
+Java_com_paris_neuromorphic_Eventprocessor_trigger_1prediction(JNIEnv *env, jclass type,
+                                                               jlong jniCPtr) {
+    EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
+    eventProcessor->_fifo.push(sepia::dvs_event{1, 1000, 1, false});
 }
 
 }

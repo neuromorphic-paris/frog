@@ -79,15 +79,12 @@ public class ProcessingThread extends HandlerThread {
     }
 
     private void processBufferElements() {
+        Eventprocessor.createThread();
         while (isCameraAttached) {
             try {
                 toExchange = (ToExchange) buffer.take();
                 if (toExchange.size == 13) {
-                    String gesture = Eventprocessor.predict();
-                    Message message = Message.obtain();
-                    message.obj = gesture;
-                    resultHandler.sendMessage(message);
-                    Log.i(TAG, gesture);
+                    Eventprocessor.triggerPrediction();
                     break;
                 } else {
                     startTimeStamp = System.nanoTime();

@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
         threadButton.setOnClickListener(view -> {
             Eventprocessor.createThread();
+            Eventprocessor.triggerPrediction();
         });
     }
 

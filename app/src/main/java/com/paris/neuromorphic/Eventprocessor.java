@@ -88,6 +88,10 @@ public class Eventprocessor {
         return predict(objPtr);
     }
 
+    static void triggerPrediction(){
+        trigger_prediction(objPtr);
+    }
+
     static void createThread(){
         create_thread(objPtr);
     }
@@ -115,6 +119,8 @@ public class Eventprocessor {
     private static native void gestures_init(long objPtr, String arg0, String arg1, boolean denoise, boolean bgDenoise, boolean refrac, int gest_mode);
 
     private static native String predict(long jniCPtr);
+
+    private static native void trigger_prediction(long jniCPtr);
 
     private static native void create_thread(long jniCPtr);
 

@@ -47,7 +47,7 @@
 
 class EventProcessor {
 public:
-    EventProcessor() : _fifo(20000), _scaleY(1) {
+    EventProcessor() : _fifo(20000), is_processing(true){
     };
 
     JavaVM *jvm = nullptr;
@@ -55,6 +55,8 @@ public:
     uint64_t _baseTime = 0;
 
     jobject _bitmap = nullptr;
+
+    std::atomic_bool is_processing;
 
     AndroidBitmapInfo _bitmap_info{0};
     const int _scaleX = 1; //static_cast<int>(info.width/320);

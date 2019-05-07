@@ -128,9 +128,13 @@ void *threadFunction(EventProcessor *eventProcessor) {
     JNIEnv *threadEnv = nullptr;
     eventProcessor->jvm->AttachCurrentThread(&threadEnv,
                                              nullptr);
-    LOGD("before wait");
-    sleep(3);
-    LOGD("after wait");
+    while (eventProcessor->is_processing) {
+        sepia::dvs_event event = {};
+        if (eventProcessor->_fifo.pull(event)) {
+            LOGD("t: %u", event.t);
+        };
+    }
+
     eventProcessor->jvm->DetachCurrentThread();
     return nullptr;
 }
@@ -140,11 +144,20 @@ Java_com_paris_neuromorphic_Eventprocessor_create_1thread(JNIEnv *env, jclass ty
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     env->GetJavaVM(&eventProcessor->jvm);
 
+    eventProcessor->_fifo.push(sepia::dvs_event{1, 2, 2, false});
+    eventProcessor->_fifo.push(sepia::dvs_event{2, 3, 3, false});
+    eventProcessor->_fifo.push(sepia::dvs_event{5, 4, 4, false});
+
     std::thread my_thread(threadFunction, eventProcessor);
 
     LOGD("before join");
-    my_thread.detach();
+    //my_thread.detach();
     LOGD("after join");
+    //sleep(1);
+
+    //eventProcessor->is_processing = false;
+    my_thread.join();
+
 }
 
 }

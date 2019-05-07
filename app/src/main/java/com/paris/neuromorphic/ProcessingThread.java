@@ -88,6 +88,7 @@ public class ProcessingThread extends HandlerThread {
                     message.obj = gesture;
                     resultHandler.sendMessage(message);
                     Log.i(TAG, gesture);
+                    break;
                 } else {
                     startTimeStamp = System.nanoTime();
                     Eventprocessor.setCameraData(toExchange.data, toExchange.size, toExchange.isRecorded);

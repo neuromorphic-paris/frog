@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     Button startRecordingButton;
     @BindView(R.id.playback_button)
     Button playbackButton;
+    @BindView(R.id.thread_button)
+    Button threadButton;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -108,6 +110,10 @@ public class MainActivity extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        });
+
+        threadButton.setOnClickListener(view -> {
+            Eventprocessor.createThread();
         });
     }
 

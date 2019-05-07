@@ -91,6 +91,17 @@
             android:focusableInTouchMode="false"
             android:padding="10dp"
             android:text="@string/playback_button" />
+        <Button
+            android:id="@+id/thread_button"
+            style="@style/Base.TextAppearance.AppCompat.Button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:enabled="true"
+            android:focusableInTouchMode="false"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="test JNI threads" />
 
     </LinearLayout>
 

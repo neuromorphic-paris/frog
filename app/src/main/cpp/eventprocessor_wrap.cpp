@@ -1,5 +1,7 @@
 #include "eventprocessor.hpp"
 #include <jni.h>
+#include <zconf.h>
+#include <unistd.h>
 
 #define LOG_TAG "eventprocessor"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -43,7 +45,8 @@ Java_com_paris_neuromorphic_Eventprocessor_reset_1bitmap(JNIEnv *env, jclass ins
 }
 
 JNIEXPORT void JNICALL
-Java_com_paris_neuromorphic_Eventprocessor_delete_1bitmap(JNIEnv *env, jclass instance, jlong jniCPtr) {
+Java_com_paris_neuromorphic_Eventprocessor_delete_1bitmap(JNIEnv *env, jclass instance,
+                                                          jlong jniCPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     if (eventProcessor->_bitmap != nullptr) {
         env->DeleteGlobalRef(eventProcessor->_bitmap);
@@ -64,14 +67,16 @@ Java_com_paris_neuromorphic_Eventprocessor_trigger_1sepia(JNIEnv *env, jclass in
 JNIEXPORT void JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_set_1camera_1data(JNIEnv *env, jclass instance,
                                                              jlong objPtr, jbyteArray camera_data_,
-                                                             jlong camera_data_length, jboolean is_recorded) {
+                                                             jlong camera_data_length,
+                                                             jboolean is_recorded) {
     std::chrono::system_clock::time_point start_copying, end_copying;
 
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
 
     start_copying = std::chrono::system_clock::now();
     jbyte *camera_data = env->GetByteArrayElements(camera_data_, nullptr);
-    (eventProcessor)->set_camera_data(env, (unsigned char *) camera_data, (unsigned long) camera_data_length, is_recorded);
+    (eventProcessor)->set_camera_data(env, (unsigned char *) camera_data,
+                                      (unsigned long) camera_data_length, is_recorded);
     env->ReleaseByteArrayElements(camera_data_, camera_data, 0);
     end_copying = std::chrono::system_clock::now();
 
@@ -89,10 +94,13 @@ Java_com_paris_neuromorphic_Eventprocessor_gestures_1init(JNIEnv *env, jclass ty
     const char *gestureSigPath = env->GetStringUTFChars(arg1_, 0);
 
     std::string stdL1ProtoPath(l1ProtoPath, 100);
-    stdL1ProtoPath.erase(std::find(stdL1ProtoPath.begin(), stdL1ProtoPath.end(), '\0'), stdL1ProtoPath.end());
+    stdL1ProtoPath.erase(std::find(stdL1ProtoPath.begin(), stdL1ProtoPath.end(), '\0'),
+                         stdL1ProtoPath.end());
     std::string stdGestureSigPath(gestureSigPath, 100);
-    stdGestureSigPath.erase(std::find( stdGestureSigPath.begin(), stdGestureSigPath.end(), '\0'), stdGestureSigPath.end());
-    (eventProcessor)->gesture_init(stdL1ProtoPath, stdGestureSigPath, denoise, bgDenoise, refrac, gest_mode);
+    stdGestureSigPath.erase(std::find(stdGestureSigPath.begin(), stdGestureSigPath.end(), '\0'),
+                            stdGestureSigPath.end());
+    (eventProcessor)->gesture_init(stdL1ProtoPath, stdGestureSigPath, denoise, bgDenoise, refrac,
+                                   gest_mode);
 
     env->ReleaseStringUTFChars(arg0_, l1ProtoPath);
     env->ReleaseStringUTFChars(arg1_, gestureSigPath);
@@ -107,13 +115,36 @@ JNIEXPORT jstring JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_predict(JNIEnv *env, jclass type, jlong jniCPtr) {
     //	DOWN, HOME, LEFT, RIGHT, SELECT, UP
     jstring jpredict = env->NewStringUTF("0.000000,0.000000,0.000000,0.000000,0.000000,0.000000");
-    char* cpredict = (char *)env->GetStringUTFChars(jpredict, nullptr);
+    char *cpredict = (char *) env->GetStringUTFChars(jpredict, nullptr);
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     (eventProcessor)->predict(cpredict);
     jpredict = env->NewStringUTF(cpredict);
     env->ReleaseStringUTFChars(jpredict, cpredict);
 
     return jpredict;
+}
+
+void *threadFunction(EventProcessor *eventProcessor) {
+    JNIEnv *threadEnv = nullptr;
+    eventProcessor->jvm->AttachCurrentThread(&threadEnv,
+                                             nullptr);
+    LOGD("before wait");
+    sleep(3);
+    LOGD("after wait");
+    eventProcessor->jvm->DetachCurrentThread();
+    return nullptr;
+}
+
+JNIEXPORT void JNICALL
+Java_com_paris_neuromorphic_Eventprocessor_create_1thread(JNIEnv *env, jclass type, jlong jniCPtr) {
+    EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
+    env->GetJavaVM(&eventProcessor->jvm);
+
+    std::thread my_thread(threadFunction, eventProcessor);
+
+    LOGD("before join");
+    my_thread.detach();
+    LOGD("after join");
 }
 
 }

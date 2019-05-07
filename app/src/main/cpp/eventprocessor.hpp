@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdint>
 #include <chrono>
+#include <thread>
 #include "sepia/source/sepia.hpp"
 
 // INPUT DATA PARAMETERS
@@ -46,7 +47,10 @@
 
 class EventProcessor {
 public:
-    EventProcessor() = default;
+    EventProcessor() : _fifo(20000), _scaleY(1) {
+    };
+
+    JavaVM *jvm = nullptr;
 
     uint64_t _baseTime = 0;
 
@@ -86,6 +90,8 @@ public:
     void flush();
 
     std::vector<float> getKnnProbaVector();
+
+    sepia::fifo<sepia::dvs_event> _fifo;
 
 private:
     // we need an event struct here because the timestamp is cumulative

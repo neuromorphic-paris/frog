@@ -133,9 +133,16 @@ void *threadFunction(EventProcessor *eventProcessor) {
     }
     LOGD("Attached worker thread...");
     u_long event_counter = 0;
+    u_long noop_counter = 0;
+    bool first_event = true;
+    u_long first_event_counter = 0;
     for (;;) {
         sepia::dvs_event event = {};
         if (eventProcessor->_fifo.pull(event)) {
+            if (first_event) {
+                first_event = false;
+                first_event_counter = noop_counter;
+            }
             if (event.x == 1000) {
                 jstring jpredict = threadEnv->NewStringUTF(
                         "0.000000,0.000000,0.000000,0.000000,0.000000,0.000000");
@@ -154,10 +161,14 @@ void *threadFunction(EventProcessor *eventProcessor) {
             }
             eventProcessor->processEvent(event.t, event.x, event.y);
             event_counter++;
-        };
+        } else {
+            noop_counter++;
+        }
     }
     LOGD("Detaching worker thread after having processed %lu events.", event_counter);
     LOGD("Plotted %lu events.", eventProcessor->_event_counter);
+    LOGD("Number of noops in total: %lu", noop_counter);
+    LOGD("thereof %lu noops before first event", first_event_counter);
     eventProcessor->_event_counter = 0;
     eventProcessor->jvm->DetachCurrentThread();
     return nullptr;
@@ -169,6 +180,14 @@ Java_com_paris_neuromorphic_Eventprocessor_create_1thread(JNIEnv *env, jclass ty
     env->GetJavaVM(&eventProcessor->jvm);
 
     std::thread my_thread(threadFunction, eventProcessor);
+
+    sched_param sch{};
+    int policy;
+    pthread_getschedparam(my_thread.native_handle(), &policy, &sch);
+    sch.sched_priority = 0;
+    if (pthread_setschedparam(my_thread.native_handle(), SCHED_FIFO, &sch)) {
+        LOGE("Failed to set schedparam");
+    }
 
     my_thread.detach();
 }

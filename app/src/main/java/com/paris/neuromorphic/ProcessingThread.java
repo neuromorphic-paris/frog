@@ -85,7 +85,6 @@ public class ProcessingThread extends HandlerThread {
                 toExchange = (ToExchange) buffer.take();
                 if (toExchange.size == 13) {
                     Eventprocessor.triggerPrediction();
-                    break;
                 } else {
                     startTimeStamp = System.nanoTime();
                     Eventprocessor.setCameraData(toExchange.data, toExchange.size, toExchange.isRecorded);

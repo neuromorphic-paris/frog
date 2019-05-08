@@ -14,12 +14,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     final String ASSETS_FILE_BIASES = "standard_new.bias";
     final String ASSETS_FILE_PROTOTYPE_L1 = "fixed-20180216.prototypes";
     final String ASSETS_FILE_SIGNATURES = "fixed-20180427-bg4-300-dn10000-5-2.signatures";
+    private final float[] gestureThresholds = {(float) 0.5, (float) 0.5, (float) 0.7, (float) 0.7, (float) 0.5, (float) 0.7, (float) 1};
 
     String cameraBiasFilePath, exampleFilePath, prototypesFilePath, signaturesFilePath;
 
@@ -101,21 +102,11 @@ public class MainActivity extends AppCompatActivity {
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 
-        startRecordingButton.setOnClickListener(view -> {
-            cameraService.triggerRecording(GESTURE_DURATION);
-        });
+        startRecordingButton.setOnClickListener(view -> cameraService.triggerRecording(GESTURE_DURATION));
 
-        playbackButton.setOnClickListener(view -> {
-            try {
-                startCameraReplacementFilePolling();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        });
+        playbackButton.setOnClickListener(view -> startCameraReplacementFilePolling());
 
-        threadButton.setOnClickListener(view -> {
-            Eventprocessor.testJniCallback();
-        });
+        threadButton.setOnClickListener(view -> Eventprocessor.testJniCallback());
     }
 
     private native void set_main_activity_object(long ptr);
@@ -138,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void startCameraReplacementFilePolling() throws FileNotFoundException {
+    public void startCameraReplacementFilePolling() {
         startCameraService();
         new AsyncPlaybackStart().execute();
     }
@@ -157,10 +148,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showGestureResult(String message) {
+        String gestureScore[] = message.split(",");
+
+        int winningGesture = 6;
+        float winningScore = 0;
+
+        for (int i = 0; i < gestureScore.length; i++) {
+            float tempScore = Float.parseFloat(gestureScore[i]);
+            if (tempScore > winningScore) {
+                winningScore = tempScore;
+                winningGesture = i;
+            }
+        }
+
+        final int gestureNumber = winningGesture;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), String.valueOf(gestureNumber), Toast.LENGTH_SHORT).show();
             }
         });
     }

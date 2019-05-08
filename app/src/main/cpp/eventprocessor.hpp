@@ -55,6 +55,8 @@ public:
     uint64_t _baseTime = 0;
 
     jobject _bitmap = nullptr;
+    jobject mainActivityObject;
+    jclass mainActivityClass;
 
     u_long _event_counter = 0;
 

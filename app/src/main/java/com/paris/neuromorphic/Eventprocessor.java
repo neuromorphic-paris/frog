@@ -33,8 +33,8 @@ public class Eventprocessor {
         }
     }
 
-    protected static long getCPtr(Eventprocessor obj) {
-        return (obj == null) ? 0 : objPtr;
+    static long getCPtr() {
+        return objPtr;
     }
 
     public synchronized void delete() {
@@ -100,6 +100,10 @@ public class Eventprocessor {
         return get_JVM_version();
     }
 
+    static void testJniCallback() {
+        test_jni_callback(objPtr);
+    }
+
     private static native long new_Eventprocessor();
 
     private static native void delete_Eventprocessor(long jniCPtr);
@@ -123,6 +127,8 @@ public class Eventprocessor {
     private static native void trigger_prediction(long jniCPtr);
 
     private static native void create_thread(long jniCPtr);
+
+    private static native void test_jni_callback(long jniCPtr);
 
     // Robolectric cannot load shared libraries
     private static boolean isEventProcessorLibraryLoaded() {

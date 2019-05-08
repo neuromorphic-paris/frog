@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         Eventprocessor.newEventprocessor();
         Eventprocessor.gesturesInitialisation(prototypesFilePath, signaturesFilePath, true, true, false, 6);
+        set_main_activity_object(Eventprocessor.getCPtr());
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 
@@ -117,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
             Eventprocessor.triggerPrediction();
         });
     }
+
+    private native void set_main_activity_object(long ptr);
 
     @Override
     public void onStart() {
@@ -152,6 +155,15 @@ public class MainActivity extends AppCompatActivity {
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
         Eventprocessor.resetBitmap();
+    }
+
+    void showGestureResult() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "yes", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public class AsyncPlaybackStart extends AsyncTask<Boolean, Integer, Void> {

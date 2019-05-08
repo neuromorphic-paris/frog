@@ -134,10 +134,16 @@ void *threadFunction(EventProcessor *eventProcessor) {
         sepia::dvs_event event = {};
         if (eventProcessor->_fifo.pull(event)) {
             if (event.x == 1000) {
-                jstring jpredict = threadEnv->NewStringUTF("0.000000,0.000000,0.000000,0.000000,0.000000,0.000000");
+                jstring jpredict = threadEnv->NewStringUTF(
+                        "0.000000,0.000000,0.000000,0.000000,0.000000,0.000000");
                 char *cpredict = (char *) threadEnv->GetStringUTFChars(jpredict, nullptr);
                 eventProcessor->predict(cpredict);
                 jpredict = threadEnv->NewStringUTF(cpredict);
+
+                jmethodID gesture_result_show = threadEnv->GetMethodID(
+                        eventProcessor->mainActivityClass,
+                        "showGestureResult", "()V");
+                threadEnv->CallVoidMethod(eventProcessor->mainActivityObject, gesture_result_show);
                 threadEnv->ReleaseStringUTFChars(jpredict, cpredict);
                 break;
             }
@@ -145,7 +151,7 @@ void *threadFunction(EventProcessor *eventProcessor) {
             event_counter++;
         };
     }
-    LOGD("Detaching worker thread after having processed %lu", event_counter);
+    LOGD("Detaching worker thread after having processed %lu events.", event_counter);
     LOGD("Plotted %lu events.", eventProcessor->_event_counter);
     eventProcessor->_event_counter = 0;
     eventProcessor->jvm->DetachCurrentThread();
@@ -169,4 +175,21 @@ Java_com_paris_neuromorphic_Eventprocessor_trigger_1prediction(JNIEnv *env, jcla
     eventProcessor->_fifo.push(sepia::dvs_event{1, 1000, 1, false});
 }
 
+JNIEXPORT void JNICALL
+Java_com_paris_neuromorphic_MainActivity_set_1main_1activity_1object(JNIEnv *env, jobject instance,
+                                                                     jlong ptr) {
+    EventProcessor *eventProcessor = *(EventProcessor **) &ptr;
+    jclass clz = (env)->GetObjectClass(instance);
+    eventProcessor->mainActivityClass = reinterpret_cast<jclass>(env->NewGlobalRef(clz));
+    eventProcessor->mainActivityObject = env->NewGlobalRef(instance);
+}
+
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_paris_neuromorphic_Eventprocessor_test_1jni_1callback(JNIEnv *env, jclass type,
+                                                               jlong jniCPtr) {
+    EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
+    jmethodID gesture_result_show = env->GetMethodID(eventProcessor->mainActivityClass,
+                                                     "showGestureResult", "()V");
+    env->CallVoidMethod(eventProcessor->mainActivityObject, gesture_result_show);
 }

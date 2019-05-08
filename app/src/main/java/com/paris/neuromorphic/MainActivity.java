@@ -168,19 +168,21 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), String.valueOf(gestureNumber), Toast.LENGTH_SHORT).show();
             switch (gestureNumber) {
                 case 0:
-                    resultIconView.setImageResource(R.drawable.icon_swipe_down);
+                    resultIconView.setImageResource(R.mipmap.icon_down_small_ok);
                     break;
+                case 1:
+                    resultIconView.setImageResource(R.mipmap.icon_home_small_ok);
                 case 2:
-                    resultIconView.setImageResource(R.drawable.icon_swipe_right);
+                    resultIconView.setImageResource(R.mipmap.icon_right_small_ok);
                     break;
                 case 3:
-                    resultIconView.setImageResource(R.drawable.icon_swipe_left);
+                    resultIconView.setImageResource(R.mipmap.icon_left_small_ok);
                     break;
                 case 5:
-                    resultIconView.setImageResource(R.drawable.icon_swipe_up);
+                    resultIconView.setImageResource(R.mipmap.icon_up_small_ok);
                     break;
                 default:
-                    resultIconView.setImageResource(R.drawable.ccam_animation);
+                    resultIconView.setImageResource(R.mipmap.icon_warnings);
             }
         });
     }

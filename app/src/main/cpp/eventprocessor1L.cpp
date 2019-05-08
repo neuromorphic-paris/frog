@@ -2,6 +2,10 @@
 #include <sstream>
 #include "eventprocessor.hpp"
 
+#define LOG_TAG "eventprocessor1L"
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+
 void EventProcessor::gesture_init(std::string l1ProtoPath, std::string gestureSigPath, bool denoise, bool bg_denoise, bool refrac, int gest_mode)
 {
     // The constructor sets all vectors,
@@ -387,6 +391,9 @@ void EventProcessor::processEvent(uint64_t ts, uint16_t x, uint16_t y)
 
 void EventProcessor::predict(char *cpredict)
 {
+    LOGD("number of events past denoiser: %lu", this->pastDenoiseFilter);
+    LOGD("number of events past background remover: %lu", this->pastBackgroundRemover);
+    LOGD("number of events past refrac: %lu", this->pastRefrac);
     // normalize signature (which is stored in outputMemory)
     float sumO = std::accumulate(this->outputMemory.begin(), this->outputMemory.end(), 0.0);
     for (auto & count: this->outputMemory) {

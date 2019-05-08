@@ -128,6 +128,9 @@ void *threadFunction(EventProcessor *eventProcessor) {
     JNIEnv *threadEnv = nullptr;
     eventProcessor->jvm->AttachCurrentThread(&threadEnv,
                                              nullptr);
+    if (eventProcessor->jvm->GetEnv(reinterpret_cast<void**>(&threadEnv), JNI_VERSION_1_6) != JNI_OK) {
+        LOGE("me don't like");
+    }
     LOGD("Attached worker thread...");
     u_long event_counter = 0;
     for (;;) {
@@ -143,7 +146,9 @@ void *threadFunction(EventProcessor *eventProcessor) {
                 jmethodID gesture_result_show = threadEnv->GetMethodID(
                         eventProcessor->mainActivityClass,
                         "showGestureResult", "(Ljava/lang/String;)V");
-                threadEnv->CallVoidMethod(eventProcessor->mainActivityObject, gesture_result_show);
+                jstring javaMsg = threadEnv->NewStringUTF(cpredict);
+                threadEnv->CallVoidMethod(eventProcessor->mainActivityObject, gesture_result_show, javaMsg);
+                threadEnv->DeleteLocalRef(javaMsg);
                 threadEnv->ReleaseStringUTFChars(jpredict, cpredict);
                 break;
             }

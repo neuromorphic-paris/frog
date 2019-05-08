@@ -114,8 +114,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         threadButton.setOnClickListener(view -> {
-            Eventprocessor.createThread();
-            Eventprocessor.triggerPrediction();
+            Eventprocessor.testJniCallback();
         });
     }
 
@@ -157,11 +156,11 @@ public class MainActivity extends AppCompatActivity {
         Eventprocessor.resetBitmap();
     }
 
-    void showGestureResult() {
+    void showGestureResult(String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), "yes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
     }

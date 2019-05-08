@@ -142,7 +142,7 @@ void *threadFunction(EventProcessor *eventProcessor) {
 
                 jmethodID gesture_result_show = threadEnv->GetMethodID(
                         eventProcessor->mainActivityClass,
-                        "showGestureResult", "()V");
+                        "showGestureResult", "(Ljava/lang/String;)V");
                 threadEnv->CallVoidMethod(eventProcessor->mainActivityObject, gesture_result_show);
                 threadEnv->ReleaseStringUTFChars(jpredict, cpredict);
                 break;
@@ -184,12 +184,15 @@ Java_com_paris_neuromorphic_MainActivity_set_1main_1activity_1object(JNIEnv *env
     eventProcessor->mainActivityObject = env->NewGlobalRef(instance);
 }
 
-}extern "C"
 JNIEXPORT void JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_test_1jni_1callback(JNIEnv *env, jclass type,
                                                                jlong jniCPtr) {
     EventProcessor *eventProcessor = *(EventProcessor **) &jniCPtr;
     jmethodID gesture_result_show = env->GetMethodID(eventProcessor->mainActivityClass,
-                                                     "showGestureResult", "()V");
-    env->CallVoidMethod(eventProcessor->mainActivityObject, gesture_result_show);
+                                                     "showGestureResult", "(Ljava/lang/String;)V");
+    jstring javaMsg = env->NewStringUTF("okay");
+    env->CallVoidMethod(eventProcessor->mainActivityObject, gesture_result_show, javaMsg);
+    env->DeleteLocalRef(javaMsg);
+}
+
 }

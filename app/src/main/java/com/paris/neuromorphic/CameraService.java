@@ -159,6 +159,8 @@ public class CameraService extends Service {
     }
 
     public void triggerRecording(int duration) {
+        Eventprocessor.createThread();
+
         cameraPollingThread.setRecordingStatus(true);
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {

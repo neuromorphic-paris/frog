@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -63,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
     Button startRecordingButton;
     @BindView(R.id.playback_button)
     Button playbackButton;
-    @BindView(R.id.thread_button)
-    Button threadButton;
+    @BindView(R.id.result_icon)
+    ImageView resultIconView;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -104,9 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
         startRecordingButton.setOnClickListener(view -> cameraService.triggerRecording(GESTURE_DURATION));
 
-        playbackButton.setOnClickListener(view -> startCameraReplacementFilePolling());
+        playbackButton.setOnClickListener(view -> {
+            Eventprocessor.createThread();
+            startCameraReplacementFilePolling();
+        });
 
-        threadButton.setOnClickListener(view -> Eventprocessor.testJniCallback());
     }
 
     private native void set_main_activity_object(long ptr);
@@ -162,10 +163,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         final int gestureNumber = winningGesture;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), String.valueOf(gestureNumber), Toast.LENGTH_SHORT).show();
+        runOnUiThread(() -> {
+            Log.d(TAG, "test");
+            Toast.makeText(getApplicationContext(), String.valueOf(gestureNumber), Toast.LENGTH_SHORT).show();
+            switch (gestureNumber) {
+                case 0:
+                    resultIconView.setImageResource(R.drawable.icon_swipe_down);
+                    break;
+                case 2:
+                    resultIconView.setImageResource(R.drawable.icon_swipe_right);
+                    break;
+                case 3:
+                    resultIconView.setImageResource(R.drawable.icon_swipe_left);
+                    break;
+                case 5:
+                    resultIconView.setImageResource(R.drawable.icon_swipe_up);
+                    break;
+                default:
+                    resultIconView.setImageResource(R.drawable.ccam_animation);
             }
         });
     }

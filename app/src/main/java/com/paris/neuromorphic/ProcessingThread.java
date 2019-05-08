@@ -79,7 +79,6 @@ public class ProcessingThread extends HandlerThread {
     }
 
     private void processBufferElements() {
-        Eventprocessor.createThread();
         while (isCameraAttached) {
             try {
                 toExchange = (ToExchange) buffer.take();

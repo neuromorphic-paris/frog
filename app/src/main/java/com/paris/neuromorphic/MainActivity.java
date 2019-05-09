@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     Button playbackButton;
     @BindView(R.id.result_icon)
     ImageView resultIconView;
+    @BindView(R.id.gesture_info)
+    TextView gestureTextView;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -101,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
 
         cameraPreview.setBackgroundColor(Color.GRAY);
         resultIconView.setImageResource(0);
+        gestureTextView.setText("");
+        playbackButton.setVisibility(View.INVISIBLE);
 
         startRecordingButton.setOnClickListener(view -> {
             view.setEnabled(false);
@@ -125,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void startCameraService() {
         cameraStatusImage.setImageResource(R.mipmap.camera_wait);
-        Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
+        infoText.setText("");
+        //Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
         cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
         cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
         cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
@@ -150,6 +156,9 @@ public class MainActivity extends AppCompatActivity {
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
         resultIconView.setImageResource(0);
+        gestureTextView.setText("");
+        infoText.setText(R.string.no_camera_connected);
+
         Eventprocessor.resetBitmap();
     }
 
@@ -170,29 +179,34 @@ public class MainActivity extends AppCompatActivity {
         final int gestureNumber = winningGesture;
         runOnUiThread(() -> {
             startRecordingButton.setEnabled(true);
-            Log.d(TAG, "test");
-            Toast.makeText(getApplicationContext(), String.valueOf(gestureNumber), Toast.LENGTH_SHORT).show();
             switch (gestureNumber) {
                 case 0:
                     resultIconView.setImageResource(R.mipmap.icon_down_small_ok);
+                    gestureTextView.setText("Down");
                     break;
                 case 1:
                     resultIconView.setImageResource(R.mipmap.icon_home_small_ok);
+                    gestureTextView.setText("Home");
                     break;
                 case 2:
                     resultIconView.setImageResource(R.mipmap.icon_right_small_ok);
+                    gestureTextView.setText("Right");
                     break;
                 case 3:
                     resultIconView.setImageResource(R.mipmap.icon_left_small_ok);
+                    gestureTextView.setText("Left");
                     break;
                 case 4:
                     resultIconView.setImageResource(R.mipmap.icon_select_small_ok);
+                    gestureTextView.setText("Select");
                     break;
                 case 5:
                     resultIconView.setImageResource(R.mipmap.icon_up_small_ok);
+                    gestureTextView.setText("Up");
                     break;
                 default:
                     resultIconView.setImageResource(R.mipmap.icon_warnings);
+                    gestureTextView.setText("Unknown");
             }
         });
     }

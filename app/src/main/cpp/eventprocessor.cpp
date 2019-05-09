@@ -94,7 +94,8 @@ void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
     );
 }
 
-void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size, bool is_recorded) {
+void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size,
+                                     bool is_recorded) {
     std::chrono::system_clock::time_point start_method = std::chrono::system_clock::now();
 
     std::chrono::system_clock::time_point start_coordinates;
@@ -102,7 +103,7 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
     std::chrono::system_clock::time_point start_set_pixel, end_set_pixel;
 
     std::vector<sepia::dvs_event> all_events;
-    all_events.reserve(size/4);
+    all_events.reserve(size / 4);
 
     start_coordinates = std::chrono::system_clock::now();
     for (int i = 0; i < size;) {
@@ -113,23 +114,28 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
         auto pol = (unsigned char) ((d & 0xf0u) >> 4u);
         if (pol == 8) {
             this->_baseTime = (((a & 0xffu) | ((b & 0xffu) << 8u) | ((c & 0xffu) << 16u)
-                    | ((d & 0x0fu) << 24u)) << 11u);
+                                | ((d & 0x0fu) << 24u)) << 11u);
             //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor ", "index=%u raw=%02X%02X%02X%02X, ts=%llu", i, a, b, c, d, (unsigned long long int) localBaseTime);
         } else if (this->_baseTime != 0) {
             auto y = (unsigned short) (a & 0xffu);
             if (y <= 239) {
                 y = static_cast<uint16_t>(239u - y);
             } else {
-                __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "Mirroring for y-axis does not work for y=%d", y);
+                __android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor",
+                                    "Mirroring for y-axis does not work for y=%d", y);
             }
             auto x = (unsigned short) ((b & 0xffu) | ((c & 0x01u) << 8u));
             uint64_t ts = this->_baseTime + (((c & 0xffu) >> 1u) & 0x7fu) | ((d & 0x0fu) << 7u);
             //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "index=%u raw=%02X%02X%02X%02X, ts=%llu, pol=%u, x=%03u, y=%03u", i, a, b, c, d, (unsigned long long int) ts, pol, x, y);
             auto event = sepia::dvs_event{ts, x, y, static_cast<bool>(pol)};
             all_events.push_back(event);
+            if (is_recorded) {
+                this->_fifo.push(event);
+            }
         }
     }
-    std::chrono::duration<double, std::milli> time_coordinates = std::chrono::system_clock::now() - start_coordinates;
+    std::chrono::duration<double, std::milli> time_coordinates =
+            std::chrono::system_clock::now() - start_coordinates;
 
     void *pixels;
     int ret;
@@ -139,19 +145,15 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
     start_set_pixel = std::chrono::system_clock::now();
-    for(auto event : all_events){
+    for (auto event : all_events) {
         set_pixel(event, pixels);
         this->_event_counter++;
     }
     end_set_pixel = std::chrono::system_clock::now();
     AndroidBitmap_unlockPixels(env, this->_bitmap);
 
-    if (is_recorded) {
-        for (auto event : all_events) {
-            this->_fifo.push(event);
-        }
-    }
-    std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() - start_locking);
+    std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() -
+                                                              start_locking);
     std::chrono::duration<double, std::milli> time_set_pixel = (end_set_pixel - start_set_pixel);
     std::chrono::duration<double, std::milli> end = std::chrono::system_clock::now() - start_method;
     //LOGD("Total parsing time for %lu events %fms, setting the pixel %fms and locking overall %fms. Method execution time %fms", size, time_coordinates.count(), time_set_pixel.count(), time_locking.count(), end.count());

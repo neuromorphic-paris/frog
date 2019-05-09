@@ -132,6 +132,7 @@ public class Eventprocessor {
 
     // Robolectric cannot load shared libraries
     private static boolean isEventProcessorLibraryLoaded() {
+        Thread thread = new Thread();
         try {
             Set<String> libs = new HashSet<>();
             String mapsFile = "/proc/" + android.os.Process.myPid() + "/maps";

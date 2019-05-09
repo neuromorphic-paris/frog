@@ -96,10 +96,11 @@ public class MainActivity extends AppCompatActivity {
         signaturesFilePath = Util.copyResource(getApplicationContext(), ASSETS_FILE_SIGNATURES);
 
         Eventprocessor.newEventprocessor();
-        Eventprocessor.gesturesInitialisation(prototypesFilePath, signaturesFilePath, true, true, false, 6);
+        Eventprocessor.gesturesInitialisation(prototypesFilePath, signaturesFilePath, true, true, true, 6);
         set_main_activity_object(Eventprocessor.getCPtr());
 
         cameraPreview.setBackgroundColor(Color.GRAY);
+        resultIconView.setImageResource(0);
 
         startRecordingButton.setOnClickListener(view -> {
             view.setEnabled(false);
@@ -148,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
             stopService(cameraServiceIntent);
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
+        resultIconView.setImageResource(0);
         Eventprocessor.resetBitmap();
     }
 

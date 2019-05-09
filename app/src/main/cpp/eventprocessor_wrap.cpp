@@ -184,7 +184,7 @@ Java_com_paris_neuromorphic_Eventprocessor_create_1thread(JNIEnv *env, jclass ty
     sched_param sch{};
     int policy;
     pthread_getschedparam(my_thread.native_handle(), &policy, &sch);
-    sch.sched_priority = 0;
+    sch.sched_priority = -10;
     if (pthread_setschedparam(my_thread.native_handle(), SCHED_FIFO, &sch)) {
         LOGE("Failed to set schedparam");
     }

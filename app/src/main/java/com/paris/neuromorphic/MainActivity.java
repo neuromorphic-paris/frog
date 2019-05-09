@@ -101,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
 
         cameraPreview.setBackgroundColor(Color.GRAY);
 
-        startRecordingButton.setOnClickListener(view -> cameraService.triggerRecording(GESTURE_DURATION));
+        startRecordingButton.setOnClickListener(view -> {
+            view.setEnabled(false);
+            cameraService.triggerRecording(GESTURE_DURATION);
+        });
 
         playbackButton.setOnClickListener(view -> {
             Eventprocessor.createThread();
@@ -164,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
         final int gestureNumber = winningGesture;
         runOnUiThread(() -> {
+            startRecordingButton.setEnabled(true);
             Log.d(TAG, "test");
             Toast.makeText(getApplicationContext(), String.valueOf(gestureNumber), Toast.LENGTH_SHORT).show();
             switch (gestureNumber) {
@@ -172,11 +176,15 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 1:
                     resultIconView.setImageResource(R.mipmap.icon_home_small_ok);
+                    break;
                 case 2:
                     resultIconView.setImageResource(R.mipmap.icon_right_small_ok);
                     break;
                 case 3:
                     resultIconView.setImageResource(R.mipmap.icon_left_small_ok);
+                    break;
+                case 4:
+                    resultIconView.setImageResource(R.mipmap.icon_select_small_ok);
                     break;
                 case 5:
                     resultIconView.setImageResource(R.mipmap.icon_up_small_ok);

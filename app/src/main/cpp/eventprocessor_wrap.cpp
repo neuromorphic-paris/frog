@@ -26,11 +26,19 @@ Java_com_paris_neuromorphic_Eventprocessor_delete_1Eventprocessor(JNIEnv *env, j
 }
 
 JNIEXPORT void JNICALL
-Java_com_paris_neuromorphic_Eventprocessor_set_1bitmap(JNIEnv *env, jclass instance,
+Java_com_paris_neuromorphic_Eventprocessor_set_1shared_1bitmap(JNIEnv *env, jclass instance,
                                                        jlong objPtr, jobject bitmap) {
     EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
     eventProcessor->_bitmap = env->NewGlobalRef(bitmap);
     eventProcessor->save_bitmap_info(env);
+}
+
+JNIEXPORT void JNICALL
+Java_com_paris_neuromorphic_Eventprocessor_update_1shared_1bitmap(JNIEnv *env, jclass type,
+                                                                  jlong objPtr) {
+
+    // TODO
+
 }
 
 JNIEXPORT void JNICALL

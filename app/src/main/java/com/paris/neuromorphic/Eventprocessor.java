@@ -44,16 +44,21 @@ public class Eventprocessor {
         }
     }
 
-    static void setBitmap(Bitmap bitmap) {
+    static void setSharedBitmap(Bitmap bitmap) {
         if (isEventProcessorLibraryLoaded()) {
             if (objPtr == 0) {
                 newEventprocessor();
                 Log.d(TAG, "Created new Eventprocessor from setBitmap");
             }
-            set_bitmap(objPtr, bitmap);
+            set_shared_bitmap(objPtr, bitmap);
         } else {
             Log.e(TAG, "libeventprocessor is not loaded");
         }
+    }
+
+
+    static void updateSharedBitmap() {
+        update_shared_bitmap(objPtr);
     }
 
     static void resetBitmap() {
@@ -88,7 +93,9 @@ public class Eventprocessor {
 
     private static native void delete_Eventprocessor(long jniCPtr);
 
-    private static native void set_bitmap(long objPtr, Bitmap bitmap);
+    private static native void set_shared_bitmap(long objPtr, Bitmap bitmap);
+
+    private static native void update_shared_bitmap(long objPtr);
 
     private static native void reset_bitmap(long objPtr);
 

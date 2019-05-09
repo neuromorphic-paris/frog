@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
@@ -89,11 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         startButton.setEnabled(true);
         startButton.setOnClickListener(view -> {
-            try {
-                startCameraReplacementFilePolling();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            startCameraReplacementFilePolling();
         });
     }
 
@@ -115,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         bindService(cameraServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void startCameraReplacementFilePolling() throws FileNotFoundException {
+    public void startCameraReplacementFilePolling() {
         startCameraService();
         new AsyncPlaybackStart().execute();
     }

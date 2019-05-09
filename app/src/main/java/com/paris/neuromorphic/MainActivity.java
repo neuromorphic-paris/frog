@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startCameraService() {
         cameraStatusImage.setImageResource(R.mipmap.camera_wait);
-        Toast.makeText(getApplicationContext(), "Preparing camera, please standby", Toast.LENGTH_SHORT).show();
+        infoText.setText("");
         cameraServiceIntent = new Intent(getApplicationContext(), CameraService.class);
         cameraServiceIntent.putExtra("usbDevice", getUsbDevice());
         cameraServiceIntent.putExtra("filePath", cameraBiasFilePath);
@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
             stopService(cameraServiceIntent);
         }
         cameraStatusImage.setImageResource(R.mipmap.camera_ko);
+        infoText.setText(R.string.no_camera_connected);
         Eventprocessor.resetBitmap();
     }
 

@@ -36,9 +36,8 @@ Java_com_paris_neuromorphic_Eventprocessor_set_1shared_1bitmap(JNIEnv *env, jcla
 JNIEXPORT void JNICALL
 Java_com_paris_neuromorphic_Eventprocessor_update_1shared_1bitmap(JNIEnv *env, jclass type,
                                                                   jlong objPtr) {
-
-    // TODO
-
+    EventProcessor *eventProcessor = *(EventProcessor **) &objPtr;
+    //eventProcessor->update_shared_bitmap(env);
 }
 
 JNIEXPORT void JNICALL

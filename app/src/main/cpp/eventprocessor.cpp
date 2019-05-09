@@ -17,6 +17,12 @@ void EventProcessor::save_bitmap_info(JNIEnv *env) {
     }
     LOGD("JNI bitmap width: %d, height: %d, stride: %d", info.width, info.height, info.stride);
     this->_bitmap_info = info;
+
+    for(int x = 0; x < 304; x++){
+        for(int y = 0; y < 240; y++){
+            this->_bitarray[x*y] = false;
+        }
+    }
 }
 
 void EventProcessor::reset_bitmap(JNIEnv *pEnv) {
@@ -36,17 +42,6 @@ void EventProcessor::reset_bitmap(JNIEnv *pEnv) {
     AndroidBitmap_unlockPixels(pEnv, this->_bitmap);
 }
 
-void EventProcessor::set_pixel(sepia::dvs_event event, void *pixels) {
-    int x = event.x;
-    pixels = (char *) pixels + event.y * this->_bitmap_info.stride;
-    auto *line = (char *) pixels;
-    if (event.is_increase) {
-        line[x] = static_cast<char>(0xFF); //white
-    } else {
-        line[x] = 0x00;
-    }
-}
-
 void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
     int counter = 0;
     JavaVM *jvm;
@@ -63,20 +58,7 @@ void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
                                                          isThreadAttached = true;
                                                      }
 
-                                                     void *pixels;
-                                                     int ret;
-                                                     if ((ret = AndroidBitmap_lockPixels(threadEnv,
-                                                                                         this->_bitmap,
-                                                                                         &pixels)) <
-                                                         0) {
-                                                         LOGE("AndroidBitmap_lockPixels() failed ! error=%d",
-                                                              ret);
-                                                     }
-
-                                                     set_pixel(dvs_event, pixels);
-
-                                                     AndroidBitmap_unlockPixels(threadEnv,
-                                                                                this->_bitmap);
+                                                     this->_bitarray[dvs_event.x*dvs_event.y] = dvs_event.is_increase;
 
                                                      if (dvs_event.is_increase) {
                                                          if (counter < 10) {
@@ -95,16 +77,9 @@ void EventProcessor::trigger_sepia(JNIEnv *env, std::string filepath) {
 }
 
 void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned long size) {
-    std::chrono::system_clock::time_point start_method = std::chrono::system_clock::now();
-
-    std::chrono::system_clock::time_point start_coordinates;
-    std::chrono::system_clock::time_point start_locking;
-    std::chrono::system_clock::time_point start_set_pixel, end_set_pixel;
-
     std::vector<sepia::dvs_event> all_events;
     all_events.reserve(size/4);
 
-    start_coordinates = std::chrono::system_clock::now();
     for (int i = 0; i < size;) {
         unsigned char a = data[i++];
         unsigned char b = data[i++];
@@ -125,29 +100,33 @@ void EventProcessor::set_camera_data(JNIEnv *env, unsigned char *data, unsigned 
             auto x = (unsigned short) ((b & 0xffu) | ((c & 0x01u) << 8u));
             uint64_t ts = this->_baseTime + (((c & 0xffu) >> 1u) & 0x7fu) | ((d & 0x0fu) << 7u);
             //__android_log_print(ANDROID_LOG_DEBUG, "C++ EventProcessor", "index=%u raw=%02X%02X%02X%02X, ts=%llu, pol=%u, x=%03u, y=%03u", i, a, b, c, d, (unsigned long long int) ts, pol, x, y);
-            auto event = sepia::dvs_event{ts, x, y, static_cast<bool>(pol)};
-            all_events.push_back(event);
+            //auto event = sepia::dvs_event{ts, x, y, static_cast<bool>(pol)};
+
+            //write event to internal bitarray that lives in the JNI
+            this->_bitarray[x*y] = static_cast<bool>(pol);
         }
     }
-    std::chrono::duration<double, std::milli> time_coordinates = std::chrono::system_clock::now() - start_coordinates;
+}
 
+void EventProcessor::update_shared_bitmap(JNIEnv *pEnv) {
     void *pixels;
     int ret;
 
-    start_locking = std::chrono::system_clock::now();
-    if ((ret = AndroidBitmap_lockPixels(env, this->_bitmap, &pixels)) < 0) {
+    if ((ret = AndroidBitmap_lockPixels(pEnv, this->_bitmap, &pixels)) < 0) {
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
-    start_set_pixel = std::chrono::system_clock::now();
-    for(auto event : all_events){
-        set_pixel(event, pixels);
+
+    for (int x = 0; x < this->_sensor_width; x++) {
+        for (int y = 0; y < this->_sensor_height; y++) {
+            pixels = (char *) pixels + y * this->_scaleY * this->_bitmap_info.stride;
+            auto *line = (char *) pixels;
+            if (this->_bitarray[x*y]) {
+                line[x * this->_scaleX] = static_cast<char>(0xFF); //white
+            } else {
+                line[x * this->_scaleX] = 0x00;
+            }
+        }
     }
-    end_set_pixel = std::chrono::system_clock::now();
 
-    AndroidBitmap_unlockPixels(env, this->_bitmap);
-
-    std::chrono::duration<double, std::milli> time_locking = (std::chrono::system_clock::now() - start_locking);
-    std::chrono::duration<double, std::milli> time_set_pixel = (end_set_pixel - start_set_pixel);
-    std::chrono::duration<double, std::milli> end = std::chrono::system_clock::now() - start_method;
-    LOGD("Total parsing time for %lu events %fms, setting the pixel %fms and locking overall %fms. Method execution time %fms", size, time_coordinates.count(), time_set_pixel.count(), time_locking.count(), end.count());
+    AndroidBitmap_unlockPixels(pEnv, this->_bitmap);
 }

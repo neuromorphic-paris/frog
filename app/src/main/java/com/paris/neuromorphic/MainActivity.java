@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     final String ASSETS_FILE_BIASES = "standard_new.bias";
     final String ASSETS_FILE_PROTOTYPE_L1 = "fixed-20180216.prototypes";
     final String ASSETS_FILE_SIGNATURES = "fixed-20180427-bg4-300-dn10000-5-2.signatures";
+    //final String ASSETS_FILE_SIGNATURES = "13-05-19.signatures";
     private final float[] gestureThresholds = {(float) 0.5, (float) 0.5, (float) 0.7, (float) 0.7, (float) 0.5, (float) 0.7, (float) 1};
 
     String cameraBiasFilePath, exampleFilePath, prototypesFilePath, signaturesFilePath;
